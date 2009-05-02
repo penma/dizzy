@@ -88,6 +88,12 @@ void dizzyrender_hand_resize(int w, int h) {
 	glViewport(0, 0, (GLsizei) w, (GLsizei) h);
 }
 
+void dizzyrender_hand_keyboard(unsigned char key, int x, int y) {
+	if (key == 27) { /* escape */
+		exit(0);
+	}
+}
+
 void dizzyrender_prepare_view() {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
@@ -106,15 +112,17 @@ void dizzyrender_prepare_view() {
 
 void dizzyrender_init(struct dizzyrender *dr, int argc, char *argv[]) {
 	glutInit(&argc, argv);
-	glutReshapeFunc(dizzyrender_hand_resize);
-	glutIdleFunc(dizzyrender_hand_idle);
-	glutDisplayFunc(dizzyrender_hand_render);
 }
 
 void dizzyrender_window(struct dizzyrender *dr, int w, int h) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(w, h);
 	glutCreateWindow("dizzy");
+
+	glutReshapeFunc(dizzyrender_hand_resize);
+	glutIdleFunc(dizzyrender_hand_idle);
+	glutDisplayFunc(dizzyrender_hand_render);
+	glutKeyboardFunc(dizzyrender_hand_keyboard);
 }
 
 void dizzyrender_start(struct dizzyrender *dr, int texture_res) {
