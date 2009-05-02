@@ -35,38 +35,41 @@ void dizzyTextures::generateTextures()
   GLuint *texid;
 
   float dx, dy, dist, angle;
-  for(int textype = 0; textype <= 5; textype++)
+  for(int textype = 0; textype <= 6; textype++)
   {
   	texid = new GLuint;
   	for(int x = 0; x < res; x++)
   	{
   	  for(int y = 0; y < res; y++)
   	  {
-  	  	dx = res/2.0f - x;
-  	  	dy = res/2.0f - y;
-  	  	dist = sqrt(dx*dx + dy*dy)+0.001;
-  	  	angle = asin(dy / dist);
-  	  	switch(textype)
-  	  	{
-  	  	  case 0:
-  	  	    texel = (unsigned char)(sin(res / dist * M_PI / 2.0f) * 128 + 128);
-            break;
-          case 1:
-            texel = (unsigned char)(cos(dist / res * M_PI) * 128 + 128);
-            break;
-          case 2:
-            texel = (unsigned char)(cos(dist / res * M_PI + sin(angle)) * 128 + 128);
-            break;
-          case 3:
-            texel = (unsigned char)(cos(dist / res * M_PI + sin(angle * 8)*0.2f) * 128 + 128);
-            break;
-          case 4:
-            texel = (unsigned char)(cos(dist / res * M_PI + sin(angle * 2)*0.2f) * 128 + 128);
-            break;
-  	  	  case 5:
-  	  	    texel = (unsigned char)(sin(dist / res * M_PI / 2.0f) * 128 + 128);
-            break;
-  	  	}
+  	    dx = res/2.0f - x;
+  	    dy = res/2.0f - y;
+  	    dist = sqrt(dx*dx + dy*dy)+0.001;
+  	    angle = asin(dy / dist);
+  	    switch(textype)
+  	    {
+              case 0:
+                texel = (unsigned char)(sin(res / dist * M_PI / 2.0f) * 128 + 128);
+                break;
+              case 1:
+                texel = (unsigned char)(cos(dist / res * M_PI) * 128 + 128);
+                break;
+              case 2:
+                texel = (unsigned char)(cos(dist / res * M_PI + sin(angle)) * 128 + 128);
+                break;
+              case 3:
+                texel = (unsigned char)(cos(dist / res * M_PI + sin(angle * 8)*0.2f) * 128 + 128);
+                break;
+              case 4:
+                texel = (unsigned char)(cos(dist / res * M_PI + sin(angle * 2)*0.2f) * 128 + 128);
+                break;
+              case 5:
+                texel = (unsigned char)(sin(dist / res * M_PI / 2.0f) * 128 + 128);
+                break;
+              case 6:
+                texel = (unsigned char)((cos(dy / res * M_PI) + sin(dx / res * M_PI)) * 128 + 128);
+                break;
+            }
         texture[(x * res + y) * 3] = texel;
   	    texture[(x * res + y) * 3+1] = texel;
         texture[(x * res + y) * 3+2] = texel;
