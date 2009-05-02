@@ -15,6 +15,7 @@ int main(int argc, char* argv[])
 {
   int w = 1024;
   int h = 768;
+  int tres = 64
   bool fs = false;
   if(argc > 1)
   {
@@ -24,13 +25,16 @@ int main(int argc, char* argv[])
       cout << argv[i] << endl;
       if((string)argv[i] == "-w" && i < argc - 1)
       {
-        w = atoi(((string)argv[++i]).c_str());
+        w = atoi(argv[++i]);
       } else if((string)argv[i] == "-h" && i < argc -1)
       { 
-        h = atoi(((string)argv[++i]).c_str());
+        h = atoi(argv[++i]);
       } else if((string)argv[i] == "-f")
       { 
         fs = true;
+      } else if((string)argv[i] == "-t")
+      {
+        tres = atoi(argv[++i]);
       }
     }
   }
@@ -46,7 +50,7 @@ int main(int argc, char* argv[])
   glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
   dizzyTextures *dt = dizzyTextures::getInstance();
-  dt->setResolution(64);
+  dt->setResolution(tres);
   dt->generateTextures();
   dt->setTexture(0);
 
