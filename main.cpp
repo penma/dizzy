@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
 {
   int w = 1024;
   int h = 768;
-  int tres = 64
+  int tres = 64;
   bool fs = false;
   if(argc > 1)
   {
