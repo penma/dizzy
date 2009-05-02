@@ -12,5 +12,6 @@ struct dizzytextures {
 void dizzytextures_init(struct dizzytextures *dt);
 void dizzytextures_set_resolution(struct dizzytextures *dt, int res);
 void dizzytextures_generate_textures(struct dizzytextures *dt);
+void dizzytextures_set_texture(struct dizzytextures *dt, int tex_id);
 
 #endif
