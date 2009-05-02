@@ -63,8 +63,8 @@ int main(int argc, char* argv[])
   while(running)
   {
     tick = SDL_GetTicks();
-  	glClear(GL_COLOR_BUFFER_BIT);
-  	glLoadIdentity();
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
 
     setColorFromHSV((tick*0.0002f) - (int)(tick*0.0002f),cos(tick * 0.001f)*0.125f + 0.5f, 0.5f);
     glPushMatrix();
@@ -88,19 +88,19 @@ int main(int argc, char* argv[])
     glEnd();
     glPopMatrix();
 
-  	SDL_GL_SwapBuffers();
+    SDL_GL_SwapBuffers();
 
-  	while(SDL_PollEvent(&event))
-  	{
-  	  if(event.type == SDL_QUIT)
-  	    running = false;
-  	  if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_LEFT)
-  	    dt->setTexture((++textureID)%dt->getCount());
-         if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_RIGHT)
-           dt->setTexture((--textureID)%dt->getCount());
-  	  if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
-  	    running=false;
-  	}
+    while(SDL_PollEvent(&event))
+    {
+      if(event.type == SDL_QUIT)
+        running = false;
+      if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_LEFT)
+        dt->setTexture((++textureID)%dt->getCount());
+      if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_RIGHT)
+        dt->setTexture((--textureID)%dt->getCount());
+      if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
+        running=false;
+    }
     SDL_Delay(1);
   }
   SDL_Quit();
