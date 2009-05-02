@@ -14,6 +14,7 @@ void dizzytextures_init(struct dizzytextures *dt) {
 
 	/* no textures have been generated yet */
 	dt->textures_count = 0;
+	dt->textures = NULL;
 }
 
 void dizzytextures_set_resolution(struct dizzytextures *dt, int res) {
