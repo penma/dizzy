@@ -1,10 +1,11 @@
 LDFLAGS ?= -lSDL -lGL -lm
 CFLAGS  ?= -Os -g -std=c99
+OBJFILES = main.o dizzy_textures.o
 
 all: dizzy
 
-dizzy: main.o dizzy_textures.o
+dizzy: $(OBJFILES)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 clean:
-	$(RM) dizzy
+	$(RM) dizzy $(OBJFILES)
