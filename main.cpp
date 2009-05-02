@@ -96,6 +96,8 @@ int main(int argc, char* argv[])
   	    running = false;
   	  if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_LEFT)
   	    dt->setTexture((++textureID)%dt->getCount());
+         if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_RIGHT)
+           dt->setTexture((--textureID)%dt->getCount());
   	  if(event.type == SDL_KEYUP && event.key.keysym.sym == SDLK_ESCAPE)
   	    running=false;
   	}
