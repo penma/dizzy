@@ -1,6 +1,4 @@
-#define _XOPEN_SOURCE 500
-#include <stdlib.h>
-#include <math.h>
+#include "dizzy_global.h"
 #include "dizzy_textures.h"
 
 void dizzytextures_set_texture(struct dizzytextures *dt, int tex_id) {

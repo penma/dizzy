@@ -1,5 +1,6 @@
 LDFLAGS ?= -lSDL -lGL -lm
-CFLAGS  ?= -Os -g -std=c99
+CFLAGS  ?= -Os -g -std=gnu99
+
 OBJFILES = main.o dizzy_textures.o
 
 all: dizzy

@@ -1,6 +1,4 @@
-#define _XOPEN_SOURCE 500
-#include <stdlib.h>
-#include <math.h>
+#include "dizzy_global.h"
 
 #include <SDL/SDL.h>
 #include <GL/glx.h>
