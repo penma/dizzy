@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 			} else if (!strcmp(argv[i], "-h") && (i < argc -1)) {
 				h = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "-f")) {
-				fullscreen = 1;
+				w = h = -1;
 			} else if (!strcmp(argv[i], "-t")) {
 				tres = atoi(argv[++i]);
 			}
@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
 
 	struct dizzyrender *dr = malloc(sizeof(struct dizzyrender));
 	dizzyrender_init(dr, argc, argv);
-	dizzyrender_window(dr,w, h);
+	dizzyrender_window(dr, w, h);
 	dizzyrender_start(dr, tres);
 }
 

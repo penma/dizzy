@@ -116,8 +116,15 @@ void dizzyrender_init(struct dizzyrender *dr, int argc, char *argv[]) {
 
 void dizzyrender_window(struct dizzyrender *dr, int w, int h) {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(w, h);
-	glutCreateWindow("dizzy");
+	if (w < 0 || h < 0) {
+		char gmstring[32];
+		snprintf(gmstring, 31, "%dx%d", glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
+		glutGameModeString(gmstring);
+		glutEnterGameMode();
+	} else {
+		glutInitWindowSize(w, h);
+		glutCreateWindow("dizzy");
+	}
 
 	glutReshapeFunc(dizzyrender_hand_resize);
 	glutIdleFunc(dizzyrender_hand_idle);
