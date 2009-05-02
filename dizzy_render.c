@@ -94,6 +94,19 @@ void dizzyrender_hand_keyboard(unsigned char key, int x, int y) {
 	}
 }
 
+void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
+	if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
+		if (key == GLUT_KEY_LEFT) {
+			the_dr->texture_id--;
+			the_dr->texture_id += the_dr->dt->textures_count;
+		} else {
+			the_dr->texture_id++;
+		}
+		the_dr->texture_id %= the_dr->dt->textures_count;
+		dizzytextures_set_texture(the_dr->dt, the_dr->texture_id);
+	}
+}
+
 void dizzyrender_prepare_view() {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
@@ -130,6 +143,7 @@ void dizzyrender_window(struct dizzyrender *dr, int w, int h) {
 	glutIdleFunc(dizzyrender_hand_idle);
 	glutDisplayFunc(dizzyrender_hand_render);
 	glutKeyboardFunc(dizzyrender_hand_keyboard);
+	glutSpecialFunc(dizzyrender_hand_keyboardspecial);
 }
 
 void dizzyrender_start(struct dizzyrender *dr, int texture_res) {
