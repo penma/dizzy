@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
   SDL_Event event;
   while(running)
   {
-    tick = SDL_GetTicks();
+    tick = clock()/(CLOCKS_PER_SEC/1000);
   	glClear(GL_COLOR_BUFFER_BIT);
   	glLoadIdentity();
 
