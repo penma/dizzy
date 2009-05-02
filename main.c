@@ -1,7 +1,5 @@
 #include "dizzy_global.h"
 
-#include <GL/glx.h>
-#include <GL/gl.h>
 #include "dizzy_textures.h"
 #include "dizzy_render.h"
 
