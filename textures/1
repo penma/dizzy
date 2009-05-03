@@ -1,1 +1,3 @@
-return sin(M_PI / (2 * _dist)) / 2 + 0.5;
+TEXFUNC {
+	return sin(M_PI / (2 * _dist)) / 2 + 0.5;
+}

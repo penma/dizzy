@@ -25,16 +25,17 @@ print $fh (<< "EOH");
 typedef double (*texture_proc)(double, double);
 
 EOH
+
 print $fh "#define dizzytextures_data_count " . scalar(@textures) . "\n";
+print $fh "#define _TEXFUNC(num) double dizzytextures_data_func_##num (double x, double y)\n";
 
 for (my $i = 0; $i < @textures; $i++) {
-	print $fh "double dizzytextures_data_func_$i(double x, double y) {\n";
+	print $fh "#undef TEXFUNC\n#define TEXFUNC _TEXFUNC($i)\n";
 	print $fh "#include \"textures/$textures[$i]\"\n";
-	print $fh "}\n\n";
 }
 
 print $fh "static texture_proc dizzytextures_data_funcs[dizzytextures_data_count] = {\n";
 print $fh "     dizzytextures_data_func_$_,\n" foreach (0..$#textures);
 print $fh "};\n\n";
 
-print $fh "#undef _dist\n#undef _angle\n";
+print $fh "#undef _dist\n#undef _angle\n#undef _TEXFUNC\n#undef TEXFUNC\n";

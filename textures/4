@@ -1,1 +1,3 @@
-return (cos(_dist * M_PI + sin(_angle * 8) * 0.2) / 2 + 0.5);
+TEXFUNC {
+	return (cos(_dist * M_PI + sin(_angle * 8) * 0.2) / 2 + 0.5);
+}
