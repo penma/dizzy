@@ -1,0 +1,3 @@
+TEXFUNC {
+	return 1.0 - (cos(_dist * M_PI) / 2 + 0.5);
+}
