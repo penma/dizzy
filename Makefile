@@ -5,8 +5,10 @@ OBJFILES = main.o dizzy_textures.o dizzy_render.o
 
 all: dizzy
 
-textures_data.h:
+textures_data.h: %.h: textures/*
 	./maketextures
+
+dizzy_textures.o: textures_data.h
 
 dizzy: textures_data.h $(OBJFILES)
 	$(CC) $(LDFLAGS) $(OBJFILES) -o $@
