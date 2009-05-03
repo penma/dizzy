@@ -1,6 +1,8 @@
 #include "dizzy_global.h"
 #include "dizzy_textures.h"
 
+#include "textures_data.h"
+
 void dizzytextures_set_texture(struct dizzytextures *dt, int tex_id) {
 	if (dt->textures) {
 		if (dt->textures_count) {
@@ -28,45 +30,13 @@ void dizzytextures_generate_textures(struct dizzytextures *dt) {
 	unsigned int texel;
 	GLuint texid;
 
-	for (int textype = 0; textype <= 8; textype++) {
+	for (int textype = 0; textype < dizzytextures_data_count; textype++) {
 		for (int x = 0; x < dt->resolution; x++) {
 			for (int y = 0; y < dt->resolution; y++) {
-				double dx = (dt->resolution / 2.0) - x;
-				double dy = (dt->resolution / 2.0) - y;
-				double dist = sqrt(dx*dx + dy*dy) + 0.001;
-				double angle = asin(dy / dist);
+				double nx = ((double)x / dt->resolution) - 0.5;
+				double ny = ((double)y / dt->resolution) - 0.5;
 
-				switch (textype) {
-					case 0:
-						texel = (unsigned char)((
-						0
-						) * 128 + 128);
-						break;
-					case 1:
-						texel = (unsigned char)(sin(dt->resolution / dist * M_PI / 2.0) * 128 + 128);
-						break;
-					case 2:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI) * 128 + 128);
-						break;
-					case 3:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle)) * 128 + 128);
-						break;
-					case 4:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 8) * 0.2) * 128 + 128);
-						break;
-					case 5:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 2) * 0.2) * 128 + 128);
-						break;
-					case 6:
-						texel = (unsigned char)(sin(dist / dt->resolution * M_PI / 2.0) * 128 + 128);
-						break;
-					case 7:
-						texel = (unsigned char)((cos(dy / dt->resolution * M_PI) + sin(dx / dt->resolution * M_PI)) * 128 + 128);
-						break;
-					case 8:
-						texel = (unsigned char)(cos((dx / dt->resolution * 2) + angle) * 128 + 128);
-						break;
-				}
+				texel = (unsigned char)(dizzytextures_data_funcs[textype](nx, ny) * 256);
 
 				texture[(x * dt->resolution + y) * 3    ] = texel;
 				texture[(x * dt->resolution + y) * 3 + 1] = texel;

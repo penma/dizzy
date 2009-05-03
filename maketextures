@@ -1,0 +1,40 @@
+#!/usr/bin/env perl
+# vim:ft=perl
+use strict;
+use warnings;
+
+# read the textures dir
+my $fh;
+opendir($fh, "textures/");
+my @textures = sort grep { $_ ne "." and $_ ne ".." } readdir($fh);
+closedir($fh);
+undef($fh);
+
+# write the header
+open($fh, ">", "textures_data.h");
+print $fh (<< "EOH");
+/* This file contains the texture generators. It is generated.
+   You're advised to not edit it.
+   Make changes in the textures/ directory or in the maketextures script.
+*/
+
+/* input: x/y  -0.5...0.5 - out: texel 0.0...1.0 */
+#define _dist (sqrt(x*x + y*y) + 0.001)
+#define _angle asin(y/_dist)
+
+typedef double (*texture_proc)(double, double);
+
+EOH
+print $fh "#define dizzytextures_data_count " . scalar(@textures) . "\n";
+
+for (my $i = 0; $i < @textures; $i++) {
+	print $fh "double dizzytextures_data_func_$i(double x, double y) {\n";
+	print $fh "#include \"textures/$textures[$i]\"\n";
+	print $fh "}\n\n";
+}
+
+print $fh "static texture_proc dizzytextures_data_funcs[dizzytextures_data_count] = {\n";
+print $fh "     dizzytextures_data_func_$_,\n" foreach (0..$#textures);
+print $fh "};\n\n";
+
+print $fh "#undef _dist\n#undef _angle\n";

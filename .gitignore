@@ -1,2 +1,3 @@
 *.o
 /dizzy
+/textures_data.h

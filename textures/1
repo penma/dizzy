@@ -1,0 +1,1 @@
+return sin(M_PI / (2 * _dist)) / 2 + 0.5;

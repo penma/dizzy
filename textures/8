@@ -1,0 +1,1 @@
+return (cos((x * 2) + _angle) / 2 + 0.5);

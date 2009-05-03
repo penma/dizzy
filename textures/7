@@ -1,0 +1,1 @@
+return (cos(y * M_PI) + sin(x * M_PI)) / 2 + 0.5;
