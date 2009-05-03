@@ -57,10 +57,10 @@ void dizzyrender_hand_render() {
 	glRotatef(tick * 0.005f, 0, 0, 1);
 	glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
 	glBegin(GL_QUADS);
-		glTexCoord2f( 0, 0); glVertex2f(-800, -800);
-		glTexCoord2f( 0, 1); glVertex2f(-800, 800);
-		glTexCoord2f( 1, 1); glVertex2f( 800, 800);
-		glTexCoord2f( 1, 0); glVertex2f( 800, -800);
+		glTexCoord2f(0, 0); glVertex2f(-800, -800);
+		glTexCoord2f(0, 1); glVertex2f(-800,  800);
+		glTexCoord2f(1, 1); glVertex2f( 800,  800);
+		glTexCoord2f(1, 0); glVertex2f( 800, -800);
 	glEnd();
 	glPopMatrix();
 
@@ -68,10 +68,10 @@ void dizzyrender_hand_render() {
 	glRotatef(tick * -0.0025f, 0, 0, 1);
 	glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
 	glBegin(GL_QUADS);
-		glTexCoord2f( 0, 0); glVertex2f(-800, -800);
-		glTexCoord2f( 0, 1); glVertex2f(-800, 800);
-		glTexCoord2f( 1, 1); glVertex2f( 800, 800);
-		glTexCoord2f( 1, 0); glVertex2f( 800, -800);
+		glTexCoord2f(0, 0); glVertex2f(-800, -800);
+		glTexCoord2f(0, 1); glVertex2f(-800,  800);
+		glTexCoord2f(1, 1); glVertex2f( 800,  800);
+		glTexCoord2f(1, 0); glVertex2f( 800, -800);
 	glEnd();
 	glPopMatrix();
 }
