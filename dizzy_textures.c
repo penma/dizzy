@@ -28,7 +28,7 @@ void dizzytextures_generate_textures(struct dizzytextures *dt) {
 	unsigned int texel;
 	GLuint texid;
 
-	for (int textype = 0; textype < 7; textype++) {
+	for (int textype = 0; textype <= 8; textype++) {
 		for (int x = 0; x < dt->resolution; x++) {
 			for (int y = 0; y < dt->resolution; y++) {
 				double dx = (dt->resolution / 2.0) - x;
@@ -38,25 +38,33 @@ void dizzytextures_generate_textures(struct dizzytextures *dt) {
 
 				switch (textype) {
 					case 0:
-						texel = (unsigned char)(sin(dt->resolution / dist * M_PI / 2.0) * 128 + 128);
+						texel = (unsigned char)((
+						0
+						) * 128 + 128);
 						break;
 					case 1:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI) * 128 + 128);
+						texel = (unsigned char)(sin(dt->resolution / dist * M_PI / 2.0) * 128 + 128);
 						break;
 					case 2:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle)) * 128 + 128);
+						texel = (unsigned char)(cos(dist / dt->resolution * M_PI) * 128 + 128);
 						break;
 					case 3:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 8) * 0.2) * 128 + 128);
+						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle)) * 128 + 128);
 						break;
 					case 4:
-						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 2) * 0.2) * 128 + 128);
+						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 8) * 0.2) * 128 + 128);
 						break;
 					case 5:
-						texel = (unsigned char)(sin(dist / dt->resolution * M_PI / 2.0) * 128 + 128);
+						texel = (unsigned char)(cos(dist / dt->resolution * M_PI + sin(angle * 2) * 0.2) * 128 + 128);
 						break;
 					case 6:
+						texel = (unsigned char)(sin(dist / dt->resolution * M_PI / 2.0) * 128 + 128);
+						break;
+					case 7:
 						texel = (unsigned char)((cos(dy / dt->resolution * M_PI) + sin(dx / dt->resolution * M_PI)) * 128 + 128);
+						break;
+					case 8:
+						texel = (unsigned char)(cos((dx / dt->resolution * 2) + angle) * 128 + 128);
 						break;
 				}
 
