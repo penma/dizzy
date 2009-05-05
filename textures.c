@@ -1,5 +1,5 @@
-#include "dizzy_global.h"
-#include "dizzy_textures.h"
+#include "global.h"
+#include "textures.h"
 
 #include "textures_data.h"
 

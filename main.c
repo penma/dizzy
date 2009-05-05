@@ -1,7 +1,7 @@
-#include "dizzy_global.h"
+#include "global.h"
 
-#include "dizzy_textures.h"
-#include "dizzy_render.h"
+#include "textures.h"
+#include "render.h"
 
 int main(int argc, char* argv[])
 {

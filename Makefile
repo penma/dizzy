@@ -1,14 +1,14 @@
 LDFLAGS ?= -lGL -lglut -lm -lrt
 CFLAGS  ?= -Wall -Wextra -Os -g -std=gnu99
 
-OBJFILES = main.o dizzy_textures.o dizzy_render.o
+OBJFILES = main.o textures.o render.o
 
 all: dizzy
 
 textures_data.h: %.h: textures/* textures/
 	./maketextures
 
-dizzy_textures.o: textures_data.h
+textures.o: textures_data.h
 
 dizzy: textures_data.h $(OBJFILES)
 	$(CC) $(LDFLAGS) $(OBJFILES) -o $@
