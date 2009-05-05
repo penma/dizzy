@@ -44,9 +44,9 @@ the texture. They range from -0.5 to 0.5.
 
 There are some macros defined for common calculations:
 
-_angle - the angle of the pixel relative to the center. A very small value for
+angle  - the angle of the pixel relative to the center. A very small value for
          the center itself.
-_dist  - the distance of the pixel to the center. Is positive and can obviously
+dist   - the distance of the pixel to the center. Is positive and can obviously
          not be larger than +sqrt(0.5).
 
 * Writing more complex functions
