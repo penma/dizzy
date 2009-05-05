@@ -1,0 +1,9 @@
+TEXFUNC {
+	double raw = _angle / 2 + 0.5;
+	if (raw > 1.0)
+		return 0.0;
+	else if (raw < 0.0)
+		return 1.0;
+	else
+		return raw;
+}
