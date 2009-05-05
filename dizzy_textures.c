@@ -36,7 +36,12 @@ void dizzytextures_generate_textures(struct dizzytextures *dt) {
 				double nx = ((double)x / dt->resolution) - 0.5;
 				double ny = ((double)y / dt->resolution) - 0.5;
 
-				texel = (unsigned char)(dizzytextures_data_funcs[textype](nx, ny) * 255);
+				double txval = dizzytextures_data_funcs[textype](nx, ny);
+				if (txval > 1.0)
+					txval = 1.0;
+				if (txval < 0.0)
+					txval = 0.0;
+				texel = (unsigned char)(txval * 255);
 
 				texture[(x * dt->resolution + y) * 3    ] = texel;
 				texture[(x * dt->resolution + y) * 3 + 1] = texel;
