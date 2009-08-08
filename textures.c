@@ -23,12 +23,29 @@ void dizzytextures_set_resolution(struct dizzytextures *dt, int res) {
 	dt->resolution = res;
 }
 
-GLuint dizzytextures_generate_texture(struct dizzytextures *dt, double (*texture_func)(double, double)) {
+GLuint dizzytextures_new_texture(struct dizzytextures *dt) {
+	GLuint oldtex;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldtex);
+
+	GLuint texid;
+	glGenTextures(1, &texid);
+	glBindTexture(GL_TEXTURE_2D, texid);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, oldtex);
+
+	return texid;
+}
+
+void dizzytextures_render_texture(struct dizzytextures *dt, GLuint texid, double (*texture_func)(double, double)) {
+	GLuint oldtex;
+	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldtex);
+
 	unsigned char *texture;
 	texture = malloc(dt->resolution * dt->resolution * (24 / 8));
 
 	unsigned int texel;
-	GLuint texid;
 
 	for (int x = 0; x < dt->resolution; x++) {
 		for (int y = 0; y < dt->resolution; y++) {
@@ -49,19 +66,18 @@ GLuint dizzytextures_generate_texture(struct dizzytextures *dt, double (*texture
 	}
 
 	/* load the texture into opengl */
-	glGenTextures(1, &texid);
 	glBindTexture(GL_TEXTURE_2D, texid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, dt->resolution, dt->resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
 
-	return texid;
+	/* restore previous texture */
+	glBindTexture(GL_TEXTURE_2D, oldtex);
 }
 
 void dizzytextures_generate_textures(struct dizzytextures *dt) {
 	for (int textype = 0; textype < dizzytextures_data_count; textype++) {
 		dt->textures = realloc(dt->textures, sizeof(GLuint) * (dt->textures_count + 1));
-		dt->textures[dt->textures_count] = dizzytextures_generate_texture(dt, dizzytextures_data_funcs[textype]);
+		dt->textures[dt->textures_count] = dizzytextures_new_texture(dt);
+		dizzytextures_render_texture(dt, dt->textures[dt->textures_count], dizzytextures_data_funcs[textype]);
 		dt->textures_count++;
 	}
 }
