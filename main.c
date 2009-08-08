@@ -8,7 +8,6 @@ int main(int argc, char* argv[])
 	int w = 1024;
 	int h = 768;
 	int tres = 64;
-	int fullscreen = 0;
 
 	int tb_active = 0;
 	int tb_wait = 2000;
