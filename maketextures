@@ -20,7 +20,7 @@ print $fh (<< "EOH");
 
 /* input: x/y  -0.5...0.5 - out: texel 0.0...1.0 */
 #define dist (sqrt(x*x + y*y))
-#define angle asin(y/dist)
+#define angle atan2(y, x)
 #define wrapval(v) ((v) > 1.0 ? 0.0 : ((v) < 0.0 ? 1.0 : (v)))
 
 typedef double (*texture_proc)(double, double);
