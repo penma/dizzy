@@ -116,10 +116,7 @@ void dizzyrender_hand_keyboard(unsigned char key, int x, int y) {
 	}
 }
 
-void dr_tweak_tex(int val);
-
 void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
-	static int tweak_val = 0;
 	if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
 		/* handle this only if we're not currently blending. */
 		if (!the_dr->texblend_active) {
@@ -133,20 +130,6 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 			dizzytextures_set_texture(the_dr->dt, the_dr->texture_id);
 		}
 	}
-	if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
-		if (key == GLUT_KEY_UP) {
-			tweak_val++;
-		} else {
-			tweak_val--;
-		}
-		printf("tweak_val = %d\n", tweak_val);
-		dr_tweak_tex(tweak_val);
-	}
-}
-
-void dr_tweak_tex(int val) {
-	dizzytextures_blend_textures(the_dr->dt, 1, 2, (double) val / 32.0);
-	glBindTexture(GL_TEXTURE_2D, the_dr->dt->blend_texture);
 }
 
 void dizzyrender_prepare_view() {
