@@ -7,6 +7,7 @@ struct dizzytextures {
 	int resolution;
 	GLuint *textures;
 	int textures_count;
+	GLuint blend_texture;
 };
 
 void dizzytextures_init(struct dizzytextures *dt);

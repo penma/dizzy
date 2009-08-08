@@ -123,6 +123,8 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 }
 
 void dr_tweak_tex(int val) {
+	dizzytextures_blend_textures(the_dr->dt, 1, 2, (double) val / 32.0);
+	glBindTexture(GL_TEXTURE_2D, the_dr->dt->blend_texture);
 }
 
 void dizzyrender_prepare_view() {

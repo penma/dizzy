@@ -11,12 +11,15 @@ void dizzytextures_set_texture(struct dizzytextures *dt, int tex_id) {
 	}
 }
 
+GLuint dizzytextures_new_texture(struct dizzytextures *dt);
+
 void dizzytextures_init(struct dizzytextures *dt) {
 	dizzytextures_set_resolution(dt, 64);
 
 	/* no textures have been generated yet */
 	dt->textures_count = 0;
 	dt->textures = NULL;
+	dt->blend_texture = dizzytextures_new_texture(dt);
 }
 
 void dizzytextures_set_resolution(struct dizzytextures *dt, int res) {
@@ -82,3 +85,12 @@ void dizzytextures_generate_textures(struct dizzytextures *dt) {
 	}
 }
 
+void dizzytextures_blend_textures(struct dizzytextures *dt, int t1, int t2, double ratio) {
+	double blend_func(double x, double y) {
+		return (
+			  (dizzytextures_data_funcs[t1](x, y) * (1.0 - ratio))
+			+ (dizzytextures_data_funcs[t2](x, y) * ratio));
+	}
+
+	dizzytextures_render_texture(dt, dt->blend_texture, blend_func);
+}
