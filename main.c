@@ -3,6 +3,22 @@
 #include "textures.h"
 #include "render.h"
 
+#define awrite(fd,str) write((fd),(str),strlen((str)))
+void usage() {
+	awrite(2, "usage: dizzy [options...]\n");
+
+	awrite(2, "   Graphics settings:\n");
+	awrite(2, "     -w num           set window width\n");
+	awrite(2, "     -h num           set window height\n");
+	awrite(2, "     -f               run in fullscreen mode\n");
+	awrite(2, "     -t num           set texture resolution (power of two)\n");
+
+	awrite(2, "   Texture blending options:\n");
+	awrite(2, "     -tb              activate texture blending\n");
+	awrite(2, "     -tbwait num      leave one texture active for num milliseconds\n");
+	awrite(2, "     -tbduration num  duration of the transition in milliseconds\n");
+}
+
 int main(int argc, char* argv[])
 {
 	int w = 1024;
@@ -31,6 +47,15 @@ int main(int argc, char* argv[])
 				tb_wait = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "-tbduration")) {
 				tb_duration = atoi(argv[++i]);
+			} else if (!strcmp(argv[i], "--help")) {
+				usage();
+				exit(0);
+			} else {
+				awrite(2, "dizzy: unknown argument ");
+				awrite(2, argv[i]);
+				awrite(2, "\n");
+				usage();
+				exit(1);
 			}
 		}
 	}
