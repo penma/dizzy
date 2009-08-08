@@ -123,52 +123,6 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 }
 
 void dr_tweak_tex(int val) {
-	unsigned char *texture;
-	texture = malloc(the_dr->dt->resolution * the_dr->dt->resolution * (24 / 8));
-
-	unsigned int texel;
-	GLuint texid;
-
-	for (int x = 0; x < the_dr->dt->resolution; x++) {
-		for (int y = 0; y < the_dr->dt->resolution; y++) {
-			double dx = (the_dr->dt->resolution / 2.0) - x;
-			double dy = (the_dr->dt->resolution / 2.0) - y;
-			double dist = sqrt(dx*dx + dy*dy) + 0.001;
-			double angle = asin(dy / dist);
-
-			double nx = ((double)x / the_dr->dt->resolution) * 2 - 0.5;
-			double ny = ((double)y / the_dr->dt->resolution) * 2 - 0.5;
-			double nd = (double)dist / the_dr->dt->resolution;
-
-			texel = (unsigned char)(
-				// cos(dist / the_dr->dt->resolution * M_PI + sin(angle * val) * val)
-				// cos(dist / the_dr->dt->resolution * M_PI + sin(angle * 8) * val)
-				// cos(dist * val / the_dr->dt->resolution * M_PI + sin(angle * 8) * 0.02)
-				// cos(dist / tan(the_dr->dt->resolution) * M_PI + cos(angle * 8) * 0.02)
-				// tan(sin(dist) / the_dr->dt->resolution * M_PI + cos(angle * 8) * 0.02 * val)
-				// tan(sin(dist) / the_dr->dt->resolution * M_PI + cos(angle * 8) * 0.02 * val)
-				// /// cos(dist / the_dr->dt->resolution * M_PI + sin(angle * 8) * 0.2)
-					// cos(dist / the_dr->dt->resolution * M_PI + cos(angle * 8) * 0.2)
-					// cos(dist / the_dr->dt->resolution * M_PI + cos(tan(angle) * val) * 0.2)
-				0
-			* 128 + 128);
-
-			texture[(x * the_dr->dt->resolution + y) * 3    ] = texel;
-			texture[(x * the_dr->dt->resolution + y) * 3 + 1] = texel;
-			texture[(x * the_dr->dt->resolution + y) * 3 + 2] = texel;
-		}
-	}
-
-	glGenTextures(1, &texid);
-	glBindTexture(GL_TEXTURE_2D, texid);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, the_dr->dt->resolution, the_dr->dt->resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
-
-	the_dr->dt->textures[0] = texid;
-
-	dizzytextures_set_texture(the_dr->dt, 0);
-
 }
 
 void dizzyrender_prepare_view() {
