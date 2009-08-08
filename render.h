@@ -12,8 +12,8 @@ struct dizzyrender {
 
 	int texblend_active;
 	uint64_t texblend_last;
-	int64_t texblend_wait;
-	int64_t texblend_duration;
+	uint64_t texblend_wait;
+	uint64_t texblend_duration;
 };
 
 void dizzyrender_init(struct dizzyrender *dr, int argc, char *argv[]);

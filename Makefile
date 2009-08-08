@@ -1,5 +1,5 @@
 LDFLAGS ?= -lGL -lglut -lm -lrt
-CFLAGS  ?= -Wall -Wextra -Os -g -std=gnu99
+CFLAGS  ?= -Wall -Wextra -Wno-unused -Os -g -std=gnu99
 
 OBJFILES = main.o textures.o render.o
 

@@ -117,17 +117,18 @@ void dizzyrender_hand_keyboard(unsigned char key, int x, int y) {
 }
 
 void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
+	struct dizzyrender *dr = the_dr;
 	if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
 		/* handle this only if we're not currently blending. */
-		if (!the_dr->texblend_active) {
+		if (!dr->texblend_active) {
 			if (key == GLUT_KEY_LEFT) {
-				the_dr->texture_id--;
-				the_dr->texture_id += the_dr->dt->textures_count;
+				dr->texture_id--;
+				dr->texture_id += dr->dt->textures_count;
 			} else {
-				the_dr->texture_id++;
+				dr->texture_id++;
 			}
-			the_dr->texture_id %= the_dr->dt->textures_count;
-			dizzytextures_set_texture(the_dr->dt, the_dr->texture_id);
+			dr->texture_id %= dr->dt->textures_count;
+			dizzytextures_set_texture(dr->dt, dr->texture_id);
 		}
 	}
 }

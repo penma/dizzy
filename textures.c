@@ -27,7 +27,7 @@ void dizzytextures_set_resolution(struct dizzytextures *dt, int res) {
 }
 
 GLuint dizzytextures_new_texture(struct dizzytextures *dt) {
-	GLuint oldtex;
+	GLint oldtex;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldtex);
 
 	GLuint texid;
@@ -42,7 +42,7 @@ GLuint dizzytextures_new_texture(struct dizzytextures *dt) {
 }
 
 void dizzytextures_render_texture(struct dizzytextures *dt, GLuint texid, double (*texture_func)(double, double)) {
-	GLuint oldtex;
+	GLint oldtex;
 	glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldtex);
 
 	unsigned char *texture;
