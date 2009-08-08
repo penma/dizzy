@@ -49,7 +49,7 @@ void dizzyrender_hand_render() {
 	glLoadIdentity();
 
 	/* run texture blending */
-	if (dr->texblend_wait != -1) {
+	if (dr->texblend_active) {
 		if (tick - dr->texblend_last > dr->texblend_wait) {
 			double blend = (tick - dr->texblend_last - dr->texblend_wait) / (double)dr->texblend_duration;
 			if (blend < 1.0) {
@@ -121,14 +121,17 @@ void dr_tweak_tex(int val);
 void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 	static int tweak_val = 0;
 	if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
-		if (key == GLUT_KEY_LEFT) {
-			the_dr->texture_id--;
-			the_dr->texture_id += the_dr->dt->textures_count;
-		} else {
-			the_dr->texture_id++;
+		/* handle this only if we're not currently blending. */
+		if (!the_dr->texblend_active) {
+			if (key == GLUT_KEY_LEFT) {
+				the_dr->texture_id--;
+				the_dr->texture_id += the_dr->dt->textures_count;
+			} else {
+				the_dr->texture_id++;
+			}
+			the_dr->texture_id %= the_dr->dt->textures_count;
+			dizzytextures_set_texture(the_dr->dt, the_dr->texture_id);
 		}
-		the_dr->texture_id %= the_dr->dt->textures_count;
-		dizzytextures_set_texture(the_dr->dt, the_dr->texture_id);
 	}
 	if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
 		if (key == GLUT_KEY_UP) {

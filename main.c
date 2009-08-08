@@ -10,8 +10,9 @@ int main(int argc, char* argv[])
 	int tres = 64;
 	int fullscreen = 0;
 
-	int tb_wait = -1;
-	int tb_duration = 1000;
+	int tb_active = 0;
+	int tb_wait = 2000;
+	int tb_duration = 5000;
 
 	if(argc > 1)
 	{
@@ -25,6 +26,8 @@ int main(int argc, char* argv[])
 				w = h = -1;
 			} else if (!strcmp(argv[i], "-t")) {
 				tres = atoi(argv[++i]);
+			} else if (!strcmp(argv[i], "-tb")) {
+				tb_active = 1;
 			} else if (!strcmp(argv[i], "-tbwait")) {
 				tb_wait = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "-tbduration")) {
@@ -34,6 +37,7 @@ int main(int argc, char* argv[])
 	}
 
 	struct dizzyrender *dr = malloc(sizeof(struct dizzyrender));
+	dr->texblend_active = tb_active;
 	dr->texblend_wait = tb_wait;
 	dr->texblend_duration = tb_duration;
 	dizzyrender_init(dr, argc, argv);

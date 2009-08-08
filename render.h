@@ -10,6 +10,7 @@ struct dizzyrender {
 
 	int texture_id;
 
+	int texblend_active;
 	uint64_t texblend_last;
 	int64_t texblend_wait;
 	int64_t texblend_duration;
