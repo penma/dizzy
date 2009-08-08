@@ -48,6 +48,25 @@ void dizzyrender_hand_render() {
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
 
+	/* run texture blending */
+	if (dr->texblend_wait != -1) {
+		if (tick - dr->texblend_last > dr->texblend_wait) {
+			double blend = (tick - dr->texblend_last - dr->texblend_wait) / (double)dr->texblend_duration;
+			if (blend < 1.0) {
+				dizzytextures_blend_textures(
+					dr->dt,
+					dr->texture_id,
+					(dr->texture_id + 1) % dr->dt->textures_count,
+					blend);
+				glBindTexture(GL_TEXTURE_2D, dr->dt->blend_texture);
+			} else {
+				dr->texblend_last = tick;
+				dizzytextures_set_texture(dr->dt, (dr->texture_id + 1) % dr->dt->textures_count);
+				dr->texture_id = (dr->texture_id + 1) % dr->dt->textures_count;
+			}
+		}
+	}
+
 	set_color_from_hsv(
 		(tick * 0.0002f) - (int)(tick * 0.0002f),
 		cos(tick * 0.001f) * 0.125f + 0.5f,

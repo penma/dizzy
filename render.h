@@ -9,6 +9,10 @@ struct dizzyrender {
 	struct dizzytextures *dt;
 
 	int texture_id;
+
+	uint64_t texblend_last;
+	int64_t texblend_wait;
+	int64_t texblend_duration;
 };
 
 void dizzyrender_init(struct dizzyrender *dr, int argc, char *argv[]);
