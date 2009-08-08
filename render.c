@@ -160,6 +160,7 @@ void dizzyrender_window(struct dizzyrender *dr, int w, int h) {
 		snprintf(gmstring, 31, "%dx%d", glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
 		glutGameModeString(gmstring);
 		glutEnterGameMode();
+		glutSetCursor(GLUT_CURSOR_NONE);
 	} else {
 		glutInitWindowSize(w, h);
 		glutCreateWindow("dizzy");
