@@ -58,9 +58,6 @@ GLuint dizzytextures_generate_texture(struct dizzytextures *dt, double (*texture
 	return texid;
 }
 
-
-
-
 void dizzytextures_generate_textures(struct dizzytextures *dt) {
 	for (int textype = 0; textype < dizzytextures_data_count; textype++) {
 		dt->textures = realloc(dt->textures, sizeof(GLuint) * (dt->textures_count + 1));
