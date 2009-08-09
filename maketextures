@@ -3,42 +3,28 @@
 use strict;
 use warnings;
 
+use Template::Simple;
+
+my ($o_directory, $o_template, $o_outfile) = qw(textures/ textures_data.h-in textures_data.h);
+
 # read the textures dir
 my $fh;
-opendir($fh, "textures/");
-my @textures = sort grep { $_ ne "." and $_ ne ".." } readdir($fh);
+opendir($fh, $o_directory);
+my @funcs = sort grep { $_ ne "." and $_ ne ".." } readdir($fh);
 closedir($fh);
 undef($fh);
 
-# write the header
-open($fh, ">", "textures_data.h");
-print $fh (<< "EOH");
-/* This file contains the texture generators. It is generated.
-   You're advised to not edit it.
-   Make changes in the textures/ directory or in the maketextures script.
-*/
-
-/* input: x/y  -0.5...0.5 - out: texel 0.0...1.0 */
-#define dist (sqrt(x*x + y*y))
-#define angle atan2(y, x)
-#define wrapval(v) ((v) > 1.0 ? 0.0 : ((v) < 0.0 ? 1.0 : (v)))
-
-typedef double (*texture_proc)(double, double);
-
-EOH
-
-print $fh "#define dizzytextures_data_count " . scalar(@textures) . "\n";
-print $fh "#define _TEXFUNC(num) double dizzytextures_data_func_##num (double x, double y)\n";
-print $fh "#define _HELPERNAME(num,name) dizzytextures_data_func_##num##_##name\n";
-
-for (my $i = 0; $i < @textures; $i++) {
-	print $fh "#undef TEXFUNC\n#define TEXFUNC _TEXFUNC($i)\n";
-	print $fh "#undef AUXFUNC\n#define AUXFUNC(name) _HELPERNAME($i, name)\n";
-	print $fh "#include \"textures/$textures[$i]\"\n";
+# build the template variables
+my $data = {
+	count => scalar(@funcs),
+	functions => [],
+};
+for (my $i = 0; $i <= $#funcs; $i++) {
+	push(@{$data->{functions}}, { id => $i, name => $funcs[$i] });
 }
 
-print $fh "static texture_proc dizzytextures_data_funcs[dizzytextures_data_count] = {\n";
-print $fh "     dizzytextures_data_func_$_,\n" foreach (0..$#textures);
-print $fh "};\n\n";
+# read the template and produce the output file
+open(my $tpl, "<", $o_template);
+open(my $out, ">", $o_outfile);
+print $out ${Template::Simple->new()->render(join("", <$tpl>), $data)};
 
-print $fh "#undef _dist\n#undef _angle\n#undef _TEXFUNC\n#undef TEXFUNC\n#undef _HELPERNAME\n#undef AUXFUNC\n";

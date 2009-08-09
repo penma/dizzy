@@ -5,7 +5,7 @@ OBJFILES = main.o textures.o render.o
 
 all: dizzy
 
-textures_data.h: textures/* textures/
+textures_data.h: textures_data.h-in textures/* textures/
 	./maketextures
 
 textures.o: textures_data.h
