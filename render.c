@@ -152,7 +152,20 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 			}
 			dr->texture_id_next %= dr->dt->textures_count;
 			dr->texblend_start = get_tick(dr);
+			printf("Selected new texture %d [%s]\n", dr->texture_id_next, "");
 		}
+	} else if (key == GLUT_KEY_UP || key == GLUT_KEY_DOWN) {
+		/* select a different rotator */
+		int id = dr->dro->current_rotator;
+		if (key == GLUT_KEY_DOWN) {
+			id--;
+			id += dr->dro->rotators_count;
+		} else {
+			id++;
+		}
+		id %= dr->dro->rotators_count;
+		dizzyrotators_set_rotator(dr->dro, id);
+		printf("Selected new rotation procedure %d [%s]\n", id, "");
 	}
 }
 
