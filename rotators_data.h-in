@@ -21,6 +21,12 @@ static dizzyrotators_proc dizzyrotators_funcs[dizzyrotators_count] = {
 [%END functions%]
 };
 
+static char *dizzyrotators_names[dizzyrotators_count] = {
+[%START functions%]
+	"[%name%]",
+[%END functions%]
+};
+
 #undef ROTFUNC
 #undef _ROTFUNC
 #undef _HELPERNAME

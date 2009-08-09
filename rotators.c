@@ -5,6 +5,7 @@
 
 void dizzyrotators_set_rotator(struct dizzyrotators *dro, int rot_id) {
 	dro->current_rotator = rot_id;
+	dro->current_rotator_name = dizzyrotators_names[rot_id];
 }
 
 void dizzyrotators_apply(struct dizzyrotators *dro, int plane, uint64_t tick) {

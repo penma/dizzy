@@ -8,7 +8,9 @@ typedef void (*dizzyrotators_proc)(int, uint64_t);
 struct dizzyrotators {
 	dizzyrotators_proc *rotators;
 	int rotators_count;
+
 	int current_rotator;
+	char *current_rotator_name;
 };
 
 int dizzyrotators_init(struct dizzyrotators *dro);

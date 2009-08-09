@@ -165,7 +165,7 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 		}
 		id %= dr->dro->rotators_count;
 		dizzyrotators_set_rotator(dr->dro, id);
-		printf("Selected new rotation procedure %d [%s]\n", id, "");
+		printf("Selected new rotation procedure %d [%s]\n", id, dr->dro->current_rotator_name);
 	}
 }
 
