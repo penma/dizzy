@@ -5,7 +5,7 @@ use warnings;
 
 use Template::Simple;
 
-my ($o_directory, $o_template, $o_outfile) = qw(textures/ textures_data.h-in textures_data.h);
+my ($o_directory, $o_template, $o_outfile) = @ARGV;
 
 # read the textures dir
 my $fh;

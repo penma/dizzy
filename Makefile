@@ -6,7 +6,7 @@ OBJFILES = main.o textures.o render.o
 all: dizzy
 
 textures_data.h: textures_data.h-in textures/* textures/
-	./maketextures
+	./makefuncs textures/ textures_data.h-in textures_data.h
 
 textures.o: textures_data.h
 
