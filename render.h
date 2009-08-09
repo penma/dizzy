@@ -9,10 +9,14 @@ struct dizzyrender {
 	struct dizzytextures *dt;
 
 	int texture_id;
+	int texture_id_next;
+
+	int auto_active;
+	uint64_t auto_wait;
+	uint64_t auto_last;
 
 	int texblend_active;
-	uint64_t texblend_last;
-	uint64_t texblend_wait;
+	uint64_t texblend_start;
 	uint64_t texblend_duration;
 };
 

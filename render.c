@@ -80,22 +80,39 @@ void dizzyrender_hand_render() {
 
 	uint64_t tick = get_tick(dr);
 
-	/* run texture blending */
-	if (dr->texblend_active) {
-		if (tick - dr->texblend_last > dr->texblend_wait) {
-			double blend = (tick - dr->texblend_last - dr->texblend_wait) / (double)dr->texblend_duration;
+	/* if in auto mode, set a new texture. */
+	if (dr->auto_active) {
+		/* but only if we're not blending yet */
+		if (dr->texture_id_next == -1) {
+			/* and obviously after some delay */
+			if (tick - dr->auto_last >= dr->auto_wait) {
+				dr->texture_id_next = (dr->texture_id + 1) % dr->dt->textures_count;
+				dr->auto_last = tick;
+				dr->texblend_start = tick;
+			}
+		}
+	}
+
+	/* run texture blending/switching */
+	if (dr->texture_id_next != -1) {
+		if (dr->texblend_active) {
+			double blend = (tick - dr->texblend_start) / (double)dr->texblend_duration;
 			if (blend < 1.0) {
 				dizzytextures_blend_textures(
 					dr->dt,
 					dr->texture_id,
-					(dr->texture_id + 1) % dr->dt->textures_count,
+					dr->texture_id_next,
 					blend);
 				glBindTexture(GL_TEXTURE_2D, dr->dt->blend_texture);
 			} else {
-				dr->texblend_last = tick;
-				dizzytextures_set_texture(dr->dt, (dr->texture_id + 1) % dr->dt->textures_count);
-				dr->texture_id = (dr->texture_id + 1) % dr->dt->textures_count;
+				dizzytextures_set_texture(dr->dt, dr->texture_id_next);
+				dr->texture_id = dr->texture_id_next;
+				dr->texture_id_next = -1;
 			}
+		} else {
+			dizzytextures_set_texture(dr->dt, dr->texture_id_next);
+			dr->texture_id = dr->texture_id_next;
+			dr->texture_id_next = -1;
 		}
 	}
 
@@ -127,15 +144,15 @@ void dizzyrender_hand_keyboardspecial(int key, int x, int y) {
 	struct dizzyrender *dr = the_dr;
 	if (key == GLUT_KEY_LEFT || key == GLUT_KEY_RIGHT) {
 		/* handle this only if we're not currently blending. */
-		if (!dr->texblend_active) {
+		if (dr->texture_id_next == -1 && !(dr->auto_active)) {
 			if (key == GLUT_KEY_LEFT) {
-				dr->texture_id--;
-				dr->texture_id += dr->dt->textures_count;
+				dr->texture_id_next = dr->texture_id - 1;
+				dr->texture_id_next += dr->dt->textures_count;
 			} else {
-				dr->texture_id++;
+				dr->texture_id_next = dr->texture_id + 1;
 			}
-			dr->texture_id %= dr->dt->textures_count;
-			dizzytextures_set_texture(dr->dt, dr->texture_id);
+			dr->texture_id_next %= dr->dt->textures_count;
+			dr->texblend_start = get_tick(dr);
 		}
 	}
 }

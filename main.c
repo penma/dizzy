@@ -13,9 +13,12 @@ void usage() {
 	awrite(2, "     -f               run in fullscreen mode\n");
 	awrite(2, "     -t num           set texture resolution (power of two)\n");
 
+	awrite(2, "   Auto mode:\n");
+	awrite(2, "     -a               activate auto mode\n");
+	awrite(2, "     -aw num          set a new texture every num milliseconds\n");
+
 	awrite(2, "   Texture blending options:\n");
 	awrite(2, "     -tb              activate texture blending\n");
-	awrite(2, "     -tbwait num      leave one texture active for num milliseconds\n");
 	awrite(2, "     -tbduration num  duration of the transition in milliseconds\n");
 }
 
@@ -25,8 +28,9 @@ int main(int argc, char* argv[])
 	int h = 768;
 	int tres = 64;
 
+	int auto_active = 0;
+	int auto_wait = 7000;
 	int tb_active = 0;
-	int tb_wait = 2000;
 	int tb_duration = 5000;
 
 	if(argc > 1)
@@ -41,10 +45,12 @@ int main(int argc, char* argv[])
 				w = h = -1;
 			} else if (!strcmp(argv[i], "-t")) {
 				tres = atoi(argv[++i]);
+			} else if (!strcmp(argv[i], "-a")) {
+				auto_active = 1;
+			} else if (!strcmp(argv[i], "-aw")) {
+				auto_wait = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "-tb")) {
 				tb_active = 1;
-			} else if (!strcmp(argv[i], "-tbwait")) {
-				tb_wait = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "-tbduration")) {
 				tb_duration = atoi(argv[++i]);
 			} else if (!strcmp(argv[i], "--help")) {
@@ -61,8 +67,9 @@ int main(int argc, char* argv[])
 	}
 
 	struct dizzyrender *dr = malloc(sizeof(struct dizzyrender));
+	dr->auto_active = auto_active;
+	dr->auto_wait = auto_wait;
 	dr->texblend_active = tb_active;
-	dr->texblend_wait = tb_wait;
 	dr->texblend_duration = tb_duration;
 	dizzyrender_init(dr, argc, argv);
 	dizzyrender_window(dr, w, h);
