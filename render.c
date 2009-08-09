@@ -41,31 +41,11 @@ static void set_color_from_hsv(float H, float V, float S) {
 	}
 }
 
-void dizzyrender_hand_render() {
-	struct dizzyrender *dr = the_dr;
-
+void dizzyrender_render_planes(struct dizzyrender *dr) {
 	uint64_t tick = get_tick(dr);
+
 	glClear(GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-
-	/* run texture blending */
-	if (dr->texblend_active) {
-		if (tick - dr->texblend_last > dr->texblend_wait) {
-			double blend = (tick - dr->texblend_last - dr->texblend_wait) / (double)dr->texblend_duration;
-			if (blend < 1.0) {
-				dizzytextures_blend_textures(
-					dr->dt,
-					dr->texture_id,
-					(dr->texture_id + 1) % dr->dt->textures_count,
-					blend);
-				glBindTexture(GL_TEXTURE_2D, dr->dt->blend_texture);
-			} else {
-				dr->texblend_last = tick;
-				dizzytextures_set_texture(dr->dt, (dr->texture_id + 1) % dr->dt->textures_count);
-				dr->texture_id = (dr->texture_id + 1) % dr->dt->textures_count;
-			}
-		}
-	}
 
 	set_color_from_hsv(
 		(tick * 0.0002f) - (int)(tick * 0.0002f),
@@ -93,6 +73,33 @@ void dizzyrender_hand_render() {
 		glTexCoord2f(1, 0); glVertex2f( 800, -800);
 	glEnd();
 	glPopMatrix();
+}
+
+void dizzyrender_hand_render() {
+	struct dizzyrender *dr = the_dr;
+
+	uint64_t tick = get_tick(dr);
+
+	/* run texture blending */
+	if (dr->texblend_active) {
+		if (tick - dr->texblend_last > dr->texblend_wait) {
+			double blend = (tick - dr->texblend_last - dr->texblend_wait) / (double)dr->texblend_duration;
+			if (blend < 1.0) {
+				dizzytextures_blend_textures(
+					dr->dt,
+					dr->texture_id,
+					(dr->texture_id + 1) % dr->dt->textures_count,
+					blend);
+				glBindTexture(GL_TEXTURE_2D, dr->dt->blend_texture);
+			} else {
+				dr->texblend_last = tick;
+				dizzytextures_set_texture(dr->dt, (dr->texture_id + 1) % dr->dt->textures_count);
+				dr->texture_id = (dr->texture_id + 1) % dr->dt->textures_count;
+			}
+		}
+	}
+
+	dizzyrender_render_planes(dr);
 }
 
 void dizzyrender_hand_idle() {
