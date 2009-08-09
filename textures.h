@@ -8,6 +8,8 @@ struct dizzytextures {
 	GLuint *textures;
 	int textures_count;
 	GLuint blend_texture;
+
+	char *current_texture_name;
 };
 
 void dizzytextures_init(struct dizzytextures *dt);

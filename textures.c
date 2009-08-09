@@ -7,6 +7,7 @@ void dizzytextures_set_texture(struct dizzytextures *dt, int tex_id) {
 	if (dt->textures) {
 		if (dt->textures_count) {
 			glBindTexture(GL_TEXTURE_2D, dt->textures[tex_id]);
+			dt->current_texture_name = dizzytextures_data_names[tex_id];
 		}
 	}
 }
