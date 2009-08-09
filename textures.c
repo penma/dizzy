@@ -72,6 +72,8 @@ void dizzytextures_render_texture(struct dizzytextures *dt, GLuint texid, double
 	glBindTexture(GL_TEXTURE_2D, texid);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, dt->resolution, dt->resolution, 0, GL_RGB, GL_UNSIGNED_BYTE, texture);
 
+	free(texture);
+
 	/* restore previous texture */
 	glBindTexture(GL_TEXTURE_2D, oldtex);
 }
