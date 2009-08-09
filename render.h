@@ -7,6 +7,7 @@ struct dizzyrender {
 	struct timespec starttime;
 
 	struct dizzytextures *dt;
+	struct dizzyrotators *dro;
 
 	int texture_id;
 	int texture_id_next;

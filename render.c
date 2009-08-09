@@ -5,6 +5,7 @@
 
 #include "render.h"
 #include "textures.h"
+#include "rotators.h"
 
 static struct dizzyrender *the_dr;
 
@@ -53,8 +54,7 @@ void dizzyrender_render_planes(struct dizzyrender *dr) {
 		0.5f);
 
 	glPushMatrix();
-	glRotatef(tick * 0.005f, 0, 0, 1);
-	glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
+	dizzyrotators_apply(dr->dro, 1, tick);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex2f(-800, -800);
 		glTexCoord2f(0, 1); glVertex2f(-800,  800);
@@ -64,8 +64,7 @@ void dizzyrender_render_planes(struct dizzyrender *dr) {
 	glPopMatrix();
 
 	glPushMatrix();
-	glRotatef(tick * -0.0025f, 0, 0, 1);
-	glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
+	dizzyrotators_apply(dr->dro, 2, tick);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex2f(-800, -800);
 		glTexCoord2f(0, 1); glVertex2f(-800,  800);
@@ -204,6 +203,11 @@ void dizzyrender_start(struct dizzyrender *dr, int texture_res) {
 	dizzytextures_set_resolution(dr->dt, texture_res);
 	dizzytextures_generate_textures(dr->dt);
 	dizzytextures_set_texture(dr->dt, 0);
+
+	/* setup dizzyrotators */
+	dr->dro = malloc(sizeof(struct dizzyrotators));
+	dizzyrotators_init(dr->dro);
+	dizzyrotators_set_rotator(dr->dro, 0);
 
 	/* setup global state */
 	clock_gettime(CLOCK_MONOTONIC, &dr->starttime);

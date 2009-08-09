@@ -1,3 +1,4 @@
 *.o
 /dizzy
 /textures_data.h
+/rotators_data.h
