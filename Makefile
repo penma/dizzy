@@ -6,10 +6,10 @@ OBJFILES = main.o textures.o rotators.o render.o
 all: dizzy
 
 textures_data.h: textures_data.h-in textures/* textures/
-	./makefuncs textures/ textures_data.h-in textures_data.h
+	./makefuncs textures/* < textures_data.h-in > textures_data.h
 
 rotators_data.h: rotators_data.h-in rotators/* rotators/
-	./makefuncs rotators/ rotators_data.h-in rotators_data.h
+	./makefuncs rotators/* < rotators_data.h-in > rotators_data.h
 
 textures.o: textures_data.h
 

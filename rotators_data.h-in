@@ -12,7 +12,7 @@
 #undef AUXFUNC
 #define ROTFUNC _ROTFUNC([%id%])
 #define AUXFUNC(name) _HELPERNAME([%id%], name)
-#include "rotators/[%name%]"
+#include "[%file%]"
 [%END functions%]
 
 static dizzyrotators_proc dizzyrotators_funcs[dizzyrotators_count] = {

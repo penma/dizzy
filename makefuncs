@@ -5,14 +5,8 @@ use warnings;
 
 use Template::Simple;
 
-my ($o_directory, $o_template, $o_outfile) = @ARGV;
-
-# read the textures dir
-my $fh;
-opendir($fh, $o_directory);
-my @funcs = sort grep { $_ ne "." and $_ ne ".." } readdir($fh);
-closedir($fh);
-undef($fh);
+# read the functions dir
+my @funcs = @ARGV;
 
 # build the template variables
 my $data = {
@@ -20,11 +14,10 @@ my $data = {
 	functions => [],
 };
 for (my $i = 0; $i <= $#funcs; $i++) {
-	push(@{$data->{functions}}, { id => $i, name => $funcs[$i] });
+	$funcs[$i] =~ /([^\/]+)$/;
+	push(@{$data->{functions}}, { id => $i, file => $funcs[$i], name => $1 });
 }
 
 # read the template and produce the output file
-open(my $tpl, "<", $o_template);
-open(my $out, ">", $o_outfile);
-print $out ${Template::Simple->new()->render(join("", <$tpl>), $data)};
+print ${Template::Simple->new()->render(join("", <STDIN>), $data)};
 

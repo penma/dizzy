@@ -19,7 +19,7 @@ typedef double (*texture_proc)(double, double);
 #undef AUXFUNC
 #define TEXFUNC _TEXFUNC([%id%])
 #define AUXFUNC(name) _HELPERNAME([%id%], name)
-#include "textures/[%name%]"
+#include "[%file%]"
 [%END functions%]
 
 static texture_proc dizzytextures_data_funcs[dizzytextures_data_count] = {
