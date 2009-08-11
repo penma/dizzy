@@ -41,7 +41,7 @@ sub render_function {
 			}
 
 			# append pixel data
-			$tex .= pack("C", int($val * 255));
+			$tex .= pack("f", $val);
 		}
 	}
 
@@ -53,7 +53,7 @@ sub from_func {
 
 	# render the image
 	my ($tex_data, $tex_format) = render_function(resolution => $args{resolution}, function => $args{function});
-	my $tex_pixels = OpenGL::Array->new_scalar(GL_UNSIGNED_BYTE, $tex_data, length($tex_data));
+	my $tex_pixels = OpenGL::Array->new_scalar(GL_FLOAT, $tex_data, length($tex_data));
 
 	# save old texture
 	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
@@ -71,7 +71,7 @@ sub from_func {
 		$args{resolution}, $args{resolution},
 		0,
 		$tex_format,
-		GL_UNSIGNED_BYTE,
+		GL_FLOAT,
 		$tex_pixels->ptr()
 	);
 
