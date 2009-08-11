@@ -1,4 +1,4 @@
-package Dizzy::Textures;
+package Dizzy::TextureGenerator;
 
 use strict;
 use warnings;

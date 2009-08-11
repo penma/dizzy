@@ -60,7 +60,7 @@ use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Convert::Color;
 use Convert::Color::HSV;
-use Dizzy::Textures;
+use Dizzy::TextureGenerator;
 
 sub set_color_from_hsv {
 	my ($h, $v, $s) = @_;
@@ -157,11 +157,12 @@ init_glut();
 init_view();
 
 # create an initial texture
-my $some_texture = Dizzy::Textures::from_func(
+my $some_texture = Dizzy::TextureGenerator::from_func(
 	function => sub {
 		my ($x, $y) = @_;
 		my $val;
-		$val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
+		# $val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
+		$val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
 		return ($val < 0.0 ? 1.0 : ($val > 1.0 ? 0.0 : $val));
 	},
 	resolution => 64,
