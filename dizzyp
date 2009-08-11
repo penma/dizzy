@@ -57,77 +57,58 @@ use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
 use Dizzy::Render;
+use Dizzy::GLUT;
 
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ HANDLERS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-sub handler_resize {
-	glViewport(0, 0, $_[0], $_[1]);
-}
+Dizzy::GLUT::register_handler(
+	keyboard => sub {
+		my %args = @_;
 
-sub handler_idle {
-	handler_render();
+		# so we don't get warning spam
+		$args{ascii} //= "";
+		$args{special} //= -1;
 
-	glFlush();
-	glutSwapBuffers();
-	sleep(1 / 50);
-}
+		if ($args{ascii} eq "\e") { # escape
+			exit(0);
+		}
+	},
 
-sub handler_keyboard {
-	my ($key, $x, $y) = @_;
+	render => sub {
+		Dizzy::Render::render_planes(
+			tick => time() - $^T,
+			rotator_func => sub {
+				my ($tick, $plane) = @_;
+				if ($plane == 1) {
+					glRotatef($tick * 5, 0, 0, 1);
+					glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+				} elsif ($plane == 2) {
+					glRotatef($tick * -2.5, 0, 0, 1);
+					glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+				}
+			},
+		);
+	},
+);
 
-	if ($key == 27) { # escape
-		exit(0);
-	}
-}
-
-sub handler_keyboardspecial {
-}
-
-sub handler_render {
-	Dizzy::Render::render_planes(
-		tick => time() - $^T,
-		rotator_func => sub {
-			my ($tick, $plane) = @_;
-			if ($plane == 1) {
-				glRotatef($tick * 5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
-			} elsif ($plane == 2) {
-				glRotatef($tick * -2.5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
-			}
-		},
-	);
-}
-
-# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INIT STUFF @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-sub init_glut {
-	glutInit();
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(1024, 768);
-	glutCreateWindow("dizzy");
-
-	glutReshapeFunc(\&handler_resize);
-	glutIdleFunc(\&handler_idle);
-	glutDisplayFunc(\&handler_render);
-	glutKeyboardFunc(\&handler_keyboard);
-	glutSpecialFunc(\&handler_keyboardspecial);
-}
-
-init_glut();
+Dizzy::GLUT::init(title => "Dizzy");
 Dizzy::Render::init_view();
 
 # create an initial texture
+sub wrapval {
+	   if ($_[0] < 0.0) { return 1.0; }
+	elsif ($_[0] > 1.0) { return 0.0; }
+	else                { return $_[0]; }
+}
 my $some_texture = Dizzy::TextureGenerator::from_func(
 	function => sub {
 		my ($x, $y) = @_;
 		my $val;
 		# $val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
 		$val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
-		return ($val < 0.0 ? 1.0 : ($val > 1.0 ? 0.0 : $val));
+		return wrapval($val);
 	},
 	resolution => $options{texture_resolution},
 );
 glBindTexture(GL_TEXTURE_2D, $some_texture);
 
-glutMainLoop();
+Dizzy::GLUT::run();
 
