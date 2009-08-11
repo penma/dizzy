@@ -51,54 +51,12 @@ GetOptions(\%options,
 	'texblend_duration|texblend-duration=f',
 ) or (usage_message(), exit(1));
 
-#use Dizzy::Render;
-#use Dizzy::MainLoop;
-
 ########
 use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
-use Convert::Color;
-use Convert::Color::HSV;
 use Dizzy::TextureGenerator;
-
-sub set_color_from_hsv {
-	my ($h, $v, $s) = @_;
-	glColor3f(Convert::Color::HSV->new($h * 360, $s, $v)->rgb());
-}
-
-sub handler_render {
-	my $tick = time() - $^T;
-	glClear(GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-
-	set_color_from_hsv(
-		($tick * 0.2) - int($tick * 0.2),
-		cos($tick) * 0.125 + 0.5,
-		0.5);
-
-	glPushMatrix();
-		glRotatef($tick * 5, 0, 0, 1);
-		glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-800, -800);
-		glTexCoord2f(0, 1); glVertex2f(-800,  800);
-		glTexCoord2f(1, 1); glVertex2f( 800,  800);
-		glTexCoord2f(1, 0); glVertex2f( 800, -800);
-	glEnd();
-	glPopMatrix();
-
-	glPushMatrix();
-		glRotatef($tick * -2.5, 0, 0, 1);
-		glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0); glVertex2f(-800, -800);
-		glTexCoord2f(0, 1); glVertex2f(-800,  800);
-		glTexCoord2f(1, 1); glVertex2f( 800,  800);
-		glTexCoord2f(1, 0); glVertex2f( 800, -800);
-	glEnd();
-	glPopMatrix();
-}
+use Dizzy::Render;
 
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ HANDLERS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 sub handler_resize {
@@ -124,6 +82,22 @@ sub handler_keyboard {
 sub handler_keyboardspecial {
 }
 
+sub handler_render {
+	Dizzy::Render::render_planes(
+		tick => time() - $^T,
+		rotator_func => sub {
+			my ($tick, $plane) = @_;
+			if ($plane == 1) {
+				glRotatef($tick * 5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+			} elsif ($plane == 2) {
+				glRotatef($tick * -2.5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+			}
+		},
+	);
+}
+
 # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INIT STUFF @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
 sub init_glut {
@@ -139,22 +113,8 @@ sub init_glut {
 	glutSpecialFunc(\&handler_keyboardspecial);
 }
 
-sub init_view {
-	glClearColor(0.0, 0.0, 0.0, 0.0);
-
-	glMatrixMode(GL_PROJECTION);
-	glOrtho(-320, 320, 240, -240, 1, -1);
-	glMatrixMode(GL_TEXTURE);
-	glScalef(50, 50, 50);
-	glMatrixMode(GL_MODELVIEW);
-
-	glEnable(GL_TEXTURE_2D);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-}
-
 init_glut();
-init_view();
+Dizzy::Render::init_view();
 
 # create an initial texture
 my $some_texture = Dizzy::TextureGenerator::from_func(
@@ -165,7 +125,7 @@ my $some_texture = Dizzy::TextureGenerator::from_func(
 		$val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
 		return ($val < 0.0 ? 1.0 : ($val > 1.0 ? 0.0 : $val));
 	},
-	resolution => 64,
+	resolution => $options{texture_resolution},
 );
 glBindTexture(GL_TEXTURE_2D, $some_texture);
 
