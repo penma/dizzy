@@ -1,0 +1,172 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Getopt::Long qw(:config no_ignore_case bundling);
+
+sub usage_message {
+	print STDERR << "EOH";
+usage: dizzy [options]
+
+   Graphics settings:
+     -h num           set window height
+     -f               run in fullscreen mode
+     -t num           set texture resolution (power of two)
+
+   Auto mode:
+     -a               activate auto mode
+     -aw num          set a new texture every num milliseconds
+
+   Texture blending options:
+     -tb              activate texture blending
+     -tbduration num  duration of the transition in milliseconds
+EOH
+}
+
+my %options = (
+	help                   => sub { usage_message(); exit(0); },
+
+	width                  => -1,
+	height                 => -1,
+	texture_resolution     => 64,
+
+	automode               => 0,
+	automode_wait          => 7,
+
+	texblend               => 0,
+	texblend_duration      => 2,
+);
+
+GetOptions(\%options,
+	'help|?',
+
+	'width|w=i',
+	'height|h=i',
+	'texture_resolution|texture-resolution=i',
+
+	'automode|a+',
+	'automode_wait|automode-wait=f',
+
+	'texblend|t+',
+	'texblend_duration|texblend-duration=f',
+) or (usage_message(), exit(1));
+
+#use Dizzy::Render;
+#use Dizzy::MainLoop;
+
+########
+use OpenGL qw(:all);
+use Math::Trig;
+use Time::HiRes qw(sleep time);
+use Convert::Color;
+use Convert::Color::HSV;
+use Dizzy::Textures;
+
+sub set_color_from_hsv {
+	my ($h, $v, $s) = @_;
+	glColor3f(Convert::Color::HSV->new($h * 360, $s, $v)->rgb());
+}
+
+sub handler_render {
+	my $tick = time() - $^T;
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+
+	set_color_from_hsv(
+		($tick * 0.2) - int($tick * 0.2),
+		cos($tick) * 0.125 + 0.5,
+		0.5);
+
+	glPushMatrix();
+		glRotated($tick * 5, 0, 0, 1);
+		glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex2f(-800, -800);
+		glTexCoord2f(0, 1); glVertex2f(-800,  800);
+		glTexCoord2f(1, 1); glVertex2f( 800,  800);
+		glTexCoord2f(1, 0); glVertex2f( 800, -800);
+	glEnd();
+	glPopMatrix();
+
+	glPushMatrix();
+		glRotatef($tick * -2.5, 0, 0, 1);
+		glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex2f(-800, -800);
+		glTexCoord2f(0, 1); glVertex2f(-800,  800);
+		glTexCoord2f(1, 1); glVertex2f( 800,  800);
+		glTexCoord2f(1, 0); glVertex2f( 800, -800);
+	glEnd();
+	glPopMatrix();
+}
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ HANDLERS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+sub handler_resize {
+	glViewport(0, 0, $_[0], $_[1]);
+}
+
+sub handler_idle {
+	handler_render();
+
+	glFlush();
+	glutSwapBuffers();
+	sleep(1 / 50);
+}
+
+sub handler_keyboard {
+	my ($key, $x, $y) = @_;
+
+	if ($key == 27) { # escape
+		exit(0);
+	}
+}
+
+sub handler_keyboardspecial {
+}
+
+# @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ INIT STUFF @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+sub init_glut {
+	glutInit();
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowSize(1024, 768);
+	glutCreateWindow("dizzy");
+
+	glutReshapeFunc(\&handler_resize);
+	glutIdleFunc(\&handler_idle);
+	glutDisplayFunc(\&handler_render);
+	glutKeyboardFunc(\&handler_keyboard);
+	glutSpecialFunc(\&handler_keyboardspecial);
+}
+
+sub init_view {
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+
+	glMatrixMode(GL_PROJECTION);
+	glOrtho(-320, 320, 240, -240, 1, -1);
+	glMatrixMode(GL_TEXTURE);
+	glScalef(50, 50, 50);
+	glMatrixMode(GL_MODELVIEW);
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+}
+
+init_glut();
+init_view();
+
+# create an initial texture
+my $some_texture = Dizzy::Textures::from_func(
+	function => sub {
+		my ($x, $y) = @_;
+		my $val;
+		$val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
+		return ($val < 0.0 ? 1.0 : ($val > 1.0 ? 0.0 : $val));
+	},
+	resolution => 64,
+);
+glBindTexture(GL_TEXTURE_2D, $some_texture);
+
+glutMainLoop();
+
