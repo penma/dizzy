@@ -78,7 +78,7 @@ sub handler_render {
 		0.5);
 
 	glPushMatrix();
-		glRotated($tick * 5, 0, 0, 1);
+		glRotatef($tick * 5, 0, 0, 1);
 		glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); glVertex2f(-800, -800);
