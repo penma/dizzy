@@ -45,14 +45,14 @@ sub render_function {
 		}
 	}
 
-	return ($tex, GL_LUMINANCE);
+	return $tex;
 }
 
 sub from_func {
 	my %args = @_;
 
 	# render the image
-	my ($tex_data, $tex_format) = render_function(resolution => $args{resolution}, function => $args{function});
+	my $tex_data = render_function(resolution => $args{resolution}, function => $args{function});
 	my $tex_pixels = OpenGL::Array->new_scalar(GL_FLOAT, $tex_data, length($tex_data));
 
 	# save old texture
@@ -62,15 +62,14 @@ sub from_func {
 	my $new_texture = create_texture();
 
 	# upload the texture image
-	# TODO: why store as GL_RGBA8 internally? / how about textures not stored as unsigned bytes?
 	glBindTexture(GL_TEXTURE_2D, $new_texture);
 	glTexImage2D_c(
 		GL_TEXTURE_2D,
 		0,
-		GL_RGBA8,
+		GL_LUMINANCE,
 		$args{resolution}, $args{resolution},
 		0,
-		$tex_format,
+		GL_LUMINANCE,
 		GL_FLOAT,
 		$tex_pixels->ptr()
 	);
