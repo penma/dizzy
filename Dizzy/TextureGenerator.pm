@@ -51,6 +51,11 @@ sub render_function {
 sub from_func {
 	my %args = @_;
 
+	# confirm resolution. GL likes to choke on non-power-of-two textures
+	if (int(log($args{resolution}) / log(2)) != log($args{resolution}) / log(2)) {
+		die("Texture size not a power of two, dying");
+	}
+
 	# render the image
 	my $tex_data = render_function(resolution => $args{resolution}, function => $args{function});
 	my $tex_pixels = OpenGL::Array->new_scalar(GL_FLOAT, $tex_data, length($tex_data));
