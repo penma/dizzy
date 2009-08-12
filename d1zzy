@@ -1,0 +1,40 @@
+#!/bin/zsh
+dizzydir=${0:h:A}
+deps=( \
+	$dizzydir/deps/OpenGL-Simple-0.04/blib/arch/ \
+	$dizzydir/deps/OpenGL-Simple-0.04/blib/lib/ \
+	$dizzydir/deps/OpenGL-Simple-GLUT-0.03/blib/arch/ \
+	$dizzydir/deps/OpenGL-Simple-GLUT-0.03/blib/lib/ \
+)
+deps_cmd=-I${(j: -I:)deps}
+deps_lib=${(j/:/)deps}
+
+echo "*** checking if dependencies are present"
+if ! perl ${=deps_cmd} -MOpenGL::Simple -MOpenGL::Simple::GLUT -e ''
+then
+	trap 'echo "*** failed to build dependencies - cannot resume"; exit 1' ERR
+	echo "*** building dependencies now. stand by"
+	rm -rf $dizzydir/deps
+	mkdir -p $dizzydir/deps
+	pushd $dizzydir/deps
+
+	wget http://search.cpan.org/CPAN/authors/id/J/JC/JCHIN/OpenGL-Simple-0.03.tar.gz
+	wget http://search.cpan.org/CPAN/authors/id/J/JC/JCHIN/OpenGL-Simple-GLUT-0.03.tar.gz
+	tar xf OpenGL-Simple-0.03.tar.gz
+	tar xf OpenGL-Simple-GLUT-0.03.tar.gz
+	cp -a OpenGL-Simple-0.03 OpenGL-Simple-0.04
+	cd OpenGL-Simple-0.04
+	patch -Np1 -i $dizzydir/OpenGL-Simple-texturebinding.diff
+	perl Makefile.PL
+	make
+	cd ..
+	cd OpenGL-Simple-GLUT-0.03
+	perl Makefile.PL
+	make
+	cd ..
+
+	popd
+	trap - ERR
+fi
+export PERL5LIB=${PERL5LIB}:$deps_lib
+exec $dizzydir/dizzy $*
