@@ -48,7 +48,7 @@ sub render_function {
 	return $tex;
 }
 
-sub from_func {
+sub render_from_func {
 	my %args = @_;
 
 	# confirm resolution. GL likes to choke on non-power-of-two textures
@@ -57,17 +57,17 @@ sub from_func {
 	}
 
 	# render the image
-	my $tex_data = render_function(resolution => $args{resolution}, function => $args{function});
+	my $tex_data = render_function(
+		resolution   => $args{resolution},
+		function     => $args{function}
+	);
 	my $tex_pixels = OpenGL::Array->new_scalar(GL_FLOAT, $tex_data, length($tex_data));
 
 	# save old texture
 	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
 
-	# allocate new texture
-	my $new_texture = create_texture();
-
 	# upload the texture image
-	glBindTexture(GL_TEXTURE_2D, $new_texture);
+	glBindTexture(GL_TEXTURE_2D, $args{target});
 	glTexImage2D_c(
 		GL_TEXTURE_2D,
 		0,
@@ -81,6 +81,18 @@ sub from_func {
 
 	# restore the old texture
 	glBindTexture(GL_TEXTURE_2D, $old_texture);
+}
+
+sub new_from_func {
+	my %args = @_;
+
+	# allocate a new texture and render into it.
+	my $new_texture = create_texture();
+	render_from_func(
+		function     => $args{function},
+		resolution   => $args{resolution},
+		target       => $new_texture,
+	);
 
 	return $new_texture;
 }

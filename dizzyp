@@ -98,7 +98,7 @@ sub wrapval {
 	elsif ($_[0] > 1.0) { return 0.0; }
 	else                { return $_[0]; }
 }
-my $some_texture = Dizzy::TextureGenerator::from_func(
+my $some_texture = Dizzy::TextureGenerator::new_from_func(
 	function => sub {
 		my ($x, $y) = @_;
 		my $val;
