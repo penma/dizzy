@@ -58,9 +58,42 @@ use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
+use Dizzy::TextureManager;
 use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
+
+Dizzy::GLUT::init(title => "Dizzy");
+Dizzy::Render::init_view(texture_scale => $options{texture_scale});
+
+Dizzy::TextureManager::init(
+	texture_resolution => $options{texture_resolution},
+);
+sub wrapval {
+	   if ($_[0] < 0.0) { return 1.0; }
+	elsif ($_[0] > 1.0) { return 0.0; }
+	else                { return $_[0]; }
+}
+foreach my $tex (
+{
+	function => sub {
+		my ($x, $y) = @_;
+		my $val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
+		return wrapval($val);
+	},
+	name => "P1",
+},
+{
+	function => sub {
+		my ($x, $y) = @_;
+		my $val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
+		return wrapval($val);
+	},
+	name => "P2",
+}
+) {
+	Dizzy::TextureManager::add(%{$tex});
+}
 
 Dizzy::Handlers::register(
 	keyboard => sub {
@@ -72,9 +105,40 @@ Dizzy::Handlers::register(
 
 		if ($args{ascii} eq "\e") { # escape
 			exit(0);
+		} elsif ($args{special} == GLUT_KEY_LEFT or $args{special} == GLUT_KEY_RIGHT) {
+			Dizzy::Handlers::invoke("texture_switch",
+				direction => (($args{special} == GLUT_KEY_LEFT) ? -1 : +1),
+			);
 		}
 
 		Dizzy::Handlers::GO_ON;
+	},
+
+	# to be moved to: TexBlend
+	texture_switch => sub {
+		my %args = @_;
+		# check here if we are currently blending. if we are, STOP.
+		# else:
+		Dizzy::Handlers::GO_ON;
+	},
+
+	# the simple texture switcher: eats the function and makes a texture.
+	texture_switch => sub {
+		my %args = @_;
+		my $some_texture;
+		print "<Simple texture switcher> Changing texture!\n";
+		if (!defined($args{gl_texture})) {
+			print "<Simple texture switcher> no GL texture provided, rendering texture myself\n";
+			$some_texture = Dizzy::TextureGenerator::new_from_func(
+				function => $args{function},
+				resolution => $options{texture_resolution},
+			);
+		} else {
+			print "<Simple texture switcher> using existing GL texture $args{gl_texture}\n";
+			$some_texture = $args{gl_texture};
+		}
+		glBindTexture(GL_TEXTURE_2D, $some_texture);
+		Dizzy::Handlers::STOP;
 	},
 
 	render => sub {
@@ -96,26 +160,7 @@ Dizzy::Handlers::register(
 	},
 );
 
-Dizzy::GLUT::init(title => "Dizzy");
-Dizzy::Render::init_view(texture_scale => $options{texture_scale});
-
-# create an initial texture
-sub wrapval {
-	   if ($_[0] < 0.0) { return 1.0; }
-	elsif ($_[0] > 1.0) { return 0.0; }
-	else                { return $_[0]; }
-}
-my $some_texture = Dizzy::TextureGenerator::new_from_func(
-	function => sub {
-		my ($x, $y) = @_;
-		my $val;
-		# $val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
-		$val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
-		return wrapval($val);
-	},
-	resolution => $options{texture_resolution},
-);
-glBindTexture(GL_TEXTURE_2D, $some_texture);
+Dizzy::TextureManager::set(0);
 
 Dizzy::GLUT::run();
 
