@@ -49,12 +49,14 @@ sub render_planes {
 }
 
 sub init_view {
+	my %args = @_;
+
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-320, 320, 240, -240, 1, -1);
 	glMatrixMode(GL_TEXTURE);
-	glScalef(50, 50, 50);
+	glScalef(($args{texture_scale}) x 3);
 	glMatrixMode(GL_MODELVIEW);
 
 	glEnable(GL_TEXTURE_2D);
