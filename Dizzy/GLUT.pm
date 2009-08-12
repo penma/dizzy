@@ -6,22 +6,7 @@ use warnings;
 use OpenGL qw(:all);
 use Time::HiRes qw(sleep time);
 
-# handler registration
-
-my %handlers;
-
-sub call_handlers {
-	my ($name, @args) = @_;
-	foreach my $handler (@{$handlers{$name}}) {
-		$handler->(@args);
-	}
-}
-
-sub register_handler {
-	while (my ($name, $code) = splice(@_, 0, 2)) {
-		push(@{$handlers{$name}}, $code);
-	}
-}
+use Dizzy::Handlers;
 
 # default handlers, calling registered handlers and doing other stuff
 
@@ -40,7 +25,7 @@ sub handler_idle {
 sub handler_keyboard {
 	my ($key, $x, $y) = @_;
 
-	call_handlers("keyboard",
+	Dizzy::Handlers::invoke("keyboard",
 		mouse_x => $x,
 		mouse_y => $y,
 		ascii   => chr($key),
@@ -50,7 +35,7 @@ sub handler_keyboard {
 sub handler_keyboardspecial {
 	my ($key, $x, $y) = @_;
 
-	call_handlers("keyboard",
+	Dizzy::Handlers::invoke("keyboard",
 		mouse_x => $x,
 		mouse_y => $y,
 		special => $key,
@@ -58,7 +43,7 @@ sub handler_keyboardspecial {
 }
 
 sub handler_render {
-	call_handlers("render");
+	Dizzy::Handlers::invoke("render");
 }
 
 # glut initialization

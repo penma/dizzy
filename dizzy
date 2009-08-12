@@ -60,8 +60,9 @@ use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
 use Dizzy::Render;
 use Dizzy::GLUT;
+use Dizzy::Handlers;
 
-Dizzy::GLUT::register_handler(
+Dizzy::Handlers::register(
 	keyboard => sub {
 		my %args = @_;
 
