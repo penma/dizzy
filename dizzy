@@ -126,18 +126,9 @@ Dizzy::Handlers::register(
 	texture_switch => sub {
 		my %args = @_;
 		my $some_texture;
-		print "<Simple texture switcher> Changing texture!\n";
-		if (!defined($args{gl_texture})) {
-			print "<Simple texture switcher> no GL texture provided, rendering texture myself\n";
-			$some_texture = Dizzy::TextureGenerator::new_from_func(
-				function => $args{function},
-				resolution => $options{texture_resolution},
-			);
-		} else {
-			print "<Simple texture switcher> using existing GL texture $args{gl_texture}\n";
-			$some_texture = $args{gl_texture};
-		}
-		glBindTexture(GL_TEXTURE_2D, $some_texture);
+		print "<Simple texture switcher> Changing texture (from GL texture $args{old_gl_texture})!\n";
+		print "<Simple texture switcher> using GL texture $args{gl_texture}\n";
+		glBindTexture(GL_TEXTURE_2D, $args{gl_texture});
 		Dizzy::Handlers::STOP;
 	},
 
