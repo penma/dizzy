@@ -3,14 +3,17 @@ package Dizzy::Handlers;
 use strict;
 use warnings;
 
-# handler registration
-
 my %handlers;
+
+sub GO_ON()    { 1; }
+sub STOP()     { 0; }
 
 sub invoke {
 	my ($name, @args) = @_;
+	my $ret;
 	foreach my $handler (@{$handlers{$name}}) {
-		$handler->(@args);
+		$ret = $handler->(@args);
+		last if ($ret == STOP);
 	}
 }
 

@@ -73,6 +73,8 @@ Dizzy::Handlers::register(
 		if ($args{ascii} eq "\e") { # escape
 			exit(0);
 		}
+
+		Dizzy::Handlers::GO_ON;
 	},
 
 	render => sub {
@@ -89,6 +91,8 @@ Dizzy::Handlers::register(
 				}
 			},
 		);
+
+		Dizzy::Handlers::GO_ON;
 	},
 );
 
