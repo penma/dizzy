@@ -2,4 +2,5 @@
 /c/dizzy
 /c/textures_data.h
 /c/rotators_data.h
-/deps
+/deps_build
+/deps_install
