@@ -1,4 +1,4 @@
 *.o
-/dizzy
-/textures_data.h
-/rotators_data.h
+/c/dizzy
+/c/textures_data.h
+/c/rotators_data.h
