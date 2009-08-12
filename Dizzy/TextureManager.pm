@@ -3,7 +3,7 @@ package Dizzy::TextureManager;
 use strict;
 use warnings;
 
-use OpenGL qw(:all);
+use OpenGL::Simple qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;

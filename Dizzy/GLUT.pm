@@ -3,7 +3,8 @@ package Dizzy::GLUT;
 use strict;
 use warnings;
 
-use OpenGL qw(:all);
+use OpenGL::Simple qw(:all);
+use OpenGL::Simple::GLUT qw(:all);
 use Time::HiRes qw(sleep time);
 
 use Dizzy::Handlers;

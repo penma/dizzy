@@ -54,7 +54,8 @@ GetOptions(\%options,
 ) or (usage_message(), exit(1));
 
 ########
-use OpenGL qw(:all);
+use OpenGL::Simple qw(:all);
+use OpenGL::Simple::GLUT qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
@@ -138,11 +139,11 @@ Dizzy::Handlers::register(
 			rotator_func => sub {
 				my ($tick, $plane) = @_;
 				if ($plane == 1) {
-					glRotatef($tick * 5, 0, 0, 1);
-					glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+					glRotate($tick * 5, 0, 0, 1);
+					glTranslate(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
 				} elsif ($plane == 2) {
-					glRotatef($tick * -2.5, 0, 0, 1);
-					glTranslatef(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+					glRotate($tick * -2.5, 0, 0, 1);
+					glTranslate(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
 				}
 			},
 		);
