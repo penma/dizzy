@@ -1,4 +1,11 @@
 #!/bin/zsh
+
+if ! zsh -c 'echo ${0:A}' &> /dev/null
+then
+	echo -e "\e[1;31m*** fatal error: zsh too old, upgrade to 4.3.10 plzkthx\e[m"
+	exit 6
+fi
+
 dizzydir=${0:h:A}
 
 function install_mod() {
