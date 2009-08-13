@@ -28,11 +28,11 @@ sub add {
 
 sub set {
 	my ($id) = @_;
-	$previous_texture_id = $current_texture_id;
-	$current_texture_id = $id;
 	Dizzy::Handlers::invoke("texture_switch",
 		gl_texture      => $textures[$id]->{gl_texture},
 		old_gl_texture  => $textures[$previous_texture_id]->{gl_texture},
+		_texman_new_id  => $id,
+		_texman_old_id  => $current_texture_id,
 	);
 }
 
@@ -58,6 +58,22 @@ sub handler_walking {
 	}
 }
 
+# if this comes through, the texture was successfully changed
+# (if not, texblend might have refused the change because it already is
+# blending)
+sub handler_switch {
+	my %args = @_;
+
+	$previous_texture_id = $args{_texman_old_id};
+	$current_texture_id = $args{_texman_new_id};
+
+	Dizzy::Handlers::invoke("texture_changed",
+		name => $textures[$current_texture_id]->{name},
+	);
+
+	Dizzy::Handlers::STOP;
+}
+
 sub init {
 	my %args = @_;
 
@@ -65,6 +81,9 @@ sub init {
 
 	Dizzy::Handlers::register(
 		texture_switch => \&handler_walking,
+	);
+	Dizzy::Handlers::register_last(
+		texture_switch => \&handler_switch,
 	);
 }
 
