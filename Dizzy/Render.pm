@@ -31,20 +31,20 @@ sub render_planes {
 	glPushMatrix();
 	$args{rotator_func}->($tick, 1);
 	glBegin(GL_QUADS);
-		glTexCoord(0, 0); glVertex(-800, -800);
-		glTexCoord(0, 1); glVertex(-800,  800);
-		glTexCoord(1, 1); glVertex( 800,  800);
-		glTexCoord(1, 0); glVertex( 800, -800);
+		glTexCoord(0, 0); glVertex(-8, -8);
+		glTexCoord(0, 1); glVertex(-8,  8);
+		glTexCoord(1, 1); glVertex( 8,  8);
+		glTexCoord(1, 0); glVertex( 8, -8);
 	glEnd();
 	glPopMatrix();
 
 	glPushMatrix();
 	$args{rotator_func}->($tick, 2);
 	glBegin(GL_QUADS);
-		glTexCoord(0, 0); glVertex(-800, -800);
-		glTexCoord(0, 1); glVertex(-800,  800);
-		glTexCoord(1, 1); glVertex( 800,  800);
-		glTexCoord(1, 0); glVertex( 800, -800);
+		glTexCoord(0, 0); glVertex(-8, -8);
+		glTexCoord(0, 1); glVertex(-8,  8);
+		glTexCoord(1, 1); glVertex( 8,  8);
+		glTexCoord(1, 0); glVertex( 8, -8);
 	glEnd();
 	glPopMatrix();
 }
@@ -55,7 +55,7 @@ sub init_view {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glMatrixMode(GL_PROJECTION);
-	glOrtho(-320, 320, 240, -240, 1, -1);
+	glOrtho(-3.2, 3.2, 2.4, -2.4, 1, -1);
 	glMatrixMode(GL_TEXTURE);
 	glScale(($args{texture_scale}) x 3);
 	glMatrixMode(GL_MODELVIEW);
