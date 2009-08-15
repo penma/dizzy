@@ -1,6 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
+use 5.010;
 
 use Getopt::Long qw(:config no_ignore_case bundling);
 
@@ -140,6 +141,21 @@ Dizzy::Handlers::register(
 		Dizzy::Handlers::GO_ON;
 	},
 
+	# auto mode. move? or leave it here?
+	render => sub {
+		state $last_switch = 0;
+
+		if ($options{automode}) {
+			if ($last_switch + $options{automode_wait} <= time()) {
+				$last_switch = time();
+				Dizzy::Handlers::invoke("texture_switch", direction => +1);
+			}
+		}
+
+		Dizzy::Handlers::GO_ON;
+	},
+
+	# to be moved to: somewhere else (or keep it here? it's nice and warm)
 	render => sub {
 		Dizzy::Render::render_planes(
 			tick => time() - $^T,
