@@ -1,7 +1,8 @@
 {
+	name => "Ornament",
 	function => sub {
 		my ($x, $y) = @_;
 		my $dist = sqrt($x ** 2 + $y ** 2);
-		return cos($dist * pi + $y / ($dist + 0.0001)) / 2 + 0.5;
+		return sin(pi / (0.0001 + 2 * $dist)) / 2 + 0.5;
 	},
 };

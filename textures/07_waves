@@ -1,4 +1,5 @@
 {
+	name => "Waves",
 	function => sub {
 		my ($x, $y) = @_;
 		return wrapval((cos($y * pi) + sin($x * pi)) / 2 + 0.5);

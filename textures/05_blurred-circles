@@ -1,7 +1,8 @@
 {
+	name => "Blurred Circles",
 	function => sub {
 		my ($x, $y) = @_;
 		my $dist = sqrt($x ** 2 + $y ** 2);
-		return cos($dist * pi + sin(asin($y / ($dist + 0.00001)) * 2) * 0.2) / 2 + 0.5;
+		return sin($dist * pi / 2) / 2 + 0.5;
 	},
 };

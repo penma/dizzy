@@ -1,7 +1,8 @@
 {
+	name => "Crystal",
 	function => sub {
 		my ($x, $y) = @_;
 		my $dist = sqrt($x ** 2 + $y ** 2);
-		return sin($dist * pi / 2) / 2 + 0.5;
+		return cos(($x * 2) + asin($y / ($dist + 0.0001))) / 2 + 0.5;
 	},
 };
