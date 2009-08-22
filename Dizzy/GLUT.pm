@@ -51,10 +51,12 @@ sub handler_render {
 
 sub init {
 	my %args = @_;
+	$args{width}  ||= 800;
+	$args{height} ||= 600;
 
 	glutInit();
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(1024, 768);
+	glutInitWindowSize($args{width}, $args{height});
 	glutCreateWindow($args{title});
 
 	glutReshapeFunc   (\&handler_resize);

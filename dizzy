@@ -27,8 +27,8 @@ EOH
 my %options = (
 	help                   => sub { usage_message(); exit(0); },
 
-	width                  => -1,
-	height                 => -1,
+	width                  => 0,
+	height                 => 0,
 	texture_resolution     => 64,
 	texture_scale          => 50,
 
@@ -65,7 +65,7 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
-Dizzy::GLUT::init(title => "Dizzy");
+Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height});
 Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 
 Dizzy::TextureManager::init(
