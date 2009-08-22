@@ -151,10 +151,10 @@ Dizzy::Handlers::register(
 				my ($tick, $plane) = @_;
 				if ($plane == 1) {
 					glRotate($tick * 5, 0, 0, 1);
-					glTranslate(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+					glTranslate(sin($tick * 0.5), cos($tick * 0.75), 0);
 				} elsif ($plane == 2) {
 					glRotate($tick * -2.5, 0, 0, 1);
-					glTranslate(sin($tick * 0.5) * 100, cos($tick * 0.75) * 100, 0);
+					glTranslate(sin($tick * 0.5), cos($tick * 0.75), 0);
 				}
 			},
 		);
