@@ -76,24 +76,13 @@ sub wrapval {
 	elsif ($_[0] > 1.0) { return 0.0; }
 	else                { return $_[0]; }
 }
-foreach my $tex (
-{
-	function => sub {
-		my ($x, $y) = @_;
-		my $val = sin(pi / (0.0001 + 2 * sqrt($x**2 + $y**2))) / 2 + 0.5;
-		return wrapval($val);
-	},
-	name => "P1",
-},
-{
-	function => sub {
-		my ($x, $y) = @_;
-		my $val = (cos($y * pi) + sin($x * pi)) / 2 + 0.5;
-		return wrapval($val);
-	},
-	name => "P2",
-}
-) {
+
+# read textures dir
+opendir(my $textures, "textures/");
+foreach my $texture (readdir($textures)) {
+	next if (! -f "textures/$texture");
+	my $tex = do("textures/$texture");
+	$tex->{name} = $texture;
 	Dizzy::TextureManager::add(%{$tex});
 }
 
