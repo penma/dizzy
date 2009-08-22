@@ -79,10 +79,9 @@ sub wrapval {
 
 # read textures dir
 opendir(my $textures, "textures/");
-foreach my $texture (readdir($textures)) {
+foreach my $texture (sort readdir($textures)) {
 	next if (! -f "textures/$texture");
 	my $tex = do("textures/$texture");
-	$tex->{name} = $texture;
 	Dizzy::TextureManager::add(%{$tex});
 }
 
