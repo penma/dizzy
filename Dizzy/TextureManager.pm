@@ -12,7 +12,6 @@ use Dizzy::Handlers;
 
 my @textures;
 my $current_texture_id = 0;
-my $previous_texture_id = 0;
 my $texture_resolution = 0;
 
 sub add {
@@ -30,7 +29,7 @@ sub set {
 	my ($id) = @_;
 	Dizzy::Handlers::invoke("texture_switch",
 		gl_texture      => $textures[$id]->{gl_texture},
-		old_gl_texture  => $textures[$previous_texture_id]->{gl_texture},
+		old_gl_texture  => $textures[$current_texture_id]->{gl_texture},
 		_texman_new_id  => $id,
 		_texman_old_id  => $current_texture_id,
 	);
@@ -64,7 +63,6 @@ sub handler_walking {
 sub handler_switch {
 	my %args = @_;
 
-	$previous_texture_id = $args{_texman_old_id};
 	$current_texture_id = $args{_texman_new_id};
 
 	Dizzy::Handlers::invoke("texture_changed",
