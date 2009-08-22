@@ -28,25 +28,17 @@ sub render_planes {
 		cos($tick) * 0.125 + 0.5,
 		0.5);
 
-	glPushMatrix();
-	$args{rotator_func}->($tick, 1);
-	glBegin(GL_QUADS);
-		glTexCoord(0, 0); glVertex(-800, -800);
-		glTexCoord(0, 1); glVertex(-800,  800);
-		glTexCoord(1, 1); glVertex( 800,  800);
-		glTexCoord(1, 0); glVertex( 800, -800);
-	glEnd();
-	glPopMatrix();
-
-	glPushMatrix();
-	$args{rotator_func}->($tick, 2);
-	glBegin(GL_QUADS);
-		glTexCoord(0, 0); glVertex(-800, -800);
-		glTexCoord(0, 1); glVertex(-800,  800);
-		glTexCoord(1, 1); glVertex( 800,  800);
-		glTexCoord(1, 0); glVertex( 800, -800);
-	glEnd();
-	glPopMatrix();
+	foreach my $plane (1, 2) {
+		glPushMatrix();
+		$args{rotator_func}->($tick, $plane);
+		glBegin(GL_QUADS);
+			glTexCoord(0, 0); glVertex(-800, -800);
+			glTexCoord(0, 1); glVertex(-800,  800);
+			glTexCoord(1, 1); glVertex( 800,  800);
+			glTexCoord(1, 0); glVertex( 800, -800);
+		glEnd();
+		glPopMatrix();
+	}
 }
 
 sub init_view {
