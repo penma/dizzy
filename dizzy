@@ -10,17 +10,21 @@ sub usage_message {
 usage: dizzy [options]
 
    Graphics settings:
+     -w num           set window width
      -h num           set window height
-     -f               run in fullscreen mode
-     -t num           set texture resolution (power of two)
+     -f               run in fullscreen mode                     *
+     -r num           set texture resolution (power of two)
+     -s num           set texture display scale
 
    Auto mode:
      -a               activate auto mode
-     -aw num          set a new texture every num milliseconds
+     -A num           set a new texture every num seconds
 
    Texture blending options:
-     -tb              activate texture blending
-     -tbduration num  duration of the transition in milliseconds
+     -t               activate texture blending                  *
+     -T num           duration of the transition in seconds      *
+
+   * currently not implemented
 EOH
 }
 
@@ -44,14 +48,14 @@ GetOptions(\%options,
 
 	'width|w=i',
 	'height|h=i',
-	'texture_resolution|texture-resolution=i',
-	'texture_scale|texture-scale=f',
+	'texture_resolution|texture-resolution|r=i',
+	'texture_scale|texture-scale|s=f',
 
 	'automode|a+',
-	'automode_wait|automode-wait=f',
+	'automode_wait|automode-wait|A=f',
 
 	'texblend|t+',
-	'texblend_duration|texblend-duration=f',
+	'texblend_duration|texblend-duration|T=f',
 ) or (usage_message(), exit(1));
 
 ########
