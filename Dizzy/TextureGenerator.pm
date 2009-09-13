@@ -3,17 +3,17 @@ package Dizzy::TextureGenerator;
 use strict;
 use warnings;
 
-use OpenGL::Simple qw(:all);
+use OpenGL qw(:all);
 
 sub create_texture {
 	# save old texture
-	my $old_texture = glGet(GL_TEXTURE_BINDING_2D);
+	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
 
 	# allocate the new texture
-	my $new_texture = (glGenTextures(1))[0];
+	my $new_texture = (glGenTextures_p(1))[0];
 	glBindTexture(GL_TEXTURE_2D, $new_texture);
-	glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameter(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	# restore the old texture
 	glBindTexture(GL_TEXTURE_2D, $old_texture);
@@ -63,11 +63,11 @@ sub render_from_func {
 	);
 
 	# save old texture
-	my $old_texture = glGet(GL_TEXTURE_BINDING_2D);
+	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
 
 	# upload the texture image
 	glBindTexture(GL_TEXTURE_2D, $args{target});
-	glTexImage2D(
+	glTexImage2D_s(
 		GL_TEXTURE_2D,
 		0,
 		GL_LUMINANCE,
@@ -75,7 +75,7 @@ sub render_from_func {
 		0,
 		GL_LUMINANCE,
 		GL_FLOAT,
-		\$tex_data,
+		$tex_data
 	);
 
 	# restore the old texture

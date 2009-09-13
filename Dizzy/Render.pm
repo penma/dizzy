@@ -3,8 +3,7 @@ package Dizzy::Render;
 use strict;
 use warnings;
 
-use OpenGL::Simple qw(:all);
-use OpenGL::Simple::GLUT qw(:all);
+use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Convert::Color;
@@ -12,7 +11,7 @@ use Convert::Color::HSV;
 
 sub set_color_from_hsv {
 	my ($h, $v, $s) = @_;
-	glColor(Convert::Color::HSV->new($h * 360, $s, $v)->rgb());
+	glColor3f(Convert::Color::HSV->new($h * 360, $s, $v)->rgb());
 }
 
 sub render_planes {
@@ -32,10 +31,10 @@ sub render_planes {
 		glPushMatrix();
 		$args{rotator_func}->($tick, $plane);
 		glBegin(GL_QUADS);
-			glTexCoord(0, 0); glVertex(-8, -8);
-			glTexCoord(0, 1); glVertex(-8,  8);
-			glTexCoord(1, 1); glVertex( 8,  8);
-			glTexCoord(1, 0); glVertex( 8, -8);
+			glTexCoord2f(0, 0); glVertex2f(-8, -8);
+			glTexCoord2f(0, 1); glVertex2f(-8,  8);
+			glTexCoord2f(1, 1); glVertex2f( 8,  8);
+			glTexCoord2f(1, 0); glVertex2f( 8, -8);
 		glEnd();
 		glPopMatrix();
 	}
@@ -49,7 +48,7 @@ sub init_view {
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-3.2, 3.2, 2.4, -2.4, 1, -1);
 	glMatrixMode(GL_TEXTURE);
-	glScale(($args{texture_scale}) x 3);
+	glScalef(($args{texture_scale}) x 3);
 	glMatrixMode(GL_MODELVIEW);
 
 	glEnable(GL_TEXTURE_2D);
