@@ -12,7 +12,7 @@ usage: dizzy [options]
    Graphics settings:
      -w num           set window width
      -h num           set window height
-     -f               run in fullscreen mode                     *
+     -f               run in fullscreen mode
      -r num           set texture resolution (power of two)
      -s num           set texture display scale
 
@@ -33,6 +33,7 @@ my %options = (
 
 	width                  => 0,
 	height                 => 0,
+	fullscreen             => 0,
 	texture_resolution     => 64,
 	texture_scale          => 50,
 
@@ -48,6 +49,7 @@ GetOptions(\%options,
 
 	'width|w=i',
 	'height|h=i',
+	'fullscreen|f+',
 	'texture_resolution|texture-resolution|r=i',
 	'texture_scale|texture-scale|s=f',
 
@@ -68,7 +70,7 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
-Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height});
+Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
 Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 
 Dizzy::TextureManager::init(

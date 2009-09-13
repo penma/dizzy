@@ -52,11 +52,17 @@ sub init {
 	my %args = @_;
 	$args{width}  ||= 800;
 	$args{height} ||= 600;
+	$args{fullscreen} ||= 0;
 
 	glutInit();
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize($args{width}, $args{height});
-	glutCreateWindow($args{title});
+	if ($args{fullscreen}) {
+		glutGameModeString(glutGet(GLUT_SCREEN_WIDTH) . "x" . glutGet(GLUT_SCREEN_HEIGHT));
+		glutEnterGameMode();
+	} else {
+		glutInitWindowSize($args{width}, $args{height});
+		glutCreateWindow($args{title});
+	}
 
 	glutReshapeFunc   (\&handler_resize);
 	glutIdleFunc      (\&handler_idle);
