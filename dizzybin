@@ -58,6 +58,8 @@ GetOptions(\%options,
 
 	'texblend|t+',
 	'texblend_duration|texblend-duration|T=f',
+
+	'debug_show_planes|debug-show-planes+',
 ) or (usage_message(), exit(1));
 
 ########
@@ -154,6 +156,9 @@ Dizzy::Handlers::register(
 			tick => time() - $^T,
 			rotator_func => sub {
 				my ($tick, $plane) = @_;
+				if ($options{debug_show_planes}) {
+					glScalef(0.2, 0.2, 0.2);
+				}
 				if ($plane == 1) {
 					glRotatef($tick * 5, 0, 0, 1);
 					glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
