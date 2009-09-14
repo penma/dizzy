@@ -57,8 +57,23 @@ sub init {
 	glutInit();
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	if ($args{fullscreen}) {
-		glutGameModeString(glutGet(GLUT_SCREEN_WIDTH) . "x" . glutGet(GLUT_SCREEN_HEIGHT));
-		glutEnterGameMode();
+		foreach my $mode (
+			glutGet(GLUT_SCREEN_WIDTH) . "x" . glutGet(GLUT_SCREEN_HEIGHT),
+			"1024x768",
+			"800x600",
+			""
+		) {
+			print "Attempting to initialize game mode $mode\n";
+			glutGameModeString($mode);
+			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
+				glutEnterGameMode();
+				last;
+			}
+		}
+		if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) == 0) {
+			print "fatal error: couldn't initialize any game mode. Try without -f option.\n";
+			exit(1);
+		}
 	} else {
 		glutInitWindowSize($args{width}, $args{height});
 		glutCreateWindow($args{title});
