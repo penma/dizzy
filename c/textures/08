@@ -1,3 +1,0 @@
-TEXFUNC {
-	return cos((x * 2) + asin(y/dist)) / 2 + 0.5;
-}

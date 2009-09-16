@@ -1,3 +1,0 @@
-TEXFUNC {
-	return cos(dist * M_PI + y / (dist + 0.0001)) / 2 + 0.5;
-}

@@ -1,3 +1,0 @@
-TEXFUNC {
-	return wrapval(asin(y/dist) / 2 + 0.5);
-}

@@ -1,9 +1,0 @@
-ROTFUNC {
-	if (plane == 1) {
-		glRotatef(tick * 0.005f, 0, 0, 1);
-		glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
-	} else if (plane == 2) {
-		glRotatef(tick * -0.0025f, 0, 0, 1);
-		glTranslatef(sin(tick * 0.0005f) * 100, cos(tick * 0.00075f) * 100, 0);
-	}
-}
