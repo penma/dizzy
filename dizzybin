@@ -68,6 +68,7 @@ use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
 use Dizzy::TextureManager;
+use Dizzy::TexBlend;
 use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
@@ -92,6 +93,25 @@ foreach my $texture (sort readdir($textures)) {
 	Dizzy::TextureManager::add(%{$tex});
 }
 
+if ($options{texblend}) {
+	Dizzy::TexBlend::init(
+		texblend_duration => $options{texblend_duration},
+	);
+} else {
+	# move this to its own module too...
+	Dizzy::Handlers::register(
+		texture_switch => sub {
+			my %args = @_;
+			my $some_texture;
+			print "<Simple texture switcher> Changing texture (from GL texture $args{old_gl_texture})!\n";
+			print "<Simple texture switcher> using GL texture $args{gl_texture}\n";
+			glBindTexture(GL_TEXTURE_2D, $args{gl_texture});
+			Dizzy::Handlers::invoke("texture_switched", %args);
+			Dizzy::Handlers::STOP;
+		}
+	);
+}
+
 Dizzy::Handlers::register(
 	keyboard => sub {
 		my %args = @_;
@@ -109,25 +129,6 @@ Dizzy::Handlers::register(
 		}
 
 		Dizzy::Handlers::GO_ON;
-	},
-
-	# to be moved to: TexBlend
-	texture_switch => sub {
-		my %args = @_;
-		# check here if we are currently blending. if we are, STOP.
-		# else:
-		Dizzy::Handlers::GO_ON;
-	},
-
-	# the simple texture switcher: eats the function and makes a texture.
-	texture_switch => sub {
-		my %args = @_;
-		my $some_texture;
-		print "<Simple texture switcher> Changing texture (from GL texture $args{old_gl_texture})!\n";
-		print "<Simple texture switcher> using GL texture $args{gl_texture}\n";
-		glBindTexture(GL_TEXTURE_2D, $args{gl_texture});
-		Dizzy::Handlers::invoke("texture_switched", %args);
-		Dizzy::Handlers::STOP;
 	},
 
 	# notify user about texture switches
