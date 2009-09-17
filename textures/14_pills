@@ -1,0 +1,8 @@
+{
+	name => "Pills",
+	function => sub {
+		my ($x, $y) = @_;
+		my $dist = sqrt($x ** 2 + $y ** 2);
+		return -log($dist + 0.01);
+	},
+};

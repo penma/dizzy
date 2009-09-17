@@ -1,0 +1,8 @@
+{
+	name => "Bubbles",
+	function => sub {
+		my ($x, $y) = @_;
+		my $dist = sqrt($x ** 2 + $y ** 2);
+		return cosec($dist + 0.1) / 3;
+	},
+};
