@@ -21,10 +21,8 @@ usage: dizzy [options]
      -A num           set a new texture every num seconds
 
    Texture blending options:
-     -t               activate texture blending                  *
-     -T num           duration of the transition in seconds      *
-
-   * currently not implemented
+     -t               activate texture blending
+     -T num           duration of the transition in seconds
 EOH
 }
 
