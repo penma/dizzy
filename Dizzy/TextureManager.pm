@@ -57,10 +57,10 @@ sub handler_walking {
 	}
 }
 
-# if this comes through, the texture was successfully changed
-# (if not, texblend might have refused the change because it already is
-# blending)
-sub handler_switch {
+# this event serves to tell texman that the texture has now changed.
+# it is essentially like texture_switch, but this one is needed for texblend
+# to work.
+sub handler_switched {
 	my %args = @_;
 
 	$current_texture_id = $args{_texman_new_id};
@@ -81,7 +81,7 @@ sub init {
 		texture_switch => \&handler_walking,
 	);
 	Dizzy::Handlers::register_last(
-		texture_switch => \&handler_switch,
+		texture_switched => \&handler_switched,
 	);
 }
 
