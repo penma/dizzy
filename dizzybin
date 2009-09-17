@@ -58,6 +58,7 @@ GetOptions(\%options,
 	'texblend_duration|texblend-duration|T=f',
 
 	'debug_show_planes|debug-show-planes+',
+	'debug_show_messages|debug-show-messages+',
 ) or (usage_message(), exit(1));
 
 ########
@@ -110,6 +111,43 @@ if ($options{texblend}) {
 	);
 }
 
+# text rendering
+my ($text_start, $text_text) = (0, "");
+if ($options{debug_show_messages}) {
+	Dizzy::Handlers::register_last(
+		render => sub {
+			if (defined $text_text and time() - $text_start <= 1.5 + length($text_text) / 13) {
+				# disable blending and texturing, otherwise the text would look funny.
+				glDisable(GL_BLEND);
+				glDisable(GL_TEXTURE_2D);
+
+				# draw the text shadow
+				glColor3f(0, 0, 0);
+				glRasterPos2f(-3.0, 2.2);
+				foreach (split(//, $text_text)) {
+					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ord $_);
+				}
+
+				# draw the text itself
+				glColor3f(1, 1, 1);
+				glRasterPos2f(-3.01, 2.19);
+				foreach (split(//, $text_text)) {
+					glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ord $_);
+				}
+
+				# reenable texturing and blending
+				glEnable(GL_BLEND);
+				glEnable(GL_TEXTURE_2D);
+
+				# update display
+				glFlush();
+			}
+			Dizzy::Handlers::GO_ON;
+		},
+	);
+}
+
+
 Dizzy::Handlers::register(
 	keyboard => sub {
 		my %args = @_;
@@ -133,6 +171,10 @@ Dizzy::Handlers::register(
 	texture_changed => sub {
 		my %args = @_;
 		print "*** selected texture \"$args{name}\"\n";
+
+		# draw an informational message.
+		$text_start = time;
+		$text_text = $args{name};
 		Dizzy::Handlers::GO_ON;
 	},
 
