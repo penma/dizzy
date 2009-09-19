@@ -28,7 +28,7 @@ sub handler_init_switch {
 	# else:
 	$blend_params = \%args;
 	$blend_start = time;
-	print "<TexBlend> Starting blend from $blend_params->{old_gl_texture} to $blend_params->{gl_texture}. It's $blend_start now\n";
+	print "<TexBlend> Starting blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture} at $blend_start\n";
 
 	Dizzy::Handlers::STOP;
 }
@@ -45,7 +45,7 @@ sub handler_render {
 		# (assert we are done if the source and target match, so we don't block
 		# on program start)
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
-			print "<TexBlend> blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
+			print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
 
 			# retrieve the two textures to be blended
 			my (@t1, @t2);
@@ -77,7 +77,7 @@ sub handler_render {
 				$tx
 			);
 		} else {
-			print "<TexBlend> finished blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, setting final texture\n";
+			print "<TexBlend> Finished blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}\n";
 			glBindTexture(GL_TEXTURE_2D, $blend_params->{gl_texture});
 			Dizzy::Handlers::invoke("texture_switched", %{$blend_params});
 			$blend_params = undef;
