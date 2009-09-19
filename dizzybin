@@ -198,3 +198,120 @@ Dizzy::TextureManager::set(0);
 
 Dizzy::GLUT::run();
 
+__END__
+
+=head1 NAME
+
+dizzy - a graphics demo that makes you dizzy using rotating textures
+
+=head1 SYNOPSIS
+
+ dizzybin
+ dizzybin -f | -w width -h height
+ dizzybin -t switch_module -T options...
+
+=head1 DESCRIPTION
+
+Dizzy is a graphics demo that rotates planes of patterns on a colored background
+to make you dizzy. Textures can be cross-faded and there is a mode that
+automatically changes textures, allowing Dizzy to be run as a screensaver.
+
+=head1 OPTIONS
+
+=over
+
+=item -w width
+
+=item --width width
+
+=item -h height
+
+=item --height height
+
+Sets the window width and height.
+
+=item -f
+
+=item --fullscreen
+
+Attempts to switch into a true fullscreen mode, if possible. The window size
+parameters are ignored.
+
+=item -a
+
+=item --automode I<time>
+
+Automatically switches textures after a specified number of seconds has passed.
+I<time> can be fractional and the decimal separator is always the period.
+
+=item -t module
+
+=item --texswitcher module
+
+Selects the texture switching module to use. Default is B<Simple>.
+
+Available choices are B<Simple>, which just sets the new texture, and B<Blend>
+which crossfades between the current and the new texture.
+
+=item -T option=value
+
+=item --texswitcher-options option=value
+
+Passes an option I<option> with the value I<value> to the selected texture
+switcher. The available options depend on the texture switcher used.
+
+This option can be given multiple times to set multiple options.
+
+=item -r resolution
+
+=item --texture-resolution resolution
+
+Changes the texture resolution. I<resolution> must be a power of two. The default
+value is 64.
+
+=item -s scale
+
+=item --texture-scale scale
+
+Changes the texture scale factor, which is 50 by default. Smaller numbers result
+in larger boxes drawn on-screen, larger numbers draw smaller boxes.
+
+=item --debug-show-planes
+
+Zooms out of the normal view so you can see how Dizzy creates the animation.
+
+=item --debug-show-messages
+
+Display some messages not only on standard output, but also in the GL window.
+
+=back
+
+=head1 TEXTURE SWITCHERS
+
+The following texture switching modules are available:
+
+=head2 Simple
+
+A simple texture switcher. It just sets the new texture when it is told to do
+so. It takes no options.
+
+=head2 Blend
+
+A more complex texture switcher that crossfades between textures to generate a
+smooth transition. It takes this one option:
+
+=over
+
+=item B<blend>=I<duration>
+
+Sets the duration of a blend to I<duration> seconds. The value can be fractional
+(the decimal separator is always a period).
+
+Note that you have to add the time you specify here to the automode time, so if
+you want the transition to take two seconds and every image to stay for five
+seconds, you set the duration to 2 and automode to 7 (not 5).
+
+=back
+
+=cut
+
