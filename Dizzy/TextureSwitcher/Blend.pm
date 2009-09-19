@@ -89,7 +89,7 @@ sub handler_render {
 
 sub init {
 	my %args = @_;
-	$blend_duration = $args{duration};
+	$blend_duration = $args{duration} || 2;
 
 	# allocate a texture for blends
 	$blend_texture = Dizzy::TextureGenerator::create_texture();
