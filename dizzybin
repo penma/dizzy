@@ -20,9 +20,9 @@ usage: dizzy [options]
      -a               activate auto mode
      -A num           set a new texture every num seconds
 
-   Texture blending options:
-     -t               activate texture blending
-     -T num           duration of the transition in seconds
+   Texture switching options:
+     -t switcher      choose the texture switcher
+     -T opt=val       pass options to the texture switcher
 EOH
 }
 
@@ -38,8 +38,8 @@ my %options = (
 	automode               => 0,
 	automode_wait          => 7,
 
-	texblend               => 0,
-	texblend_duration      => 2,
+	texswitcher            => 'Simple',
+	texswitcher_options    => {},
 );
 
 GetOptions(\%options,
@@ -54,8 +54,8 @@ GetOptions(\%options,
 	'automode|a+',
 	'automode_wait|automode-wait|A=f',
 
-	'texblend|t+',
-	'texblend_duration|texblend-duration|T=f',
+	'texswitcher|t=s',
+	'texswitcher_options|texswitcher-options|T=s',
 
 	'debug_show_planes|debug-show-planes+',
 	'debug_show_messages|debug-show-messages+',
@@ -67,7 +67,7 @@ use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
 use Dizzy::TextureManager;
-use Dizzy::TexBlend;
+use Dizzy::TextureSwitcher;
 use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
@@ -92,24 +92,7 @@ foreach my $texture (sort readdir($textures)) {
 	Dizzy::TextureManager::add(%{$tex});
 }
 
-if ($options{texblend}) {
-	Dizzy::TexBlend::init(
-		texblend_duration => $options{texblend_duration},
-	);
-} else {
-	# move this to its own module too...
-	Dizzy::Handlers::register(
-		texture_switch => sub {
-			my %args = @_;
-			my $some_texture;
-			print "<Simple texture switcher> Changing texture (from GL texture $args{old_gl_texture})!\n";
-			print "<Simple texture switcher> using GL texture $args{gl_texture}\n";
-			glBindTexture(GL_TEXTURE_2D, $args{gl_texture});
-			Dizzy::Handlers::invoke("texture_switched", %args);
-			Dizzy::Handlers::STOP;
-		}
-	);
-}
+Dizzy::TextureSwitcher::init($options{texswitcher}, %{$options{texswitcher_options}});
 
 # text rendering
 my ($text_start, $text_text) = (0, "");

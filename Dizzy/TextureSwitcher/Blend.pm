@@ -1,4 +1,4 @@
-package Dizzy::TexBlend;
+package Dizzy::TextureSwitcher::Blend;
 
 use strict;
 use warnings;
@@ -89,8 +89,7 @@ sub handler_render {
 
 sub init {
 	my %args = @_;
-
-	$blend_duration = $args{texblend_duration};
+	$blend_duration = $args{duration};
 
 	# allocate a texture for blends
 	$blend_texture = Dizzy::TextureGenerator::create_texture();
