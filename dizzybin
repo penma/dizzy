@@ -17,8 +17,7 @@ usage: dizzy [options]
      -s num           set texture display scale
 
    Auto mode:
-     -a               activate auto mode
-     -A num           set a new texture every num seconds
+     -a num           set a new texture every num seconds
 
    Texture switching options:
      -t switcher      choose the texture switcher
@@ -36,7 +35,6 @@ my %options = (
 	texture_scale          => 50,
 
 	automode               => 0,
-	automode_wait          => 7,
 
 	texswitcher            => 'Simple',
 	texswitcher_options    => {},
@@ -51,8 +49,7 @@ GetOptions(\%options,
 	'texture_resolution|texture-resolution|r=i',
 	'texture_scale|texture-scale|s=f',
 
-	'automode|a+',
-	'automode_wait|automode-wait|A=f',
+	'automode|a=f',
 
 	'texswitcher|t=s',
 	'texswitcher_options|texswitcher-options|T=s',
@@ -164,8 +161,8 @@ Dizzy::Handlers::register(
 	render => sub {
 		state $last_switch = 0;
 
-		if ($options{automode}) {
-			if ($last_switch + $options{automode_wait} <= time()) {
+		if ($options{automode} > 0) {
+			if ($last_switch + $options{automode} <= time()) {
 				$last_switch = time();
 				Dizzy::Handlers::invoke("texture_switch", direction => +1);
 			}
