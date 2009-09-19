@@ -71,8 +71,8 @@ sub init {
 			}
 		}
 		if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) == 0) {
-			print "fatal error: couldn't initialize any game mode. Try without -f option.\n";
-			exit(1);
+			die "Fatal error: Couldn't initialize any game mode. ".
+				"Try without the -f option.\n";
 		}
 	} else {
 		glutInitWindowSize($args{width}, $args{height});
