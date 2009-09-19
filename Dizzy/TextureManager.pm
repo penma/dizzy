@@ -7,7 +7,6 @@ use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureGenerator;
-use Dizzy::GLUT;
 use Dizzy::Handlers;
 
 my @textures;

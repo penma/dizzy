@@ -65,7 +65,6 @@ GetOptions(\%options,
 use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
-use Dizzy::TextureGenerator;
 use Dizzy::TextureManager;
 use Dizzy::TextureSwitcher;
 use Dizzy::Render;

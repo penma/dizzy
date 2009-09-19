@@ -7,7 +7,6 @@ use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(time);
 use Dizzy::TextureGenerator;
-use Dizzy::GLUT;
 use Dizzy::Handlers;
 
 my $blend_params = undef;  # parameters of original texture_switch request
