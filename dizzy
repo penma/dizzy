@@ -22,6 +22,11 @@ usage: dizzy [options]
    Texture switching options:
      -t switcher      choose the texture switcher
      -T opt=val       pass options to the texture switcher
+
+   Keyboard commands:
+     cursor left      select previous texture
+     cursor right     select next texture
+     escape           exit dizzy
 EOH
 }
 
@@ -300,6 +305,24 @@ Sets the duration of a blend to I<duration> seconds. The value can be fractional
 Note that you have to add the time you specify here to the automode time, so if
 you want the transition to take two seconds and every image to stay for five
 seconds, you set the duration to 2 and automode to 7 (not 5).
+
+=back
+
+=head1 KEYBOARD COMMANDS
+
+=over
+
+=item Cursor left
+
+Select previous available texture.
+
+=item Cursor right
+
+Select next available texture.
+
+=item Escape
+
+Exit Dizzy.
 
 =back
 
