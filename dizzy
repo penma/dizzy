@@ -196,93 +196,89 @@ __END__
 
 =head1 NAME
 
-dizzy - a graphics demo that makes you dizzy using rotating textures
+B<dizzy> - a graphics demo that makes you dizzy using rotating textures
 
 =head1 SYNOPSIS
 
- dizzybin
- dizzybin -f | -w width -h height
- dizzybin -t switch_module -T options...
+B<dizzybin> [B<-f>|B<-w> I<width> B<-h> I<height>] [B<-t> I<switch_module>] [B<-T> I<options>]
 
 =head1 DESCRIPTION
 
-Dizzy is a graphics demo that rotates planes of patterns on a colored background
-to make you dizzy. Textures can be cross-faded and there is a mode that
-automatically changes textures, allowing Dizzy to be run as a screensaver.
+B<dizzy> is a graphics demo that rotates planes of patterns on a colored
+background to make you dizzy. Textures can be cross-faded and there is a mode
+that automatically changes textures, allowing Dizzy to be run as a screensaver.
 
 =head1 OPTIONS
 
 =over
 
-=item -w width
+=item B<-w> I<width>
 
-=item --width width
+=item B<--width> I<width>
 
-=item -h height
+=item B<-h> I<height>
 
-=item --height height
+=item B<--height> I<height>
 
 Sets the window width and height.
 
-=item -f
+=item B<-f>
 
-=item --fullscreen
+=item B<--fullscreen>
 
 Attempts to switch into a true fullscreen mode, if possible. The window size
 parameters are ignored.
 
-=item -a
+=item B<-a>
 
-=item --automode I<time>
+=item B<--automode> I<time>
 
 Automatically switches textures after a specified number of seconds has passed.
 I<time> can be fractional and the decimal separator is always the period.
 
-=item -t module
+=item B<-t> I<module>
 
-=item --texswitcher module
+=item B<--texswitcher> I<module>
 
 Selects the texture switching module to use. Default is B<Simple>.
 
-Available choices are B<Simple>, which just sets the new texture, and B<Blend>
-which crossfades between the current and the new texture.
+See below for available texture switchers and their descriptions.
 
-=item -T option=value
+=item B<-T> I<option>=I<value>
 
-=item --texswitcher-options option=value
+=item B<--texswitcher-options> I<option>=I<value>
 
 Passes an option I<option> with the value I<value> to the selected texture
 switcher. The available options depend on the texture switcher used.
 
 This option can be given multiple times to set multiple options.
 
-=item -r resolution
+=item B<-r> I<resolution>
 
-=item --texture-resolution resolution
+=item B<--texture-resolution> I<resolution>
 
 Changes the texture resolution. I<resolution> must be a power of two. The default
 value is 64.
 
-=item -s scale
+=item B<-s> I<scale>
 
-=item --texture-scale scale
+=item B<--texture-scale> I<scale>
 
-Changes the texture scale factor, which is 50 by default. Smaller numbers result
-in larger boxes drawn on-screen, larger numbers draw smaller boxes.
+Changes the texture scale factor, which is 50 by default, to I<scale>. Smaller
+numbers result in larger boxes drawn on-screen, larger numbers draw smaller
+boxes.
 
-=item --debug-show-planes
+=item B<--debug-show-planes>
 
 Zooms out of the normal view so you can see how Dizzy creates the animation.
 
-=item --debug-show-messages
+=item B<--debug-show-messages>
 
 Display some messages not only on standard output, but also in the GL window.
 
 =back
 
 =head1 TEXTURE SWITCHERS
-
-The following texture switching modules are available:
 
 =head2 Simple
 
@@ -291,15 +287,15 @@ so. It takes no options.
 
 =head2 Blend
 
-A more complex texture switcher that crossfades between textures to generate a
-smooth transition. It takes this one option:
+A texture switcher that crossfades between textures to generate a smooth
+transition. It takes one option:
 
 =over
 
 =item B<blend>=I<duration>
 
 Sets the duration of a blend to I<duration> seconds. The value can be fractional
-(the decimal separator is always a period).
+(the decimal separator is always a period).  The default value is 2.
 
 Note that you have to add the time you specify here to the automode time, so if
 you want the transition to take two seconds and every image to stay for five
@@ -308,4 +304,3 @@ seconds, you set the duration to 2 and automode to 7 (not 5).
 =back
 
 =cut
-
