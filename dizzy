@@ -200,7 +200,7 @@ B<dizzy> - a graphics demo that makes you dizzy using rotating textures
 
 =head1 SYNOPSIS
 
-B<dizzybin> [B<-f>|B<-w> I<width> B<-h> I<height>] [B<-t> I<switch_module>] [B<-T> I<options>]
+B<dizzy> [B<-f>|B<-w> I<width> B<-h> I<height>] [B<-t> I<switch_module>] [B<-T> I<options>]
 
 =head1 DESCRIPTION
 
