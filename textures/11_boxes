@@ -1,7 +1,0 @@
-{
-	name => "Boxes",
-	function => sub {
-		my ($x, $y) = @_;
-		return ($x + 0.5) * ($y + 0.5);
-	},
-};

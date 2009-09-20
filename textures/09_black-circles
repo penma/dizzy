@@ -1,8 +1,0 @@
-{
-	name => "Black Circles",
-	function => sub {
-		my ($x, $y) = @_;
-		my $dist = sqrt($x ** 2 + $y ** 2);
-		return 1.0 - (cos($dist * pi) / 2 + 0.5);
-	},
-};

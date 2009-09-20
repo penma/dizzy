@@ -59,11 +59,13 @@ GetOptions(\%options,
 ) or (usage_message(), exit(1));
 
 ########
+use lib 'lib';
 use OpenGL qw(:all);
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::TextureManager;
 use Dizzy::TextureSwitcher;
+use Dizzy::Textures;
 use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
@@ -74,18 +76,10 @@ Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 Dizzy::TextureManager::init(
 	texture_resolution => $options{texture_resolution},
 );
-sub wrapval {
-	   if ($_[0] < 0.0) { return 1.0; }
-	elsif ($_[0] > 1.0) { return 0.0; }
-	else                { return $_[0]; }
-}
 
-# read textures dir
-opendir(my $textures, "textures/");
-foreach my $texture (sort readdir($textures)) {
-	next if (! -f "textures/$texture");
-	my $tex = do("textures/$texture");
-	Dizzy::TextureManager::add(%{$tex});
+# read textures
+foreach my $texture (Dizzy::Textures::textures()) {
+	Dizzy::TextureManager::add(%{$texture});
 }
 
 Dizzy::TextureSwitcher::init($options{texswitcher}, %{$options{texswitcher_options}});
