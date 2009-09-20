@@ -1,0 +1,16 @@
+You need:
+
+- perl 5.10.0 or higher
+- OpenGL 0.58 or higher <http://search.cpan.org/dist/OpenGL/>
+- Convert::Color <http://search.cpan.org/dist/Convert-Color/>
+
+- OpenGL and FREEGLUT libraries
+
+To run:
+  ./dizzy
+
+To install:
+  perl Build.PL
+  ./Build
+  ./Build install
+
