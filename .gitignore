@@ -1,6 +1,4 @@
-*.o
-/c/dizzy
-/c/textures_data.h
-/c/rotators_data.h
-/deps_build
-/deps_install
+/Build
+/_build
+/blib
+
