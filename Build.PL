@@ -5,7 +5,7 @@ use Module::Build;
 
 my $build = Module::Build->new(
 	dist_name   => 'dizzy',
-	dist_version => '0.01',
+	dist_version => '0.1.0',
 	dist_author => 'Lars Stoltenow <penma@penma.de>',
 	license     => 'perl',
 
