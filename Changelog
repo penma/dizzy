@@ -1,0 +1,13 @@
+dizzy 0.1.1 - ???
+
+    * Added META.yml
+    * Added description of keybindings to documentation
+    * add 'q' key as alias for escape (to exit)
+
+dizzy 0.1.0 - Sun Sep 20 18:47:26 2009 +0200
+
+    * rotating planes with patterns that can make you dizzy
+    * 15 textures included
+    * textures can be switched manually or automatically by a timer
+    * they can be crossfaded to create a smooth transition
+    * view can be zoomed to look good on non-average (XGA) render sizes
