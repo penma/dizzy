@@ -136,9 +136,7 @@ Dizzy::Handlers::register(
 		$args{ascii} //= "";
 		$args{special} //= -1;
 
-		if ($args{ascii} eq "\e") { # escape
-			exit(0);
-		} elsif ($args{ascii} eq 'q') {
+		if ($args{ascii} eq "\e" or $args{ascii} eq "q") { # escape/q
 			exit(0);
 		} elsif ($args{special} == GLUT_KEY_LEFT or $args{special} == GLUT_KEY_RIGHT) {
 			Dizzy::Handlers::invoke("texture_switch",
