@@ -32,6 +32,44 @@ sub handler_init_switch {
 	Dizzy::Handlers::STOP;
 }
 
+# software blend two textures into a third one
+sub blend_textures_software {
+	my ($tex_a, $tex_b, $ratio) = @_;
+	# $tex_a      = first  GL texture ID
+	# $tex_b      = second GL texture ID
+	# $ratio      = 0.0 .. 1.0 (0.0 = 100% A 0% B, 1.0 = 0% A 100% B)
+
+	# retrieve the two textures to be blended
+	my (@data_a, @data_b);
+	glBindTexture(GL_TEXTURE_2D, $tex_a);
+	@data_a = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
+	glBindTexture(GL_TEXTURE_2D, $tex_b);
+	@data_b = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
+
+	# also retrieve their dimensions (as the program always uses squares, one
+	# dimension suffices)
+	my $res = glGetTexLevelParameteriv_p(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH);
+
+	# blend the two textures
+	my $target_data;
+	while (@data_a > 0) {
+		$target_data .= pack("f", shift(@data_a) * (1 - $ratio) + shift(@data_b) * $ratio);
+	}
+
+	# now load the blended image into the intermediate texture
+	glBindTexture(GL_TEXTURE_2D, $blend_texture);
+	glTexImage2D_s(
+		GL_TEXTURE_2D,
+		0,
+		GL_LUMINANCE,
+		$res, $res,
+		0,
+		GL_LUMINANCE,
+		GL_FLOAT,
+		$target_data
+	);
+}
+
 # this routine generates and activates intermediate textures
 # if there is a blend in progress right now.
 # it also sets off necessary events once the blend is finished.
@@ -46,34 +84,10 @@ sub handler_render {
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
 			print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
 
-			# retrieve the two textures to be blended
-			my (@t1, @t2);
-			glBindTexture(GL_TEXTURE_2D, $blend_params->{old_gl_texture});
-			@t1 = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
-			glBindTexture(GL_TEXTURE_2D, $blend_params->{gl_texture});
-			@t2 = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
-
-			# also retrieve their dimensions (just one, actually, and one dimension
-			# is sufficient because Dizzy always uses squares)
-			my $res = glGetTexLevelParameteriv_p(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH);
-
-			# blend the two
-			my $tx;
-			while (@t1 > 0) {
-				$tx .= pack("f", shift(@t1) * (1 - $ratio) + shift(@t2) * $ratio);
-			}
-
-			# now load the blended image into the intermediate texture
-			glBindTexture(GL_TEXTURE_2D, $blend_texture);
-			glTexImage2D_s(
-				GL_TEXTURE_2D,
-				0,
-				GL_LUMINANCE,
-				$res, $res,
-				0,
-				GL_LUMINANCE,
-				GL_FLOAT,
-				$tx
+			blend_textures_software(
+				$blend_params->{old_gl_texture},
+				$blend_params->{gl_texture},
+				$ratio,
 			);
 		} else {
 			print "<TexBlend> Finished blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}\n";
