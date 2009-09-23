@@ -15,6 +15,9 @@ my $blend_start;           # time at which current blend was started
 my $blend_texture;         # texture ID used for intermediate textures
 my $blend_duration = 0;
 
+my $shader_prog;
+my $tex_scale;
+
 sub handler_init_switch {
 	my %args = @_;
 	print "<Texblend> checking if we are blending...\n";
@@ -32,8 +35,14 @@ sub handler_init_switch {
 	Dizzy::Handlers::STOP;
 }
 
+# ******************************* SOFTWARE ***********************************
+
+sub software_init {
+	$blend_texture = Dizzy::TextureGenerator::create_texture();
+}
+
 # software blend two textures into a third one
-sub blend_textures_software {
+sub software_blend {
 	my ($tex_a, $tex_b, $ratio) = @_;
 	# $tex_a      = first  GL texture ID
 	# $tex_b      = second GL texture ID
@@ -70,6 +79,68 @@ sub blend_textures_software {
 	);
 }
 
+# ********************************** GLSL ************************************
+
+sub glsl_init {
+	my $fragment_id = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB_p($fragment_id, << "__END_SHADER__");
+uniform sampler2D Texture0;
+uniform sampler2D Texture1;
+uniform float BlendFactor;
+
+void main() {
+	vec4 texel0 = texture2D(Texture0, gl_TexCoord[0].xy);
+	vec4 texel1 = texture2D(Texture1, gl_TexCoord[1].xy);
+	gl_FragColor.rgb = gl_Color.rgb * mix(texel0, texel1, BlendFactor).r;
+}
+__END_SHADER__
+	glCompileShaderARB($fragment_id);
+	# my $stat = glGetInfoLogARB_p($fragment_id);
+	# print "WARN shader compile $stat\n" if $stat;
+
+	$shader_prog = glCreateProgramObjectARB();
+	glAttachObjectARB($shader_prog, $fragment_id);
+	glLinkProgramARB($shader_prog);
+
+	if (!glGetObjectParameterivARB_p($shader_prog, GL_OBJECT_LINK_STATUS_ARB)) {
+		my $stat = glGetInfoLogARB_p($shader_prog);
+		die("Failed to link shader program: $stat - dying");
+	}
+
+	glUseProgramObjectARB($shader_prog);
+	glUniform1iARB(glGetUniformLocationARB_p($shader_prog, "Texture0"), 0);
+	glUniform1iARB(glGetUniformLocationARB_p($shader_prog, "Texture1"), 1);
+}
+
+sub glsl_blend {
+	my ($tex_a, $tex_b, $ratio) = @_;
+
+	# load the textures
+	glActiveTextureARB(GL_TEXTURE0);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, $tex_a);
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+	glScalef(($tex_scale) x 3);
+	glMatrixMode(GL_MODELVIEW);
+
+	glActiveTextureARB(GL_TEXTURE1);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, $tex_b);
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
+	glScalef(($tex_scale) x 3);
+	glMatrixMode(GL_MODELVIEW);
+
+	# set the blend factor
+	glUniform1fARB(glGetUniformLocationARB_p($shader_prog, "BlendFactor"), $ratio);
+
+	# activate shader
+	glUseProgramObjectARB($shader_prog);
+}
+
+# ******************************** HANDLERS **********************************
+
 # this routine generates and activates intermediate textures
 # if there is a blend in progress right now.
 # it also sets off necessary events once the blend is finished.
@@ -84,7 +155,8 @@ sub handler_render {
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
 			print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
 
-			blend_textures_software(
+			# blend_textures_software(
+			glsl_blend(
 				$blend_params->{old_gl_texture},
 				$blend_params->{gl_texture},
 				$ratio,
@@ -103,9 +175,12 @@ sub handler_render {
 sub init {
 	my %args = @_;
 	$blend_duration = $args{duration} || 2;
+	$tex_scale = $args{texture_scale};
 
 	# allocate a texture for blends
 	$blend_texture = Dizzy::TextureGenerator::create_texture();
+
+	glsl_init();
 
 	Dizzy::Handlers::register(
 		texture_switch => \&handler_init_switch,

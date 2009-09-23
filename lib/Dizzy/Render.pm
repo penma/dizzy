@@ -31,10 +31,19 @@ sub render_planes {
 		glPushMatrix();
 		$args{rotator_func}->($tick, $plane);
 		glBegin(GL_QUADS);
-			glTexCoord2f(0, 0); glVertex2f(-8, -8);
-			glTexCoord2f(0, 1); glVertex2f(-8,  8);
-			glTexCoord2f(1, 1); glVertex2f( 8,  8);
-			glTexCoord2f(1, 0); glVertex2f( 8, -8);
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, 0);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0, 0);
+			glVertex2f(-8, -8);
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, 1);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 0, 1);
+			glVertex2f(-8,  8);
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 1, 1);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1, 1);
+			glVertex2f( 8,  8);
+		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 1, 0);
+		glMultiTexCoord2fARB(GL_TEXTURE1_ARB, 1, 0);
+			glVertex2f( 8, -8);
+
 		glEnd();
 		glPopMatrix();
 	}

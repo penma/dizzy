@@ -89,7 +89,11 @@ foreach my $texture (Dizzy::Textures::textures()) {
 	Dizzy::TextureManager::add(%{$texture});
 }
 
-Dizzy::TextureSwitcher::init($options{texswitcher}, %{$options{texswitcher_options}});
+Dizzy::TextureSwitcher::init(
+	$options{texswitcher},
+	%{$options{texswitcher_options}},
+	texture_scale => $options{texture_scale}
+);
 
 # text rendering
 my ($text_start, $text_text) = (0, "");
