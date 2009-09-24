@@ -15,8 +15,13 @@ my $blend_start;           # time at which current blend was started
 my $blend_texture;         # texture ID used for intermediate textures
 my $blend_duration = 0;
 
+# saved parameters
 my $shader_prog;
 my $tex_scale;
+
+# blend function to use
+my $func_init;
+my $func_blend;
 
 sub handler_init_switch {
 	my %args = @_;
@@ -155,8 +160,7 @@ sub handler_render {
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
 			print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
 
-			# blend_textures_software(
-			glsl_blend(
+			$func_blend->(
 				$blend_params->{old_gl_texture},
 				$blend_params->{gl_texture},
 				$ratio,
@@ -172,6 +176,22 @@ sub handler_render {
 	Dizzy::Handlers::GO_ON;
 }
 
+sub select_render_path {
+	# check if glsl is possible
+	my $can_glsl = !glpCheckExtension("GL_ARB_shading_language_100");
+
+	# now pick the best
+	if ($can_glsl) {
+		print "<TexBlend> Using GLSL shaders for blending\n";
+		$func_init = \&glsl_init;
+		$func_blend = \&glsl_blend;
+	} else {
+		print "<TexBlend> Falling back to slow software texture blending\n";
+		$func_init = \&software_init;
+		$func_blend = \&software_blend;
+	}
+}
+
 sub init {
 	my %args = @_;
 	$blend_duration = $args{duration} || 2;
@@ -180,7 +200,9 @@ sub init {
 	# allocate a texture for blends
 	$blend_texture = Dizzy::TextureGenerator::create_texture();
 
-	glsl_init();
+	# select and initialize render path
+	select_render_path();
+	$func_init->();
 
 	Dizzy::Handlers::register(
 		texture_switch => \&handler_init_switch,
