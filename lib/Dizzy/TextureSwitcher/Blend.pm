@@ -121,6 +121,9 @@ __END_SHADER__
 sub glsl_blend {
 	my ($tex_a, $tex_b, $ratio) = @_;
 
+	# activate shader (in case it didn't happen already)
+	glUseProgramObjectARB($shader_prog);
+
 	# load the textures
 	glActiveTextureARB(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
@@ -140,9 +143,6 @@ sub glsl_blend {
 
 	# set the blend factor
 	glUniform1fARB(glGetUniformLocationARB_p($shader_prog, "BlendFactor"), $ratio);
-
-	# activate shader
-	glUseProgramObjectARB($shader_prog);
 }
 
 # ******************************** HANDLERS **********************************
