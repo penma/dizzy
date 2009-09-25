@@ -97,6 +97,7 @@ void main() {
 	vec4 texel0 = texture2D(Texture0, gl_TexCoord[0].xy);
 	vec4 texel1 = texture2D(Texture1, gl_TexCoord[1].xy);
 	gl_FragColor.rgb = gl_Color.rgb * mix(texel0, texel1, BlendFactor).r;
+	gl_FragColor.a = 1.0;
 }
 __END_SHADER__
 	glCompileShaderARB($fragment_id);
