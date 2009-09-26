@@ -19,6 +19,13 @@ my @textures = (
 			my $dist = sqrt($x ** 2 + $y ** 2);
 			return sin(pi / (0.0001 + 2 * $dist)) / 2 + 0.5;
 		},
+		shader => << "		// END SHADER",
+			void main() {
+				float dist = length(gl_TexCoord[0].xy - 0.5);
+				float val = sin(3.141 / (0.001 + 2 * dist)) / 2 + 0.5;
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Spots",

@@ -1,0 +1,93 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use 5.010;
+
+use OpenGL qw(:all);
+use Math::Trig;
+use Time::HiRes qw(sleep time);
+
+####### GL HANDLERS
+sub handler_resize {
+	glViewport(0, 0, $_[0], $_[1]);
+}
+
+sub handler_idle {
+	handler_render();
+
+	glFlush();
+	glutSwapBuffers();
+	sleep(1 / 50);
+}
+
+sub init_gl {
+	glutInit();
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitWindowSize(512, 512);
+	glutCreateWindow("example");
+
+	glutReshapeFunc   (\&handler_resize);
+	glutIdleFunc      (\&handler_idle);
+	glutDisplayFunc   (\&handler_render);
+}
+
+sub init_vp {
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glColor3f(1.0, 1.0, 1.0);
+
+	glMatrixMode(GL_PROJECTION);
+	glOrtho(-1.0, 1.0, 1.0, -1.0, 1, -1);
+	glMatrixMode(GL_TEXTURE);
+	glMatrixMode(GL_MODELVIEW);
+
+	glEnable(GL_TEXTURE_2D);
+	# glEnable(GL_BLEND);
+	# glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+}
+
+
+init_gl();
+init_vp();
+
+# #########
+
+sub handler_render {
+	# ...
+	glClear(GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+
+	glPushMatrix();
+	glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex2f(-1, -1);
+		glTexCoord2f(0, 1); glVertex2f(-1,  1);
+		glTexCoord2f(1, 1); glVertex2f( 1,  1);
+		glTexCoord2f(1, 0); glVertex2f( 1, -1);
+	glEnd();
+	glPopMatrix();
+}
+
+my $fragment_id = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+glShaderSourceARB_p($fragment_id, << "__END_SHADER__");
+void main() {
+	float dist = length(gl_TexCoord[0].xy - 0.5);
+	float val = sin(3.141 / (0.001 + 2 * dist)) / 2 + 0.5;
+	gl_FragColor = vec4(val, val, val, 1.0);
+}
+__END_SHADER__
+glCompileShaderARB($fragment_id);
+my $stat = glGetInfoLogARB_p($fragment_id);
+print "WARN shader compile $stat\n" if $stat;
+
+my $shader_prog = glCreateProgramObjectARB();
+glAttachObjectARB($shader_prog, $fragment_id);
+glLinkProgramARB($shader_prog);
+
+if (!glGetObjectParameterivARB_p($shader_prog, GL_OBJECT_LINK_STATUS_ARB)) {
+	my $stat = glGetInfoLogARB_p($shader_prog);
+	die("Failed to link shader program: $stat - dying");
+}
+
+glUseProgramObjectARB($shader_prog);
+
+glutMainLoop();
+
