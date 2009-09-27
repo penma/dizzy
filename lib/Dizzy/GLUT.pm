@@ -10,10 +10,6 @@ use Dizzy::Handlers;
 
 # default handlers, calling registered handlers and doing other stuff
 
-sub handler_resize {
-	glViewport(0, 0, $_[0], $_[1]);
-}
-
 sub handler_idle {
 	handler_render();
 
@@ -79,7 +75,6 @@ sub init {
 		glutCreateWindow($args{title});
 	}
 
-	glutReshapeFunc   (\&handler_resize);
 	glutIdleFunc      (\&handler_idle);
 	glutDisplayFunc   (\&handler_render);
 	glutKeyboardFunc  (\&handler_keyboard);
