@@ -39,6 +39,7 @@ my %options = (
 	height                 => 0,
 	fullscreen             => 0,
 	texture_resolution     => 64,
+	shader_resolution      => 256,
 	texture_scale          => 50,
 
 	automode               => 0,
@@ -54,6 +55,7 @@ GetOptions(\%options,
 	'height|h=i',
 	'fullscreen|f+',
 	'texture_resolution|texture-resolution|r=i',
+	'shader_resolution|shader-resolution|R=i',
 	'texture_scale|texture-scale|s=f',
 
 	'automode|a=f',

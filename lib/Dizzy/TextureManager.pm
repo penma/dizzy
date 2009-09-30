@@ -12,13 +12,16 @@ use Dizzy::Handlers;
 my @textures;
 my $current_texture_id = 0;
 my $texture_resolution = 0;
+my $shader_resolution  = 0;
 
 sub add {
 	my %args = @_;
 	push(@textures, \%args);
 	$textures[$#textures]->{gl_texture} = Dizzy::TextureGenerator::new_from_func(
-		function     => $textures[$#textures]->{function},
-		resolution   => $texture_resolution,
+		function            => $textures[$#textures]->{function},
+		shader              => $textures[$#textures]->{shader},
+		texture_resolution  => $texture_resolution,
+		shader_resolution   => $shader_resolution,
 	);
 	delete($textures[$#textures]->{function});
 	return $#textures;
@@ -75,6 +78,7 @@ sub init {
 	my %args = @_;
 
 	$texture_resolution = $args{texture_resolution};
+	$shader_resolution  = $args{shader_resolution};
 
 	Dizzy::Handlers::register(
 		texture_switch => \&handler_walking,
