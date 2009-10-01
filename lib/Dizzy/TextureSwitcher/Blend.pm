@@ -178,11 +178,7 @@ sub handler_render {
 }
 
 sub select_render_path {
-	# check if glsl is possible
-	my $can_glsl = !glpCheckExtension("GL_ARB_shading_language_100");
-
-	# now pick the best
-	if ($can_glsl) {
+	if (Dizzy::GLUT::supports("glsl")) {
 		print "<TexBlend> Using GLSL shaders for blending\n";
 		$func_init = \&glsl_init;
 		$func_blend = \&glsl_blend;

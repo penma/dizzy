@@ -85,4 +85,14 @@ sub run {
 	glutMainLoop();
 }
 
+# check for capabilities
+sub supports {
+	my $feature = shift;
+	if ($feature eq "glsl") {
+		return !glpCheckExtension("GL_ARB_shading_language_100");
+	} else {
+		return undef;
+	}
+}
+
 1;

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use OpenGL qw(:all);
+use Dizzy::GLUT;
 
 sub create_texture {
 	# save old texture
@@ -154,7 +155,7 @@ sub render_from_func {
 	# render the image
 	my $tex_data;
 	my $resolution;
-	if ($args{shader}) { # and check if supported
+	if ($args{shader} and Dizzy::GLUT::supports("glsl")) {
 		$resolution = $args{shader_resolution};
 		$tex_data = render_function_shader(
 			resolution   => $resolution,
