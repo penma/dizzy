@@ -11,6 +11,14 @@ sub wrapval {
 	else                { return $_[0]; }
 }
 
+my $sf_wrapval = << "// END FUNCTION";
+	float wrapval(float val) {
+		return (val < 0.0 ? 1.0 : (
+		        val > 1.0 ? 0.0 : val)
+		);
+	}
+// END FUNCTION
+
 my @textures = (
 	{
 		name => "Ornament",
@@ -73,6 +81,12 @@ my @textures = (
 			my ($x, $y) = @_;
 			return wrapval((cos($y * pi) + sin($x * pi)) / 2 + 0.5);
 		},
+		shader => $sf_wrapval . << "		// END SHADER",
+			void main() {
+				float val = wrapval((cos(gl_TexCoord[0].y * 3.141) + sin(gl_TexCoord[0].x * 3.141)) / 2 + 0.5);
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Crystal",
@@ -81,6 +95,16 @@ my @textures = (
 			my $dist = sqrt($x ** 2 + $y ** 2);
 			return cos(($x * 2) + asin($y / ($dist + 0.0001))) / 2 + 0.5;
 		},
+		shader => << "		// END SHADER",
+			void main() {
+				float dist = length(gl_TexCoord[0].xy - 0.5);
+				float val = cos(
+					  2 * (gl_TexCoord[0].x - 0.5)
+					+ asin((gl_TexCoord[0].y - 0.5) / dist)
+				) / 2 + 0.5;
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Black Circles",
@@ -89,6 +113,13 @@ my @textures = (
 			my $dist = sqrt($x ** 2 + $y ** 2);
 			return 1.0 - (cos($dist * pi) / 2 + 0.5);
 		},
+		shader => << "		// END SHADER",
+			void main() {
+				float dist = length(gl_TexCoord[0].xy - 0.5);
+				float val = 1 - (cos(dist * 3.141) / 2 + 0.5);
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Hexagon",
@@ -97,6 +128,13 @@ my @textures = (
 			my $dist = sqrt($x ** 2 + $y ** 2);
 			return wrapval(asin($y / ($dist + 0.0001)) / 2 + 0.5);
 		},
+		shader => $sf_wrapval . << "		// END SHADER",
+			void main() {
+				float dist = length(gl_TexCoord[0].xy - 0.5);
+				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / dist) / 2 + 0.5);
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Boxes",
@@ -104,6 +142,12 @@ my @textures = (
 			my ($x, $y) = @_;
 			return ($x + 0.5) * ($y + 0.5);
 		},
+		shader => << "		// END SHADER",
+			void main() {
+				float val = gl_TexCoord[0].x * gl_TexCoord[0].y;
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 	{
 		name => "Bubbles",
@@ -136,6 +180,16 @@ my @textures = (
 			my $dist = sqrt($x ** 2 + $y ** 2);
 			return 22.35468769 * $dist**6 + sin(12) * $dist**2 / 5.734;
 		},
+		shader => << "		// END SHADER",
+			void main() {
+				float dist = length(gl_TexCoord[0].xy - 0.5);
+				float val = clamp(
+					  22.35468769 * pow(dist, 6)
+					+ sin(12) * pow(dist, 2) / 5.734
+				, 0.0, 1.0);
+				gl_FragColor = vec4(val, val, val, 1.0);
+			}
+		// END SHADER
 	},
 );
 
