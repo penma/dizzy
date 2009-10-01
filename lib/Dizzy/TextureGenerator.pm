@@ -96,8 +96,6 @@ sub render_function_shader {
 
 	glUseProgramObjectARB($shader_prog);
 
-	# todo: deallocate all objects
-
 	# render a plane
 	glDrawBuffer(GL_AUX0);
 	glReadBuffer(GL_AUX0);
@@ -130,6 +128,8 @@ sub render_function_shader {
 
 	# reset everything
 	glUseProgramObjectARB(0);
+	glDeleteObjectARB($shader_prog);
+	glDeleteObjectARB($fragment_id);
 
 	glMatrixMode(GL_TEXTURE);
 	glPopMatrix();
