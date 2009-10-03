@@ -40,7 +40,7 @@ my %options = (
 	height                 => 0,
 	fullscreen             => 0,
 	texture_resolution     => 64,
-	shader_resolution      => 256,
+	shader_resolution      => 1024,
 	texture_scale          => 50,
 
 	automode               => 0,
