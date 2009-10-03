@@ -90,6 +90,8 @@ sub supports {
 	my $feature = shift;
 	if ($feature eq "glsl") {
 		return !glpCheckExtension("GL_ARB_shading_language_100");
+	} elsif ($feature eq "fbo") {
+		return !glpCheckExtension("GL_EXT_framebuffer_object");
 	} else {
 		return undef;
 	}
