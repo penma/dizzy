@@ -61,11 +61,32 @@ sub render_function_software {
 sub render_function_shader {
 	my %args = @_;
 
-	# save old viewport
-	my (undef, undef, $vx, $vy) = glGetIntegerv_p(GL_VIEWPORT);
+	# allocate texture memory
+	glTexImage2D_c(
+		GL_TEXTURE_2D,
+		0,
+		GL_LUMINANCE,
+		$args{resolution}, $args{resolution},
+		0,
+		GL_LUMINANCE,
+		GL_FLOAT,
+		0
+	);
 
-	# set a new viewport
-	#glViewport(0, 0, $args{resolution}, $args{resolution});
+	# create and use a framebuffer object
+	my $fbo = (glGenFramebuffersEXT_p(1))[0];
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, $fbo);
+	glFramebufferTexture2DEXT(
+		GL_FRAMEBUFFER_EXT,
+		GL_COLOR_ATTACHMENT0_EXT,
+		GL_TEXTURE_2D,
+		glGetIntegerv_p(GL_TEXTURE_BINDING_2D),
+		0
+	);
+
+	# redefine the viewport (temporarily)
+	my (undef, undef, $vx, $vy) = glGetIntegerv_p(GL_VIEWPORT);
+	glViewport(0, 0, $args{resolution}, $args{resolution});
 
 	# prepare projection
 	glMatrixMode(GL_TEXTURE);
@@ -97,11 +118,6 @@ sub render_function_shader {
 	glUseProgramObjectARB($shader_prog);
 
 	# render a plane
-	glDrawBuffer(GL_AUX0);
-	glReadBuffer(GL_AUX0);
-
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	glLoadIdentity();
 
 	glBegin(GL_QUADS);
@@ -115,17 +131,6 @@ sub render_function_shader {
 	glFlush();
 	glFinish();
 
-	# read pixels into texture
-	glCopyTexImage2D(
-		GL_TEXTURE_2D,
-		0,
-		GL_LUMINANCE,
-		0, 0,
-		# $args{resolution}, $args{resolution},
-		$vx, $vy,
-		0
-	);
-
 	# reset everything
 	glUseProgramObjectARB(0);
 	glDeleteObjectARB($shader_prog);
@@ -135,9 +140,9 @@ sub render_function_shader {
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
 	glViewport(0, 0, $vx, $vy);
-	glDrawBuffer(GL_BACK);
-	glReadBuffer(GL_BACK);
 }
 
 sub render_from_func {
@@ -155,7 +160,7 @@ sub render_from_func {
 	# render the image
 	my $tex_data;
 	my $resolution;
-	if ($args{shader} and Dizzy::GLUT::supports("glsl")) {
+	if ($args{shader} and Dizzy::GLUT::supports("glsl")) { # check FBOs
 		$resolution = $args{shader_resolution};
 		$tex_data = render_function_shader(
 			resolution   => $resolution,
