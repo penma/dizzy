@@ -30,7 +30,7 @@ my @textures = (
 		shader => << "		// END SHADER",
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = sin(3.141 / (0.001 + 2 * dist)) / 2 + 0.5;
+				float val = sin(3.141 / (0.001 + 2. * dist)) / 2. + 0.5;
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -83,7 +83,7 @@ my @textures = (
 		},
 		shader => $sf_wrapval . << "		// END SHADER",
 			void main() {
-				float val = wrapval((cos(gl_TexCoord[0].y * 3.141) + sin(gl_TexCoord[0].x * 3.141)) / 2 + 0.5);
+				float val = wrapval((cos(gl_TexCoord[0].y * 3.141) + sin(gl_TexCoord[0].x * 3.141)) / 2. + 0.5);
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -99,9 +99,9 @@ my @textures = (
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
 				float val = cos(
-					  2 * (gl_TexCoord[0].x - 0.5)
+					  2. * (gl_TexCoord[0].x - 0.5)
 					+ asin((gl_TexCoord[0].y - 0.5) / dist)
-				) / 2 + 0.5;
+				) / 2. + 0.5;
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -116,7 +116,7 @@ my @textures = (
 		shader => << "		// END SHADER",
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = 1 - (cos(dist * 3.141) / 2 + 0.5);
+				float val = 1 - (cos(dist * 3.141) / 2. + 0.5);
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -131,7 +131,7 @@ my @textures = (
 		shader => $sf_wrapval . << "		// END SHADER",
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / dist) / 2 + 0.5);
+				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / dist) / 2. + 0.5);
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -184,8 +184,8 @@ my @textures = (
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
 				float val = clamp(
-					  22.35468769 * pow(dist, 6)
-					+ sin(12) * pow(dist, 2) / 5.734
+					  22.35468769 * pow(dist, 6.0)
+					+ sin(12.0) * pow(dist, 2.0) / 5.734
 				, 0.0, 1.0);
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
