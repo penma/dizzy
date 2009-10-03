@@ -141,6 +141,7 @@ sub render_function_shader {
 	glMatrixMode(GL_MODELVIEW);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	glDeleteFramebuffersEXT_p($fbo);
 
 	glViewport(0, 0, $vx, $vy);
 }
