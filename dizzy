@@ -16,6 +16,7 @@ usage: dizzy [options]
      -h num           set window height
      -f               run in fullscreen mode
      -r num           set texture resolution (power of two)
+     -R num           set shader texture resolution
      -s num           set texture display scale
 
    Auto mode:
@@ -84,6 +85,7 @@ Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 
 Dizzy::TextureManager::init(
 	texture_resolution => $options{texture_resolution},
+	shader_resolution  => $options{shader_resolution},
 );
 
 # read textures
