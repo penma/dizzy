@@ -101,8 +101,10 @@ void main() {
 }
 __END_SHADER__
 	glCompileShaderARB($fragment_id);
-	# my $stat = glGetInfoLogARB_p($fragment_id);
-	# print "WARN shader compile $stat\n" if $stat;
+	if (!glGetObjectParameterivARB_p($fragment_id, GL_OBJECT_COMPILE_STATUS_ARB)) {
+		my $stat = glGetInfoLogARB_p($fragment_id);
+		die("Shader compilation failed: $stat - dying");
+	}
 
 	$shader_prog = glCreateProgramObjectARB();
 	glAttachObjectARB($shader_prog, $fragment_id);
