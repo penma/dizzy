@@ -161,7 +161,7 @@ sub handler_render {
 		# (assert we are done if the source and target match, so we don't block
 		# on program start)
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
-			print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
+			# print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
 
 			$func_blend->(
 				$blend_params->{old_gl_texture},

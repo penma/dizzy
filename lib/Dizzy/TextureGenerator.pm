@@ -164,16 +164,22 @@ sub render_from_func {
 	my $tex_data;
 	my $resolution;
 	if ($args{shader} and Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
-		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n";
+		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
+			if (!$main::seen_texgen_renderer_info);
+		$main::seen_texgen_renderer_info = 1;
 		$resolution = $args{shader_resolution};
 		$tex_data = render_function_shader(
 			resolution   => $resolution,
 			shader       => $args{shader},
 		);
 	} else {
-		print "<TextureGenerator> Using the CPU for rendering this texture because ";
-		print "no shader program has been specified\n" if (!$args{shader});
-		print "the hardware doesn't support GLSL or FBOs\n" if ($args{shader});
+		if (!$args{shader}) {
+			print "<TextureGenerator> using cpu rendering because NO SHADER PROGRAM WAS PROVIDED!\n";
+			print "                   ** Consider providing a shader version.\n";
+			print "                   **\n";
+		} else {
+			print "<TextureGenerator> using cpu to render this because of missing hardware support.\n";
+		}
 		$resolution = $args{texture_resolution};
 		$tex_data = render_function_software(
 			resolution   => $resolution,
