@@ -93,6 +93,7 @@ sub render_function_shader {
 	glPushMatrix();
 	glLoadIdentity();
 	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 	glLoadIdentity();
 	glOrtho(-1.0, 1.0, 1.0, -1.0, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
@@ -138,6 +139,8 @@ sub render_function_shader {
 	glDeleteObjectARB($shader_prog);
 	glDeleteObjectARB($fragment_id);
 
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
 	glMatrixMode(GL_TEXTURE);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
