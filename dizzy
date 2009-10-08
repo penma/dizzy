@@ -89,8 +89,11 @@ Dizzy::TextureManager::init(
 );
 
 # read textures
-foreach my $texture (Dizzy::Textures::textures()) {
-	Dizzy::TextureManager::add(%{$texture});
+my @textures = Dizzy::Textures::textures();
+foreach my $tex (0..$#textures) {
+	$| = 1;
+	printf("Rendering texture %d/%d\n", $tex + 1, scalar(@textures));
+	Dizzy::TextureManager::add(%{$textures[$tex]});
 }
 
 Dizzy::TextureSwitcher::init(
