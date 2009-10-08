@@ -15,7 +15,6 @@ sub handler_idle {
 
 	glFlush();
 	glutSwapBuffers();
-	sleep(1 / 50);
 }
 
 sub handler_keyboard {
