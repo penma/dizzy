@@ -154,11 +154,6 @@ sub render_function_shader {
 sub render_from_func {
 	my %args = @_;
 
-	# confirm resolution. GL likes to choke on non-power-of-two textures
-	if (int(log($args{texture_resolution}) / log(2)) != log($args{texture_resolution}) / log(2)) {
-		die("Texture size not a power of two, dying");
-	}
-
 	# save old texture and prepare new
 	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
 	glBindTexture(GL_TEXTURE_2D, $args{target});
