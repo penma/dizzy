@@ -2,6 +2,10 @@ dizzy ? - ?
 
     * use fragment shaders (if available) to make texture blending less
       laggy (esp. with higher texture resolutions)
+    * use fragment shaders (if available) instead of the CPU to render
+      textures, allowing for very fast rendering of high-resolution textures
+    * removed all Perl versions of textures - CPU rendering is now done
+      by automatically converting the GLSL code to Perl and running that
 
 dizzy 0.1.1 - Mon Sep 21 20:56:45 2009 +0200
 
