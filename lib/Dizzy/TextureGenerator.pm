@@ -5,6 +5,7 @@ use warnings;
 
 use OpenGL qw(:all);
 use Dizzy::GLUT;
+use Dizzy::GLSL2Perl;
 
 sub create_texture {
 	# save old texture
@@ -165,23 +166,19 @@ sub render_from_func {
 		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
-		$resolution = $args{shader_resolution};
+
 		$tex_data = render_function_shader(
-			resolution   => $resolution,
+			resolution   => $args{shader_resolution},
 			shader       => $args{shader},
 		);
 	} else {
-		if (!$args{shader}) {
-			print "<TextureGenerator> using cpu rendering because NO SHADER PROGRAM WAS PROVIDED!\n";
-			print "                   ** Consider providing a shader version.\n";
-			print "                   **\n";
-		} else {
-			print "<TextureGenerator> using cpu to render this because of missing hardware support.\n";
-		}
-		$resolution = $args{texture_resolution};
+		print "<TextureGenerator> using cpu to render this because of missing hardware support.\n"
+			if (!$main::seen_texgen_renderer_info);
+		$main::seen_texgen_renderer_info = 1;
+
 		$tex_data = render_function_software(
-			resolution   => $resolution,
-			function     => $args{function},
+			resolution   => $args{texture_resolution},
+			function     => Dizzy::GLSL2Perl::glsl2perl($args{shader}),
 		);
 	}
 

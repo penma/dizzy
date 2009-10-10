@@ -100,7 +100,7 @@ my @textures = (
 				float dist = length(gl_TexCoord[0].xy - 0.5);
 				float val = cos(
 					  2. * (gl_TexCoord[0].x - 0.5)
-					+ asin((gl_TexCoord[0].y - 0.5) / dist)
+					+ asin((gl_TexCoord[0].y - 0.5) / (dist + 0.01))
 				) / 2. + 0.5;
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
@@ -131,7 +131,7 @@ my @textures = (
 		shader => $sf_wrapval . << "		// END SHADER",
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / dist) / 2. + 0.5);
+				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / (dist + 0.001)) / 2. + 0.5);
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
@@ -183,10 +183,9 @@ my @textures = (
 		shader => << "		// END SHADER",
 			void main() {
 				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = clamp(
+				float val =
 					  22.35468769 * pow(dist, 6.0)
-					+ sin(12.0) * pow(dist, 2.0) / 5.734
-				, 0.0, 1.0);
+					+ sin(12.0) * pow(dist, 2.0) / 5.734;
 				gl_FragColor = vec4(val, val, val, 1.0);
 			}
 		// END SHADER
