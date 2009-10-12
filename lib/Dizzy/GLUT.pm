@@ -7,6 +7,47 @@ use OpenGL qw(:all);
 use Time::HiRes qw(sleep time);
 
 use Dizzy::Handlers;
+use Dizzy::GLText;
+
+my ($fps_starttime, $fps_frames, $fps_text, $fps_fps) = (time(), 0, "", 0);
+
+sub _fps_reset {
+	$fps_starttime = time();
+	$fps_frames = 0;
+}
+
+sub _fps_update_value {
+	$fps_fps = $fps_frames / (time() - $fps_starttime);
+}
+
+sub _fps_update_text {
+	$fps_text = sprintf("%5.1f FPS (%5.3fs avg)",
+		$fps_fps, time() - $fps_starttime);
+}
+
+sub _fps_display {
+	my $color;
+	if ($fps_fps > 25) {
+		$color = [0, 1, 0];
+	} elsif ($fps_fps > 15) {
+		$color = [1 - ($fps_fps - 15) / 10, 1, 0];
+	} elsif ($fps_fps > 5) {
+		$color = [1, ($fps_fps - 5) / 10, 0];
+	} else {
+		$color = [1, 0, 0];
+	}
+	Dizzy::GLText::render_text(10, 10, $color, "test", $fps_text);
+}
+
+sub _fps_tick {
+	$fps_frames++;
+	_fps_display();
+	if (time() - $fps_starttime > 0.25) {
+		_fps_update_value();
+		_fps_update_text();
+		_fps_reset();
+	}
+}
 
 # default handlers, calling registered handlers and doing other stuff
 
@@ -14,6 +55,7 @@ sub handler_idle {
 	handler_render();
 
 	glFlush();
+	_fps_tick();
 	glutSwapBuffers();
 }
 
