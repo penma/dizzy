@@ -63,15 +63,14 @@ sub render_function_shader {
 	my %args = @_;
 
 	# allocate texture memory
-	glTexImage2D_c(
+	glTexImage2D_s(
 		GL_TEXTURE_2D,
 		0,
-		GL_LUMINANCE,
+		GL_RGBA8,
 		$args{resolution}, $args{resolution},
 		0,
-		GL_LUMINANCE,
-		GL_FLOAT,
-		0
+		GL_LUMINANCE, GL_FLOAT,
+		pack("f", 0) x ($args{resolution} ** 2)
 	);
 
 	# create and use a framebuffer object
