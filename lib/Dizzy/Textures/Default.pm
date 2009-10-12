@@ -179,14 +179,15 @@ void main() {
 	float vy = gl_TexCoord[0].y - 0.5;
 
 	float vr = length(vec2(vx, vy));
-	float vt = atan(vx, vy);
+	float vt = atan(vy, vx);
 
-	vt = vt + vr * 16;
+	vt = vt + vr * 16.;
 	vx = vr * cos(vt) + 0.5;
 	vy = vr * sin(vt) + 0.5;
 
-	float angle = atan(vx, vy);
-	float val = (sqrt(abs(sqrt(abs(vy - abs(sin(vx * 5 + 1.4))) * 2) - 1)) + (vr + angle / 4)) * (1 - vr * 2);
+	float angle = atan(vy, vx);
+	float val = (sqrt(abs(sqrt(abs(vy - abs(sin(vx * 5. + 1.4))) * 2.) - 1.))) * (1. - vr * 2.);
+
 	gl_FragColor = vec4(vec3(val), 1.0);
 }
 		// END SHADER
