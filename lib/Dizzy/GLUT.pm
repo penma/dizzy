@@ -92,7 +92,7 @@ sub init {
 	$args{fullscreen} ||= 0;
 
 	glutInit();
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	if ($args{fullscreen}) {
 		foreach my $mode (
 			glutGet(GLUT_SCREEN_WIDTH) . "x" . glutGet(GLUT_SCREEN_HEIGHT),

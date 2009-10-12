@@ -85,7 +85,7 @@ sub render_function_shader {
 	);
 
 	# redefine the viewport (temporarily)
-	my (undef, undef, $vx, $vy) = glGetIntegerv_p(GL_VIEWPORT);
+	glPushAttrib(GL_VIEWPORT_BIT);
 	glViewport(0, 0, $args{resolution}, $args{resolution});
 
 	# prepare projection
@@ -148,7 +148,7 @@ sub render_function_shader {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	glDeleteFramebuffersEXT_p($fbo);
 
-	glViewport(0, 0, $vx, $vy);
+	glPopAttrib();
 }
 
 sub render_from_func {
