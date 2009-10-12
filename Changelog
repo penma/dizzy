@@ -6,6 +6,7 @@ dizzy ? - ?
       textures, allowing for very fast rendering of high-resolution textures
     * removed all Perl versions of textures - CPU rendering is now done
       by automatically converting the GLSL code to Perl and running that
+    * two new textures
 
 dizzy 0.1.1 - Mon Sep 21 20:56:45 2009 +0200
 
