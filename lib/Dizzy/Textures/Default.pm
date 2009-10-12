@@ -125,6 +125,46 @@ my @textures = (
 			}
 		// END SHADER
 	},
+	{
+		name => "Swirl",
+		shader => << "		// END SHADER",
+void main() {
+	float vx = gl_TexCoord[0].x - 0.5;
+	float vy = gl_TexCoord[0].y - 0.5;
+
+	float vr = length(vec2(vx, vy));
+	float vt = atan(vx, vy);
+
+	vt = vt + vr * 16;
+	vx = vr * cos(vt) + 0.5;
+	vy = vr * sin(vt) + 0.5;
+
+	float angle = atan(vx, vy);
+	float val = (sqrt(abs(sqrt(abs(vy - abs(sin(vx * 5 + 1.4))) * 2) - 1)) + (vr + angle / 4)) * (1 - vr * 2);
+	gl_FragColor = vec4(vec3(val), 1.0);
+}
+		// END SHADER
+	},
+	{
+		name => "Spaceballs",
+		shader => << "		// END SHADER",
+void main() {
+	float vx = gl_TexCoord[0].x - 0.5;
+	float vy = gl_TexCoord[0].y - 0.5;
+
+	float vr = length(vec2(vx, vy));
+	float vt = atan(vx, 1);
+
+	vt = vt + vr * 16;
+	vx = vr * cos(vt) + 0.5;
+	vy = vr * sin(vt) + 0.5;
+
+	float angle = atan(vx, 1);
+	float val = (sqrt(abs(sqrt(abs(vy - abs(sin(vx * 5 + 1.4))) * 2) - 1)) + (vr + angle / 4)) * (1 - vr * 2);
+	gl_FragColor = vec4(vec3(val), 1.0);
+}
+		// END SHADER
+	},
 );
 
 sub textures {
