@@ -36,6 +36,7 @@ sub _glsl2perl {
 			vec3 => 'vecx::vec3(_!_)',
 			vec2 => 'vecx::vec2(_!_)',
 			pow => 'sub{$_[0]**$_[1]}->(_!_)',
+			atan => 'sub{atan2($_[1],$_[0])}->(_!_)',
 		);
 		$_ = $_[0];
 		my ($fn, $args);
