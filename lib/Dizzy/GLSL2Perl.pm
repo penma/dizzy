@@ -15,7 +15,7 @@ sub _glsl2perl {
 
 	# transform variables
 	# assume variable when it is not followed by () for function calls.
-	s/\b([a-zA-Z_]\w+)\b(?!\()/\$$1/g;
+	s/\b([a-zA-Z_]\w*)\b(?!\()/\$$1/g;
 
 	# replace simple types with "my"
 	# this won't work when there's an actual variable "float" in the program,
