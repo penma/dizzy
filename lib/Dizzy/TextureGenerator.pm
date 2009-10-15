@@ -7,6 +7,8 @@ use OpenGL qw(:all);
 use Dizzy::GLUT;
 use Dizzy::Perl2GLSL;
 
+use 5.010;
+
 sub create_texture {
 	# save old texture
 	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
@@ -169,9 +171,11 @@ sub render_from_func {
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
 
+		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
+
 		$tex_data = render_function_shader(
 			resolution   => $args{shader_resolution},
-			shader       => Dizzy::Perl2GLSL::perl2glsl($args{function}),
+			shader       => $shader,
 		);
 	} else {
 		print "<TextureGenerator> using cpu to render this because of missing hardware support.\n"
