@@ -75,6 +75,22 @@ sub opt_check_dist_assignment {
 	return 1;
 }
 
+# check for inline functions to be expanded
+sub opt_check_inline_builtin {
+	my ($op, $symtab) = @_;
+	my @op = @{$op};
+
+	if ($op[$#op]->[1] eq "cosec") {
+		return '(1. / sin(@))';
+	} elsif ($op[$#op]->[1] =~ /^(asin|wrapval)$/) {
+		# ^ todo: remove wrapval from here and find a better way to include it
+		#         only with the shaders that need it
+		return "$1(\@)";
+	} else {
+		return undef;
+	}
+}
+
 sub make_code {
 	my ($op, $symtab) = @_;
 
@@ -94,10 +110,16 @@ sub make_code {
 		return join(";\n", map { make_code($_, $symtab) } @op[1..$#op]) . ";";
 	} elsif ($op[0] eq "return") {
 		# return a value: assign to the fragment color and return
-		return "gl_FragColor = vec4(vec3(" . make_code($op[1], $symtab) . "), 1.0)";
+		return "float retval = " . make_code($op[1], $symtab) . "; gl_FragColor = vec4(vec3(retval), 1.0)";
 	} elsif ($op[0] eq "entersub") {
 		# external subroutine call: last child is the sub, rest is arguments
-		return $op[$#op]->[1] . "(" . join(", ", map { make_code($_, $symtab) } @op[1..$#op-1]) . ")";
+		my $code = opt_check_inline_builtin($op, $symtab);
+		if (defined($code)) {
+			$code =~ s/\@/join(", ", map { make_code($_, $symtab) } @op[1..$#op-1])/e;
+			return $code;
+		} else {
+			return "call:" . $op[$#op]->[1] . "(" . join(", ", map { make_code($_, $symtab) } @op[1..$#op-1]) . ")";
+		}
 	} elsif ($op[0] eq "sassign") {
 		# scalar assignment
 		my $allocate = defined($symtab->{$op[2]}) ? "" : "float ";
@@ -140,7 +162,7 @@ sub perl2glsl {
 
 	# walk the optree, generating code out of it
 	my $symtab = {};
-	return "float wrapval(float val){return(val<0.0?1.0:(val>1.0?0.0:val));}float cosec(float val){return 1./sin(val);}" .
+	return "float wrapval(float val){return(val<0.0?1.0:(val>1.0?0.0:val));}" .
 	"void main() { " . make_code($tree, $symtab) . "}\n";
 }
 
