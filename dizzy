@@ -80,8 +80,6 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
-$| = 1;
-
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
 Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 
