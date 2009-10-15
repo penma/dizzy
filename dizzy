@@ -80,6 +80,8 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
+$| = 1;
+
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
 Dizzy::Render::init_view(texture_scale => $options{texture_scale});
 
@@ -91,7 +93,6 @@ Dizzy::TextureManager::init(
 # read textures
 my @textures = Dizzy::Textures::textures();
 foreach my $tex (0..$#textures) {
-	$| = 1;
 	printf("Rendering texture %d/%d\n", $tex + 1, scalar(@textures));
 	Dizzy::TextureManager::add(%{$textures[$tex]});
 }
