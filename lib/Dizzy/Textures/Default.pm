@@ -130,6 +130,14 @@ my @textures = (
 			return 22.35468769 * $dist**6 + sin(12) * $dist**2 / 5.734;
 		},
 	},
+	{
+		name => "Eggs",
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return tan($dist);
+		},
+	},
 );
 
 =begin comment
