@@ -137,7 +137,7 @@ sub update_capabilities {
 	# work around mesa bug (<https://bugs.freedesktop.org/show_bug.cgi?id=24553>)
 	my $gl_vendor   = glGetString(GL_VENDOR);
 	my $gl_renderer = glGetString(GL_RENDERER);
-	if ($capabilities{glsl} and ($gl_vendor . $gl_renderer) =~ /\bmesa\b/i) {
+	if ($capabilities{glsl} and ("$gl_vendor $gl_renderer") =~ /\bmesa\b/i) {
 		print STDERR "@@@ [Graphics] MESA library detected, disabling shaders.\n";
 		print STDERR "    (why? -> <https://bugs.freedesktop.org/show_bug.cgi?id=24553>)\n";
 		$capabilities{glsl} = 0;
