@@ -34,7 +34,7 @@ sub walk_optree {
 		return ${$sv->object_2svref};
 	} elsif ($optype eq "PADOP") {
 		my $pad = (($cv->PADLIST->ARRAY)[1]->ARRAY)[$op->padix];
-		return ["glob", $pad->NAME];
+		return ["glob", $pad->NAME, $pad];
 	} elsif ($optype eq "OP") {
 		if ($op->name eq "padsv") {
 			return "var" . $op->targ;
@@ -130,7 +130,7 @@ sub make_code {
 			return $code;
 		} else {
 			# register the subroutine name and the associated code
-			$symtab->{$op[$#op]->[1]} = "subroutine code:" . perl2glsl((($op[$#op]->[2]->PADLIST->ARRAY)[1]->ARRAY)[$op[$#op]->[3]->padix]->CV, $op[$#op]->[1]);
+			$symtab->{$op[$#op]->[1]} = "subroutine code:" . perl2glsl($op[$#op]->[2]->CV, $op[$#op]->[1]);
 			return $op[$#op]->[1] . "(" . join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op-1]) . ")";
 		}
 	} elsif ($op[0] eq "sassign") {
