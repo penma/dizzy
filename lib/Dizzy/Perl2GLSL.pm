@@ -82,7 +82,7 @@ sub opt_check_inline_builtin {
 
 	if ($op[$#op]->[1] eq "cosec") {
 		return '(1. / sin(@))';
-	} elsif ($op[$#op]->[1] =~ /^(asin|wrapval)$/) {
+	} elsif ($op[$#op]->[1] =~ /^(asin|tan|wrapval)$/) {
 		# ^ todo: remove wrapval from here and find a better way to include it
 		#         only with the shaders that need it
 		return "$1(\@)";
