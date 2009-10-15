@@ -142,6 +142,9 @@ sub update_capabilities {
 		print STDERR "    (why? -> <https://bugs.freedesktop.org/show_bug.cgi?id=24553>)\n";
 		$capabilities{glsl} = 0;
 	}
+
+	# override the detected values, if forced to do so by user
+	$capabilities{glsl} = $ENV{FORCE_CAP_GLSL} if (exists($ENV{FORCE_CAP_GLSL}));
 }
 
 sub supports {
