@@ -120,22 +120,33 @@ sub init {
 	glutDisplayFunc   (\&handler_render);
 	glutKeyboardFunc  (\&handler_keyboard);
 	glutSpecialFunc   (\&handler_keyboardspecial);
+
+	update_capabilities();
 }
 
 sub run {
 	glutMainLoop();
 }
 
-# check for capabilities
+# check for capabilities and cache the results
+my %capabilities;
+sub update_capabilities {
+	$capabilities{glsl} = !glpCheckExtension("GL_ARB_shading_language_100");
+	$capabilities{fbo}  = !glpCheckExtension("GL_EXT_framebuffer_object");
+
+	# work around mesa bug (<https://bugs.freedesktop.org/show_bug.cgi?id=24553>)
+	my $gl_vendor   = glGetString(GL_VENDOR);
+	my $gl_renderer = glGetString(GL_RENDERER);
+	if ($capabilities{glsl} and ($gl_vendor . $gl_renderer) =~ /\bmesa\b/i) {
+		print STDERR "@@@ [Graphics] MESA library detected, disabling shaders.\n";
+		print STDERR "    (why? -> <https://bugs.freedesktop.org/show_bug.cgi?id=24553>)\n";
+		$capabilities{glsl} = 0;
+	}
+}
+
 sub supports {
 	my $feature = shift;
-	if ($feature eq "glsl") {
-		return !glpCheckExtension("GL_ARB_shading_language_100");
-	} elsif ($feature eq "fbo") {
-		return !glpCheckExtension("GL_EXT_framebuffer_object");
-	} else {
-		return undef;
-	}
+	return $capabilities{$feature};
 }
 
 1;
