@@ -5,172 +5,135 @@ use warnings;
 
 use Math::Trig;
 
-my $sf_wrapval = << "// END FUNCTION";
-	float wrapval(float val) {
-		return (val < 0.0 ? 1.0 : (
-		        val > 1.0 ? 0.0 : val)
-		);
-	}
-// END FUNCTION
+sub wrapval {
+	return ($_[0] < 0.0 ? 1.0 : (
+	        $_[0] > 1.0 ? 0.0 : $_[0])
+	);
+}
 
 my @textures = (
 	{
 		name => "Ornament",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = sin(3.141 / (0.001 + 2. * dist)) / 2. + 0.5;
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return sin(pi / (0.0001 + 2 * $dist)) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Spots",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = cos(3.141 * dist) / 2. + 0.5;
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cos($dist * pi) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Aurora",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = cos((dist * 3.141) + ((gl_TexCoord[0].y - 0.5) / (dist + 0.0001))) / 2. + 0.5;
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cos($dist * pi + $y / ($dist + 0.0001)) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Flowers",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = cos((dist * 3.141) + (0.2 * sin(8. * asin(
-					(gl_TexCoord[0].y - 0.5) / (dist + 0.0001)
-					)))) / 2. + 0.5;
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cos($dist * pi + sin(asin($y / ($dist + 0.00001)) * 8) * 0.2) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Blurred Circles",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = sin(3.141 * dist * 0.5) / 2. + 0.5;
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return sin($dist * pi / 2) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Blurred Anticircles",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = cos((dist * 3.141) + (0.2 * sin(2. * asin(
-					(gl_TexCoord[0].y - 0.5) / (dist + 0.0001)
-				)))) / 2. + 0.5;
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cos($dist * pi + sin(asin($y / ($dist + 0.00001)) * 2) * 0.2) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Waves",
-		shader => $sf_wrapval . << "		// END SHADER",
-			void main() {
-				float val = wrapval((cos(gl_TexCoord[0].y * 3.141) + sin(gl_TexCoord[0].x * 3.141)) / 2. + 0.5);
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			return wrapval((cos($y * pi) + sin($x * pi)) / 2 + 0.5);
+		},
 	},
 	{
 		name => "Crystal",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = cos(
-					  2. * (gl_TexCoord[0].x - 0.5)
-					+ asin((gl_TexCoord[0].y - 0.5) / (dist + 0.01))
-				) / 2. + 0.5;
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cos(($x * 2) + asin($y / ($dist + 0.0001))) / 2 + 0.5;
+		},
 	},
 	{
 		name => "Black Circles",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = 1 - (cos(dist * 3.141) / 2. + 0.5);
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return 1.0 - (cos($dist * pi) / 2 + 0.5);
+		},
 	},
 	{
 		name => "Hexagon",
-		shader => $sf_wrapval . << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = wrapval(asin((gl_TexCoord[0].y - 0.5) / (dist + 0.001)) / 2. + 0.5);
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return wrapval(asin($y / ($dist + 0.0001)) / 2 + 0.5);
+		},
 	},
 	{
 		name => "Boxes",
-		shader => << "		// END SHADER",
-			void main() {
-				float val = gl_TexCoord[0].x * gl_TexCoord[0].y;
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			return ($x + 0.5) * ($y + 0.5);
+		},
 	},
 	{
 		name => "Bubbles",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = 1. / (sin(dist + 0.1) * 3.);
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cosec($dist + 0.1) / 3;
+		},
 	},
 	{
 		name => "Winter Dream",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = 1. / (sin(3. * dist + 0.1) * 3.);
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return cosec($dist * 3 + 0.1) / 3;
+		},
 	},
 	{
 		name => "Pills",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val = -log(dist + 0.01);
-				gl_FragColor = vec4(vec3(val), 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return -log($dist + 0.01);
+		},
 	},
 	{
 		name => "Stars",
-		shader => << "		// END SHADER",
-			void main() {
-				float dist = length(gl_TexCoord[0].xy - 0.5);
-				float val =
-					  22.35468769 * pow(dist, 6.0)
-					+ sin(12.0) * pow(dist, 2.0) / 5.734;
-				gl_FragColor = vec4(val, val, val, 1.0);
-			}
-		// END SHADER
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return 22.35468769 * $dist**6 + sin(12) * $dist**2 / 5.734;
+		},
 	},
+);
+
+=begin comment
+
 	{
 		name => "Swirl",
 		shader => << "		// END SHADER",
@@ -212,7 +175,10 @@ void main() {
 }
 		// END SHADER
 	},
-);
+
+=end comment
+
+=cut
 
 sub textures {
 	return @textures;

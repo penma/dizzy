@@ -5,7 +5,7 @@ use warnings;
 
 use OpenGL qw(:all);
 use Dizzy::GLUT;
-use Dizzy::GLSL2Perl;
+use Dizzy::Perl2GLSL;
 
 sub create_texture {
 	# save old texture
@@ -106,7 +106,10 @@ sub render_function_shader {
 	glCompileShaderARB($fragment_id);
 	if (!glGetObjectParameterivARB_p($fragment_id, GL_OBJECT_COMPILE_STATUS_ARB)) {
 		my $stat = glGetInfoLogARB_p($fragment_id);
-		die("Shader compilation failed: $stat - dying");
+		print STDERR "Shader compilation failed: $stat\n";
+		print STDERR "Shader source:\n";
+		print STDERR $args{shader} . "\n";
+		die();
 	}
 
 	my $shader_prog = glCreateProgramObjectARB();
@@ -161,14 +164,14 @@ sub render_from_func {
 	# render the image
 	my $tex_data;
 	my $resolution;
-	if ($args{shader} and Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
+	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
 		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
 
 		$tex_data = render_function_shader(
 			resolution   => $args{shader_resolution},
-			shader       => $args{shader},
+			shader       => Dizzy::Perl2GLSL::perl2glsl($args{function}),
 		);
 	} else {
 		print "<TextureGenerator> using cpu to render this because of missing hardware support.\n"
@@ -177,7 +180,7 @@ sub render_from_func {
 
 		$tex_data = render_function_software(
 			resolution   => $args{texture_resolution},
-			function     => Dizzy::GLSL2Perl::glsl2perl($args{shader}),
+			function     => $args{function},
 		);
 	}
 
