@@ -41,7 +41,7 @@ my %options = (
 	fullscreen             => 0,
 	texture_resolution     => 64,
 	shader_resolution      => 1024,
-	texture_scale          => 50,
+	zoom                   => 100,
 
 	automode               => 0,
 
@@ -57,7 +57,8 @@ GetOptions(\%options,
 	'fullscreen|f+',
 	'texture_resolution|texture-resolution|r=i',
 	'shader_resolution|shader-resolution|R=i',
-	'texture_scale|texture-scale|s=f',
+	'texture_scale|texture-scale|s=f', # deprecated
+	'zoom|z=f',
 
 	'automode|a=f',
 
@@ -80,8 +81,13 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
+if ($options{texture_scale}) {
+	print "*** [dizzy] the --texture-scale option is deprecated\n";
+	print "    use the --zoom/-z option, please\n";
+	$options{zoom} = 5000 / $options{texture_scale};
+}
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
-Dizzy::Render::init_view(texture_scale => $options{texture_scale});
+Dizzy::Render::init_view(texture_scale => 5000 / $options{zoom});
 
 Dizzy::TextureManager::init(
 	texture_resolution => $options{texture_resolution},
@@ -98,7 +104,7 @@ foreach my $tex (0..$#textures) {
 Dizzy::TextureSwitcher::init(
 	$options{texswitcher},
 	%{$options{texswitcher_options}},
-	texture_scale => $options{texture_scale}
+	texture_scale => 5000 / $options{zoom}
 );
 
 # text rendering
@@ -277,13 +283,18 @@ This option can be given multiple times to set multiple options.
 Changes the texture resolution. I<resolution> must be a power of two. The default
 value is 64.
 
-=item B<-s> I<scale>
+=item B<-R> I<resolution>
 
-=item B<--texture-scale> I<scale>
+=item B<--shader-resolution> I<resolution>
 
-Changes the texture scale factor, which is 50 by default, to I<scale>. Smaller
-numbers result in larger boxes drawn on-screen, larger numbers draw smaller
-boxes.
+Changes the resolution used when rendering using shaders. I<resolution> must be
+a power of two. The default is 1024.
+
+=item B<-z> I<zoom>
+
+=item B<--zoom> I<zoom>
+
+Zooms the textures. The default value is 100.
 
 =item B<--debug-show-planes>
 
