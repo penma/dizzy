@@ -13,7 +13,7 @@ sub walk_optree {
 	$optype =~ s/^B:://;
 	my $opname = $op->name;
 
-	if ($optype eq "UNOP" or $optype eq "BINOP" or $optype eq "LISTOP") {
+	if ($optype eq "UNOP" or $optype eq "BINOP" or $optype eq "LISTOP" or $optype eq "LOGOP") {
 		my @list = $op->name;
 
 		my $child = $op->first;
@@ -38,7 +38,7 @@ sub walk_optree {
 	} elsif ($optype eq "OP") {
 		if ($op->name eq "padsv") {
 			return "var" . $op->targ;
-		} elsif ($op->name eq "pushmark") {
+		} elsif ($op->name eq "pushmark" or $op->name eq "null") {
 			return ();
 		} else {
 			return "# op description " . $op->desc;
@@ -82,9 +82,7 @@ sub opt_check_inline_builtin {
 
 	if ($op[$#op]->[1] eq "cosec") {
 		return '(1. / sin(@))';
-	} elsif ($op[$#op]->[1] =~ /^(asin|tan|wrapval)$/) {
-		# ^ todo: remove wrapval from here and find a better way to include it
-		#         only with the shaders that need it
+	} elsif ($op[$#op]->[1] =~ /^(asin|tan)$/) {
 		return "$1(\@)";
 	} else {
 		return undef;
@@ -92,7 +90,8 @@ sub opt_check_inline_builtin {
 }
 
 sub make_code {
-	my ($op, $symtab) = @_;
+	my ($op, $symtab, $in_sub) = @_;
+	$in_sub ||= 0;
 
 	# not a ref? then it's a scalar
 	if (ref($op) eq "") {
@@ -107,18 +106,32 @@ sub make_code {
 	my @op = @{$op};
 	if ($op[0] eq "lineseq") {
 		# all child expressions are statements
-		return join(";\n", map { make_code($_, $symtab) } @op[1..$#op]) . ";";
+		return join(";\n", map { make_code($_, $symtab, $in_sub) } @op[1..$#op]) . ";";
+	} elsif ($op[0] eq "cond_expr") {
+		# conditional expression
+		return "(" . make_code($op[1], $symtab, $in_sub) . " ? " . make_code($op[2], $symtab, $in_sub) . " : " . make_code($op[3], $symtab, $in_sub) . ")";
+	} elsif ($op[0] eq "glob") {
+		return "GLOB?!";
 	} elsif ($op[0] eq "return") {
-		# return a value: assign to the fragment color and return
-		return "float retval = " . make_code($op[1], $symtab) . "; gl_FragColor = vec4(vec3(retval), 1.0)";
+		# return a value - behaviour depends on if we're in main() or not
+		if ($in_sub) {
+			# just return the value in question
+			return "return " . make_code($op[1], $symtab, $in_sub);
+		} else {
+			# assign to the fragment color and return
+			return "float retval = " . make_code($op[1], $symtab, $in_sub) . "; gl_FragColor = vec4(vec3(retval), 1.0)";
+		}
 	} elsif ($op[0] eq "entersub") {
 		# external subroutine call: last child is the sub, rest is arguments
 		my $code = opt_check_inline_builtin($op, $symtab);
 		if (defined($code)) {
-			$code =~ s/\@/join(", ", map { make_code($_, $symtab) } @op[1..$#op-1])/e;
+			# substitute the inline code and return
+			$code =~ s/\@/join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op-1])/e;
 			return $code;
 		} else {
-			return "call:" . $op[$#op]->[1] . "(" . join(", ", map { make_code($_, $symtab) } @op[1..$#op-1]) . ")";
+			# register the subroutine name and the associated code
+			$symtab->{$op[$#op]->[1]} = "subroutine code:" . perl2glsl((($op[$#op]->[2]->PADLIST->ARRAY)[1]->ARRAY)[$op[$#op]->[3]->padix]->CV, $op[$#op]->[1]);
+			return $op[$#op]->[1] . "(" . join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op-1]) . ")";
 		}
 	} elsif ($op[0] eq "sassign") {
 		# scalar assignment
@@ -127,7 +140,7 @@ sub make_code {
 		if (opt_check_dist_assignment($op, $symtab)) {
 			return "$allocate$op[2] = length(gl_TexCoord[0].xy - 0.5)";
 		} else {
-			return "$allocate$op[2] = " . make_code($op[1], $symtab);
+			return "$allocate$op[2] = " . make_code($op[1], $symtab, $in_sub);
 		}
 	} elsif ($op[0] eq "aassign") {
 		# list assignment
@@ -135,35 +148,61 @@ sub make_code {
 		if ($op[1]->[0] ne "rv2av" or ref($op[1]->[1]) ne "ARRAY" or $op[1]->[1]->[0] ne "glob" or $op[1]->[1]->[1] ne "_") {
 			return "ERROR";
 		}
-		$symtab->{$op[2]} = "coord_x";
-		$symtab->{$op[3]} = "coord_y";
-		return "float $op[2] = gl_TexCoord[0].x - 0.5; float $op[3] = gl_TexCoord[0].y - 0.5";
+		if ($in_sub) {
+			foreach (2..$#op) {
+				$symtab->{$op[$_]} = "argument_" . ($_ - 2);
+			}
+			return "1";
+		} else {
+			$symtab->{$op[2]} = "coord_x";
+			$symtab->{$op[3]} = "coord_y";
+			return "float $op[2] = gl_TexCoord[0].x - 0.5; float $op[3] = gl_TexCoord[0].y - 0.5";
+		}
 
-	} elsif ($op[0] =~ /^(add|subtract|multiply|divide)$/) {
-		my $operator = { add => "+", subtract => "-", multiply => "*", divide => "/" }->{$op[0]};
-		return "(" . make_code($op[1], $symtab) . " $operator " . make_code($op[2], $symtab) . ")";
+	} elsif ($op[0] =~ /^(add|subtract|multiply|divide|lt|gt)$/) {
+		my $operator = {
+			add => "+", subtract => "-", multiply => "*", divide => "/",
+			"lt" => "<", "gt" => ">",
+		}->{$op[0]};
+		return "(" . make_code($op[1], $symtab, $in_sub) . " $operator " . make_code($op[2], $symtab, $in_sub) . ")";
 	} elsif ($op[0] eq "negate") {
-		return "-(" . make_code($op[1], $symtab) . ")";
+		return "-(" . make_code($op[1], $symtab, $in_sub) . ")";
 
 	} elsif ($op[0] =~ /^(sqrt|sin|cos|pow|log)$/) {
 		# builtin functions
-		return "$op[0](" . join(", ", map { make_code($_, $symtab) } @op[1..$#op]) . ")";
+		return "$op[0](" . join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op]) . ")";
 	} else {
 		return "UNKNOWN_$op[0]_OP";
 	}
 }
 
 sub perl2glsl {
-	my ($coderef) = @_;
+	my ($coderef, $in_sub) = @_;
+	$in_sub ||= 0;
 
-	# generate an optree suitable for further processing
-	my $cv = B::svref_2object($coderef);
+	# generate an optree suitable for further processing - if needed
+	my $cv;
+	if (ref($coderef) ne "B::CV") {
+		$cv = B::svref_2object($coderef);
+	} else {
+		$cv = $coderef;
+	}
 	my $tree = walk_optree($cv->ROOT, $cv);
 
 	# walk the optree, generating code out of it
 	my $symtab = {};
-	return "float wrapval(float val){return(val<0.0?1.0:(val>1.0?0.0:val));}" .
-	"void main() { " . make_code($tree, $symtab) . "}\n";
+	my $code = make_code($tree, $symtab, $in_sub);
+
+	# get any subroutine definitions out and prepend them to the shader code
+	my $subdefs = join("\n", map { /^subroutine code:(.*)$/s } grep { /^subroutine code:/ } values(%{$symtab}));
+
+	# now if we've been generating code for a subroutine, generate the parameter list
+	if ($in_sub) {
+		my @params = sort { $symtab->{$a} cmp $symtab->{$b} } grep { $symtab->{$_} =~ /^argument_/ } keys(%{$symtab});
+		return "float $in_sub(float " . join(", float ", @params) . ") { $code }\n";
+	} else {
+		return $subdefs . "void main() { $code }\n";
+	}
 }
 
 1;

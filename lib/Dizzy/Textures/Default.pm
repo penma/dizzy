@@ -6,8 +6,9 @@ use warnings;
 use Math::Trig;
 
 sub wrapval {
-	return ($_[0] < 0.0 ? 1.0 : (
-	        $_[0] > 1.0 ? 0.0 : $_[0])
+	my ($val) = @_;
+	return ($val < 0.0 ? 1.0 : (
+	        $val > 1.0 ? 0.0 : $val)
 	);
 }
 
