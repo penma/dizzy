@@ -92,7 +92,7 @@ Dizzy::TextureManager::init(
 my @textures = Dizzy::Textures::textures();
 foreach my $tex (0..$#textures) {
 	$| = 1;
-	printf("Rendering texture %d/%d %d bytes\n", $tex + 1, scalar(@textures), length($textures[$tex]->{shader}));
+	printf("Rendering texture %d/%d\n", $tex + 1, scalar(@textures));
 	Dizzy::TextureManager::add(%{$textures[$tex]});
 }
 
