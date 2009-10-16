@@ -17,7 +17,7 @@ usage: dizzy [options]
      -f               run in fullscreen mode
      -r num           set texture resolution (power of two)
      -R num           set shader texture resolution
-     -s num           set texture display scale
+     -z num           set texture zoom
 
    Auto mode:
      -a num           set a new texture every num seconds
