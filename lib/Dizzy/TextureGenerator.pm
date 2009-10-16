@@ -164,8 +164,6 @@ sub render_from_func {
 	glBindTexture(GL_TEXTURE_2D, $args{target});
 
 	# render the image
-	my $tex_data;
-	my $resolution;
 	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
 		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
 			if (!$main::seen_texgen_renderer_info);
@@ -173,7 +171,7 @@ sub render_from_func {
 
 		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
 
-		$tex_data = render_function_shader(
+		render_function_shader(
 			resolution   => $args{shader_resolution},
 			shader       => $shader,
 		);
@@ -182,7 +180,7 @@ sub render_from_func {
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
 
-		$tex_data = render_function_software(
+		render_function_software(
 			resolution   => $args{texture_resolution},
 			function     => $args{function},
 		);
