@@ -139,6 +139,14 @@ my @textures = (
 			return tan($dist);
 		},
 	},
+	{
+		name => "Holegrid",
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			return abs($dist - 0.5) < 0.1;
+		},
+	},
 );
 
 =begin comment
