@@ -164,7 +164,25 @@ sub render_from_func {
 	glBindTexture(GL_TEXTURE_2D, $args{target});
 
 	# render the image
-	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
+	if (-e "texture_cache/$args{name}-$args{texture_resolution}") {
+		my $name = "texture_cache/$args{name}-$args{texture_resolution}";
+		my $res = sqrt((-s $name) / length(pack("f", 0)));
+		print "<TextureGenerator> Retrieving texture from cache (${res}x${res})\n"
+			if (!$main::seen_texgen_renderer_info);
+		$main::seen_texgen_renderer_info = 1;
+		open(my $cf, "<", $name);
+		glTexImage2D_s(
+			GL_TEXTURE_2D,
+			0,
+			GL_LUMINANCE,
+			$res, $res,
+			0,
+			GL_LUMINANCE,
+			GL_FLOAT,
+			join("", <$cf>)
+		);
+		close($cf);
+	} elsif (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
 		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
@@ -196,6 +214,7 @@ sub new_from_func {
 	# allocate a new texture and render into it.
 	my $new_texture = create_texture();
 	render_from_func(
+		name               => $args{name},
 		function           => $args{function},
 		shader             => $args{shader},
 		texture_resolution => $args{texture_resolution},

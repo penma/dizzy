@@ -18,6 +18,7 @@ sub add {
 	my %args = @_;
 	push(@textures, \%args);
 	$textures[$#textures]->{gl_texture} = Dizzy::TextureGenerator::new_from_func(
+		name                => $textures[$#textures]->{name},
 		function            => $textures[$#textures]->{function},
 		shader              => $textures[$#textures]->{shader},
 		texture_resolution  => $texture_resolution,
