@@ -13,6 +13,7 @@ my @textures;
 my $current_texture_id = 0;
 my $texture_resolution = 0;
 my $shader_resolution  = 0;
+my $cache_path;
 
 sub add {
 	my %args = @_;
@@ -23,6 +24,7 @@ sub add {
 		shader              => $textures[$#textures]->{shader},
 		texture_resolution  => $texture_resolution,
 		shader_resolution   => $shader_resolution,
+		cache_path          => $cache_path,
 	);
 	delete($textures[$#textures]->{function});
 	return $#textures;
@@ -80,6 +82,7 @@ sub init {
 
 	$texture_resolution = $args{texture_resolution};
 	$shader_resolution  = $args{shader_resolution};
+	$cache_path = $args{cache_disable} ? undef : $args{cache_path};
 
 	Dizzy::Handlers::register(
 		texture_switch => \&handler_walking,

@@ -164,8 +164,8 @@ sub render_from_func {
 	glBindTexture(GL_TEXTURE_2D, $args{target});
 
 	# render the image
-	if (-e "texture_cache/$args{name}-$args{texture_resolution}") {
-		my $name = "texture_cache/$args{name}-$args{texture_resolution}";
+	if (defined($args{cache_path}) and -e "$args{cache_path}/$args{name}-$args{texture_resolution}") {
+		my $name = "$args{cache_path}/$args{name}-$args{texture_resolution}";
 		my $res = sqrt((-s $name) / length(pack("f", 0)));
 		print "<TextureGenerator> Retrieving texture from cache (${res}x${res})\n"
 			if (!$main::seen_texgen_renderer_info);
@@ -219,6 +219,7 @@ sub new_from_func {
 		shader             => $args{shader},
 		texture_resolution => $args{texture_resolution},
 		shader_resolution  => $args{shader_resolution},
+		cache_path         => $args{cache_path},
 		target             => $new_texture,
 	);
 
