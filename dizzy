@@ -44,7 +44,7 @@ my %options = (
 	texture_resolution     => 64,
 	shader_resolution      => 1024,
 	zoom                   => 100,
-	cache_path             => './texture_cache',
+	cache_paths            => ['./texture_cache'],
 	cache_disable          => 0,
 
 	automode               => 0,
@@ -63,7 +63,7 @@ GetOptions(\%options,
 	'shader_resolution|shader-resolution|R=i',
 	'texture_scale|texture-scale|s=f', # deprecated
 	'zoom|z=f',
-	'cache_path|cache-path|c=s',
+	'cache_paths|cache-paths|c=s',
 	'cache_disable|disable-cache|C+',
 
 	'automode|a=f',
@@ -98,7 +98,7 @@ Dizzy::Render::init_view(texture_scale => 5000 / $options{zoom});
 Dizzy::TextureManager::init(
 	texture_resolution => $options{texture_resolution},
 	shader_resolution  => $options{shader_resolution},
-	cache_path         => $options{cache_path},
+	cache_paths        => [reverse(@{$options{cache_paths}})],
 	cache_disable      => $options{cache_disable},
 );
 
@@ -306,9 +306,10 @@ Zooms the textures. The default value is 100.
 
 =item B<-c> I<path>
 
-=item B<--cache-path> I<path>
+=item B<--cache-paths> I<path>
 
-Use a different path for cached textures.
+Use a different path for cached textures. This option can be specified multiple
+times.
 
 =item B<-C>
 

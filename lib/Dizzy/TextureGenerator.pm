@@ -159,30 +159,34 @@ sub render_function_shader {
 sub render_from_func {
 	my %args = @_;
 
-	# save old texture and prepare new
-	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
-	glBindTexture(GL_TEXTURE_2D, $args{target});
+	# check if the image can be found in the cache
+	if (defined($args{cache_paths})) {
+		foreach my $path (@{$args{cache_paths}}) {
+			my $name = "$path/$args{name}-$args{texture_resolution}";
+			if (-e $name) {
+				my $res = sqrt((-s $name) / length(pack("f", 0)));
+				print "<TextureGenerator> Retrieving texture from cache $path (${res}x${res})\n"
+					if (1 or !$main::seen_texgen_renderer_info);
+				$main::seen_texgen_renderer_info = 1;
+				open(my $cf, "<", $name);
+				glTexImage2D_s(
+					GL_TEXTURE_2D,
+					0,
+					GL_LUMINANCE,
+					$res, $res,
+					0,
+					GL_LUMINANCE,
+					GL_FLOAT,
+					join("", <$cf>)
+				);
+				close($cf);
+				return;
+			}
+		}
+	}
 
-	# render the image
-	if (defined($args{cache_path}) and -e "$args{cache_path}/$args{name}-$args{texture_resolution}") {
-		my $name = "$args{cache_path}/$args{name}-$args{texture_resolution}";
-		my $res = sqrt((-s $name) / length(pack("f", 0)));
-		print "<TextureGenerator> Retrieving texture from cache (${res}x${res})\n"
-			if (!$main::seen_texgen_renderer_info);
-		$main::seen_texgen_renderer_info = 1;
-		open(my $cf, "<", $name);
-		glTexImage2D_s(
-			GL_TEXTURE_2D,
-			0,
-			GL_LUMINANCE,
-			$res, $res,
-			0,
-			GL_LUMINANCE,
-			GL_FLOAT,
-			join("", <$cf>)
-		);
-		close($cf);
-	} elsif (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
+	# not in cache... so render it
+	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
 		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
 			if (!$main::seen_texgen_renderer_info);
 		$main::seen_texgen_renderer_info = 1;
@@ -203,9 +207,6 @@ sub render_from_func {
 			function     => $args{function},
 		);
 	}
-
-	# restore the old texture
-	glBindTexture(GL_TEXTURE_2D, $old_texture);
 }
 
 sub new_from_func {
@@ -213,15 +214,23 @@ sub new_from_func {
 
 	# allocate a new texture and render into it.
 	my $new_texture = create_texture();
+
+	# save old texture and prepare new
+	my $old_texture = glGetIntegerv_p(GL_TEXTURE_BINDING_2D);
+	glBindTexture(GL_TEXTURE_2D, $new_texture);
+
 	render_from_func(
 		name               => $args{name},
 		function           => $args{function},
 		shader             => $args{shader},
 		texture_resolution => $args{texture_resolution},
 		shader_resolution  => $args{shader_resolution},
-		cache_path         => $args{cache_path},
+		cache_paths        => $args{cache_paths},
 		target             => $new_texture,
 	);
+
+	# restore the old texture
+	glBindTexture(GL_TEXTURE_2D, $old_texture);
 
 	return $new_texture;
 }
