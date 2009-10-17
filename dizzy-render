@@ -8,8 +8,10 @@ use Dizzy::Textures;
 my @textures = Dizzy::Textures::textures();
 
 my $res = $ARGV[0] ||= 256;
+my @tbr = @ARGV[1..$#ARGV];
 
 foreach my $texture (@textures) {
+	next if (@tbr and not grep { $_ eq $texture->{name} } @tbr);
 	print STDERR "rendering $texture->{name}-$res " . " " x 16;
 	open(my $outfile, ">", "texture_cache/$texture->{name}-$res");
 	for (my $y = 0; $y < $res; $y++) {
