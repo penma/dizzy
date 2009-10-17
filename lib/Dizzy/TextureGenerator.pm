@@ -156,6 +156,31 @@ sub render_function_shader {
 	glPopAttrib();
 }
 
+# receives a base path like ./texture_cache/Ornament-256
+# will try that file, and possibly compressed formats
+sub try_load_cached_texture {
+	my ($base_path) = @_;
+
+	# try uncompressed
+	if (-e $base_path) {
+		print "<TextureGenerator> retrieving cached texture $base_path (uncompressed)\n";
+		open(my $fd, "<", $base_path);
+		return join("", <$fd>);
+	}
+
+	# try a gzip compressed version
+	if (-e "$base_path.gz") {
+		print "<TextureGenerator> retrieving cached texture from $base_path.gz (gzipped)\n";
+		open(my $raw_fd, "<", "$base_path.gz");
+		require IO::Uncompress::Gunzip;
+		my $z = new IO::Uncompress::Gunzip($raw_fd);
+		return join("", <$z>);
+	}
+
+	# else...
+	return undef;
+}
+
 sub render_from_func {
 	my %args = @_;
 
@@ -163,23 +188,18 @@ sub render_from_func {
 	if (defined($args{cache_paths})) {
 		foreach my $path (@{$args{cache_paths}}) {
 			my $name = "$path/$args{name}-$args{texture_resolution}";
-			if (-e $name) {
-				my $res = sqrt((-s $name) / length(pack("f", 0)));
-				print "<TextureGenerator> Retrieving texture from cache $path (${res}x${res})\n"
-					if (1 or !$main::seen_texgen_renderer_info);
-				$main::seen_texgen_renderer_info = 1;
-				open(my $cf, "<", $name);
+			my $data = try_load_cached_texture($name);
+			if (defined($data)) {
 				glTexImage2D_s(
 					GL_TEXTURE_2D,
 					0,
 					GL_LUMINANCE,
-					$res, $res,
+					$args{texture_resolution}, $args{texture_resolution},
 					0,
 					GL_LUMINANCE,
 					GL_FLOAT,
-					join("", <$cf>)
+					$data
 				);
-				close($cf);
 				return;
 			}
 		}
