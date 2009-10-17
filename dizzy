@@ -73,6 +73,7 @@ GetOptions(\%options,
 
 	'debug_show_planes|debug-show-planes+',
 	'debug_show_messages|debug-show-messages+',
+	'debug_time_startup|debug-time-startup+',
 ) or (usage_message(), exit(1));
 
 ########
@@ -220,6 +221,11 @@ Dizzy::Handlers::register(
 );
 
 Dizzy::TextureManager::set(0);
+
+if ($options{debug_time_startup}) {
+	print "~~~ [Debug] startup complete, exiting as requested\n";
+	exit(0);
+}
 
 Dizzy::GLUT::run();
 
