@@ -16,8 +16,10 @@ foreach my $texture (@textures) {
 	open(my $outfile, ">", "texture_cache/$texture->{name}-$res");
 	for (my $y = 0; $y < $res; $y++) {
 		print STDERR sprintf("%s(line %4d/%4d)", "\b" x 16, $y, $res) if (!($y % 16));
+		my $val;
 		for (my $x = 0; $x < $res; $x++) {
-			print $outfile pack("f", $texture->{function}->($x / $res - 0.5, $y / $res - 0.5));
+			$val = $texture->{function}->($x / $res - 0.5, $y / $res - 0.5);
+			print $outfile pack("f", $val);
 		}
 	}
 	close($outfile);
