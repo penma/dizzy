@@ -144,7 +144,7 @@ my @textures = (
 		function => sub {
 			my ($x, $y) = @_;
 			my $dist = sqrt($x ** 2 + $y ** 2);
-			return abs($dist - 0.5) < 0.1;
+			return abs($dist - 0.5) < 0.1 ? 1.0 : 0.0;
 		},
 	},
 );

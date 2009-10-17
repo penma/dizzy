@@ -168,7 +168,7 @@ sub make_code {
 	} elsif ($op[0] eq "negate") {
 		return "-(" . make_code($op[1], $symtab, $in_sub) . ")";
 
-	} elsif ($op[0] =~ /^(sqrt|sin|cos|pow|log)$/) {
+	} elsif ($op[0] =~ /^(sqrt|sin|cos|pow|log|abs)$/) {
 		# builtin functions
 		return "$op[0](" . join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op]) . ")";
 	} else {
