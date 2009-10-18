@@ -64,16 +64,33 @@ sub render_function_software {
 sub render_function_shader {
 	my %args = @_;
 
-	# allocate texture memory
-	glTexImage2D_s(
-		GL_TEXTURE_2D,
-		0,
-		GL_RGBA8,
-		$args{resolution}, $args{resolution},
-		0,
-		GL_LUMINANCE, GL_FLOAT,
-		pack("f", 0) x ($args{resolution} ** 2)
-	);
+	# allocate texture memory.
+	# on windows systems, passing a NULL pointer to glTexImage2D is faster than
+	# allocating and passing the memory manually; in this case, the GL allocates
+	# the memory itself.
+	# on other systems (tested so far: Linux with MESA), when passing a NULL
+	# pointer hell breaks loose and all kinds of render errors are in the texture
+	# and so.
+	if ($^O eq "MSWin32") {
+		glTexImage2D_c(
+			GL_TEXTURE_2D, 0,
+			GL_RGBA8,
+			$args{resolution}, $args{resolution},
+			0,
+			GL_LUMINANCE, GL_FLOAT,
+			0
+		);
+	} else {
+		glTexImage2D_s(
+			GL_TEXTURE_2D,
+			0,
+			GL_RGBA8,
+			$args{resolution}, $args{resolution},
+			0,
+			GL_LUMINANCE, GL_FLOAT,
+			pack("f", 0) x ($args{resolution} ** 2)
+		);
+	}
 
 	# create and use a framebuffer object
 	my $fbo = (glGenFramebuffersEXT_p(1))[0];
