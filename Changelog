@@ -4,9 +4,12 @@ dizzy ? - ?
       laggy (esp. with higher texture resolutions)
     * use fragment shaders (if available) instead of the CPU to render
       textures, allowing for very fast rendering of high-resolution textures
-    * removed all Perl versions of textures - CPU rendering is now done
-      by automatically converting the GLSL code to Perl and running that
-    * two new textures
+    * removed all GLSL versions of textures - GLSL rendering is now done
+      by automatically converting the Perl code to GLSL and running that
+    * implement a texture cache to speed up startup times
+    * added a -z/--zoom option, acting like the slider in windizz
+    * removed -s option in favor of -z
+    * new textures
 
 dizzy 0.1.1 - Mon Sep 21 20:56:45 2009 +0200
 
