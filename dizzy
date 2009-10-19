@@ -61,7 +61,6 @@ GetOptions(\%options,
 	'fullscreen|f+',
 	'texture_resolution|texture-resolution|r=i',
 	'shader_resolution|shader-resolution|R=i',
-	'texture_scale|texture-scale|s=f', # deprecated
 	'zoom|z=f',
 	'cache_paths|cache-paths|c=s',
 	'cache_disable|disable-cache|C+',
@@ -88,11 +87,6 @@ use Dizzy::Render;
 use Dizzy::GLUT;
 use Dizzy::Handlers;
 
-if ($options{texture_scale}) {
-	print "warning: the --texture-scale option is deprecated\n";
-	print "         use the --zoom/-z option, please\n";
-	$options{zoom} = 5000 / $options{texture_scale};
-}
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
 Dizzy::Render::init_view(texture_scale => 5000 / $options{zoom});
 
