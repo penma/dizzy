@@ -100,7 +100,6 @@ sub init {
 			"800x600",
 			""
 		) {
-			print "Attempting to initialize game mode $mode\n";
 			glutGameModeString($mode);
 			if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
 				glutEnterGameMode();
@@ -108,8 +107,8 @@ sub init {
 			}
 		}
 		if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) == 0) {
-			die "Fatal error: Couldn't initialize any game mode. ".
-				"Try without the -f option.\n";
+			print "Fatal error: Couldn't initialize any game mode. Try without the -f option.\n";
+			exit(1);
 		}
 	} else {
 		glutInitWindowSize($args{width}, $args{height});
@@ -138,13 +137,21 @@ sub update_capabilities {
 	my $gl_vendor   = glGetString(GL_VENDOR);
 	my $gl_renderer = glGetString(GL_RENDERER);
 	if ($capabilities{glsl} and ("$gl_vendor $gl_renderer") =~ /\bmesa\b/i) {
-		print STDERR "@@@ [Graphics] MESA library detected, disabling shaders.\n";
-		print STDERR "    (why? -> <https://bugs.freedesktop.org/show_bug.cgi?id=24553>)\n";
+		print "warning: MESA library detected, disabling shaders.\n";
+		print "         (details: <https://bugs.freedesktop.org/show_bug.cgi?id=24553>)\n";
 		$capabilities{glsl} = 0;
 	}
 
 	# override the detected values, if forced to do so by user
-	$capabilities{glsl} = $ENV{FORCE_CAP_GLSL} if (exists($ENV{FORCE_CAP_GLSL}));
+	if (exists($ENV{FORCE_CAP_GLSL})) {
+		$capabilities{glsl} = $ENV{FORCE_CAP_GLSL};
+		print "note: forcefully overriding GLSL capability\n";
+	}
+
+	printf("GPU features: [%s] GLSL     [%s] FBOs\n",
+		$capabilities{glsl} ? "x" : " ",
+		$capabilities{fbo}  ? "x" : " ",
+	);
 }
 
 sub supports {

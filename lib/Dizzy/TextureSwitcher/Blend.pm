@@ -25,17 +25,15 @@ my $func_blend;
 
 sub handler_init_switch {
 	my %args = @_;
-	print "<Texblend> checking if we are blending...\n";
 	# check here if we are currently blending. if we are, STOP.
 	if (defined($blend_params)) {
-		print "<TexBlend> refused texture switch request.\n";
+		print "*** Cannot switch to different texture, because Dizzy is blending right now.\n";
 		return Dizzy::Handlers::STOP;
 	}
 
 	# else:
 	$blend_params = \%args;
 	$blend_start = time;
-	print "<TexBlend> Starting blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture} at $blend_start\n";
 
 	Dizzy::Handlers::STOP;
 }
@@ -161,15 +159,12 @@ sub handler_render {
 		# (assert we are done if the source and target match, so we don't block
 		# on program start)
 		if ($ratio < 1.0 and $blend_params->{old_gl_texture} != $blend_params->{gl_texture}) {
-			# print "<TexBlend> Blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}, ratio $ratio\n";
-
 			$func_blend->(
 				$blend_params->{old_gl_texture},
 				$blend_params->{gl_texture},
 				$ratio,
 			);
 		} else {
-			print "<TexBlend> Finished blending $blend_params->{old_gl_texture} -> $blend_params->{gl_texture}\n";
 			glBindTexture(GL_TEXTURE_2D, $blend_params->{gl_texture});
 			Dizzy::Handlers::invoke("texture_switched", %{$blend_params});
 			$blend_params = undef;
@@ -181,11 +176,11 @@ sub handler_render {
 
 sub select_render_path {
 	if (Dizzy::GLUT::supports("glsl")) {
-		print "<TexBlend> Using GLSL shaders for blending\n";
+		print "TexBlend: will use fast GLSL shaders for blending :-)\n";
 		$func_init = \&glsl_init;
 		$func_blend = \&glsl_blend;
 	} else {
-		print "<TexBlend> Falling back to slow software texture blending\n";
+		print "TexBlend: GLSL not supported, falling back to slow software blending :-(\n";
 		$func_init = \&software_init;
 		$func_blend = \&software_blend;
 	}

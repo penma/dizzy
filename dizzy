@@ -89,8 +89,8 @@ use Dizzy::GLUT;
 use Dizzy::Handlers;
 
 if ($options{texture_scale}) {
-	print "*** [dizzy] the --texture-scale option is deprecated\n";
-	print "    use the --zoom/-z option, please\n";
+	print "warning: the --texture-scale option is deprecated\n";
+	print "         use the --zoom/-z option, please\n";
 	$options{zoom} = 5000 / $options{texture_scale};
 }
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
@@ -106,7 +106,7 @@ Dizzy::TextureManager::init(
 # read textures
 my @textures = Dizzy::Textures::textures();
 foreach my $tex (0..$#textures) {
-	printf("Rendering texture %d/%d\n", $tex + 1, scalar(@textures));
+	print STDERR sprintf("Loading textures (%d/%d)\r", $tex + 1, scalar(@textures));
 	Dizzy::TextureManager::add(%{$textures[$tex]});
 }
 
@@ -223,7 +223,7 @@ Dizzy::Handlers::register(
 Dizzy::TextureManager::set(0);
 
 if ($options{debug_time_startup}) {
-	print "~~~ [Debug] startup complete, exiting as requested\n";
+	print "debug: startup complete, exiting as requested\n";
 	exit(0);
 }
 

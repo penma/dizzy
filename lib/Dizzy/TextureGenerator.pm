@@ -180,14 +180,12 @@ sub try_load_cached_texture {
 
 	# try uncompressed
 	if (-e $base_path) {
-		print "<TextureGenerator> retrieving cached texture $base_path (uncompressed)\n";
 		open(my $fd, "<", $base_path);
 		return join("", <$fd>);
 	}
 
 	# try a gzip compressed version
 	if (-e "$base_path.gz") {
-		print "<TextureGenerator> retrieving cached texture from $base_path.gz (gzipped)\n";
 		open(my $raw_fd, "<", "$base_path.gz");
 		require IO::Uncompress::Gunzip;
 		my $z = new IO::Uncompress::Gunzip($raw_fd);
@@ -224,10 +222,6 @@ sub render_from_func {
 
 	# not in cache... so render it
 	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
-		print "<TextureGenerator> Using GLSL shaders and FBOs for rendering this texture\n"
-			if (!$main::seen_texgen_renderer_info);
-		$main::seen_texgen_renderer_info = 1;
-
 		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
 
 		render_function_shader(
@@ -235,10 +229,6 @@ sub render_from_func {
 			shader       => $shader,
 		);
 	} else {
-		print "<TextureGenerator> using cpu to render this because of missing hardware support.\n"
-			if (!$main::seen_texgen_renderer_info);
-		$main::seen_texgen_renderer_info = 1;
-
 		render_function_software(
 			resolution   => $args{texture_resolution},
 			function     => $args{function},
