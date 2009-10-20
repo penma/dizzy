@@ -35,6 +35,13 @@ usage: dizzy [options]
 EOH
 }
 
+# default cache paths
+my $user_cache_root = $ENV{XDG_CACHE_HOME} || "$ENV{HOME}/.cache";
+my @default_cache_paths = (
+	"/var/cache/dizzy/textures",
+	"$user_cache_root/dizzy/textures"
+);
+
 my %options = (
 	help                   => sub { usage_message(); exit(0); },
 
@@ -44,7 +51,7 @@ my %options = (
 	texture_resolution     => 64,
 	shader_resolution      => 1024,
 	zoom                   => 100,
-	cache_paths            => ['./texture_cache'],
+	cache_paths            => \@default_cache_paths,
 	cache_disable          => 0,
 
 	automode               => 0,
