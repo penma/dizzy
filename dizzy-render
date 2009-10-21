@@ -2,6 +2,9 @@
 use strict;
 use warnings;
 
+use B::Deparse;
+use Digest::SHA1 qw(sha1_hex);
+
 use lib 'lib';
 use Dizzy::Textures;
 
@@ -12,8 +15,10 @@ my @tbr = @ARGV[1..$#ARGV];
 
 foreach my $texture (@textures) {
 	next if (@tbr and not grep { $_ eq $texture->{name} } @tbr);
-	print STDERR "rendering $texture->{name}-$res " . " " x 16;
-	open(my $outfile, ">", "texture_cache/$texture->{name}-$res");
+	my $hash = sha1_hex(new B::Deparse()->coderef2text($texture->{function}));
+	my $fn = "$hash-$texture->{name}-$res";
+	print STDERR "rendering $fn " . " " x (16 + 60 - length($fn));
+	open(my $outfile, ">", "texture_cache/$fn");
 	for (my $y = 0; $y < $res; $y++) {
 		print STDERR sprintf("%s(line %4d/%4d)", "\b" x 16, $y, $res) if (!($y % 16));
 		my $val;
