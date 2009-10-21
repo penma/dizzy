@@ -177,7 +177,7 @@ sub render_function_shader {
 	glPopAttrib();
 }
 
-# receives a base path like ./texture_cache/Ornament-256
+# receives a base path like path/to/cache/c34b7a5b72-Ornament-256
 # will try that file, and possibly compressed formats
 sub try_load_cached_texture {
 	my ($base_path) = @_;
