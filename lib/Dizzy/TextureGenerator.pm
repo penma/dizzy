@@ -215,9 +215,12 @@ sub render_from_func {
 	}
 
 	# so it's not supported, try to find it in the cache first.
+	use B::Deparse;
+	use Digest::SHA1 qw(sha1_hex);
+	my $hash = sha1_hex(new B::Deparse()->coderef2text($args{function}));
 	if (defined($args{cache_paths})) {
 		foreach my $path (@{$args{cache_paths}}) {
-			my $name = "$path/$args{name}-$args{texture_resolution}";
+			my $name = "$path/$hash-$args{name}-$args{texture_resolution}";
 			my $data = try_load_cached_texture($name);
 			if (defined($data)) {
 				glTexImage2D_s(
@@ -250,7 +253,7 @@ sub render_from_func {
 		}
 
 		my $res = glGetTexLevelParameteriv_p(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH);
-		my $fn = "$args{cache_paths}->[0]/$args{name}-$res";
+		my $fn = "$args{cache_paths}->[0]/$hash-$args{name}-$res";
 		open(my $outfile, ">", $fn) or do {
 			print STDERR "Couldn't write to cache file $fn ($!), not writing to cache.\n";
 			return;
