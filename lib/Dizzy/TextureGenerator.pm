@@ -3,7 +3,10 @@ package Dizzy::TextureGenerator;
 use strict;
 use warnings;
 
+use B::Deparse;
+use Digest::SHA1 qw(sha1_hex);
 use File::Path qw(make_path);
+
 use OpenGL qw(:all);
 use Dizzy::GLUT;
 use Dizzy::Perl2GLSL;
@@ -215,8 +218,6 @@ sub render_from_func {
 	}
 
 	# so it's not supported, try to find it in the cache first.
-	use B::Deparse;
-	use Digest::SHA1 qw(sha1_hex);
 	my $hash = sha1_hex(new B::Deparse()->coderef2text($args{function}));
 	if (defined($args{cache_paths})) {
 		foreach my $path (@{$args{cache_paths}}) {
