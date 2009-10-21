@@ -3,6 +3,7 @@ package Dizzy::TextureGenerator;
 use strict;
 use warnings;
 
+use File::Path qw(make_path);
 use OpenGL qw(:all);
 use Dizzy::GLUT;
 use Dizzy::Perl2GLSL;
@@ -199,7 +200,21 @@ sub try_load_cached_texture {
 sub render_from_func {
 	my %args = @_;
 
-	# check if the image can be found in the cache
+	# if GLSL is supported and so, render it freshly, without cache
+	# (cache read/write just wastes time here)
+	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
+		# if GLSL is supported and stuff, render it
+		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
+
+		render_function_shader(
+			resolution   => $args{shader_resolution},
+			shader       => $shader,
+		);
+
+		return;
+	}
+
+	# so it's not supported, try to find it in the cache first.
 	if (defined($args{cache_paths})) {
 		foreach my $path (@{$args{cache_paths}}) {
 			my $name = "$path/$args{name}-$args{texture_resolution}";
@@ -220,27 +235,17 @@ sub render_from_func {
 		}
 	}
 
-	# not in cache... so render it
-	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
-		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
-
-		render_function_shader(
-			resolution   => $args{shader_resolution},
-			shader       => $shader,
-		);
-	} else {
-		render_function_software(
-			resolution   => $args{texture_resolution},
-			function     => $args{function},
-		);
-	}
+	# it's not found in the cache, render it on the CPU.
+	render_function_software(
+		resolution   => $args{texture_resolution},
+		function     => $args{function},
+	);
 
 	# if caching is active, write the texture to the cache now.
-	if (defined($args{cache_paths}->[0])) { eval {
-		require File::Path::Tiny;
-
-		if (not File::Path::Tiny::mk($args{cache_paths}->[0])) {
-			print STDERR "Couldn't create cache dir $args{cache_paths}->[0] ($!), not writing to cache.\n";
+	if (defined($args{cache_paths}->[0])) {
+		eval { make_path($args{cache_paths}->[0]) };
+		if ($@) {
+			print STDERR "$@ - not writing to cache.\n";
 			return;
 		}
 
@@ -255,7 +260,7 @@ sub render_from_func {
 		my @pixels = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
 		print $outfile pack("f*", @pixels);
 		close($outfile);
-	}; warn $@ if $@; }
+	}
 }
 
 sub new_from_func {
