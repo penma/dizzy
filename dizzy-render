@@ -4,29 +4,101 @@ use warnings;
 
 use B::Deparse;
 use Digest::SHA1 qw(sha1_hex);
+use File::Path qw(make_path);
 
 use lib 'lib';
 use Dizzy::Textures;
 
+use Getopt::Long qw(:config no_ignore_case bundling);
+use Pod::Usage;
+my %options = (
+	help => 0, man => 0,
+	resolution => 64,
+	output_path => "/var/cache/dizzy/textures",
+);
+GetOptions(\%options,
+	'help|?',
+	'man',
+	'resolution|r=i',
+	'output_path|output-path|o=s',
+) or pod2usage(2);
+pod2usage(1) if $options{help};
+pod2usage(-exitstatus => 0, -verbose => 2) if $options{man};
+
 my @textures = Dizzy::Textures::textures();
+my @tbr = @ARGV;
 
-my $res = $ARGV[0] ||= 256;
-my @tbr = @ARGV[1..$#ARGV];
+# create the path first
+print STDERR "seeding texture cache in $options{output_path}\n";
+make_path($options{output_path});
 
+# render all textures or the ones specified
 foreach my $texture (@textures) {
 	next if (@tbr and not grep { $_ eq $texture->{name} } @tbr);
 	my $hash = sha1_hex(new B::Deparse()->coderef2text($texture->{function}));
-	my $fn = "$hash-$texture->{name}-$res";
+	my $fn = "$hash-$texture->{name}-$options{resolution}";
 	print STDERR "rendering $fn " . " " x (16 + 60 - length($fn));
-	open(my $outfile, ">", "texture_cache/$fn");
-	for (my $y = 0; $y < $res; $y++) {
-		print STDERR sprintf("%s(line %4d/%4d)", "\b" x 16, $y, $res) if (!($y % 16));
+	open(my $outfile, ">", "$options{output_path}/$fn");
+	for (my $y = 0; $y < $options{resolution}; $y++) {
+		print STDERR sprintf("%s(line %4d/%4d)", "\b" x 16, $y, $options{resolution}) if (!($y % 16));
 		my $val;
-		for (my $x = 0; $x < $res; $x++) {
-			$val = $texture->{function}->($x / $res - 0.5, $y / $res - 0.5);
+		for (my $x = 0; $x < $options{resolution}; $x++) {
+			$val = $texture->{function}->($x / $options{resolution} - 0.5, $y / $options{resolution} - 0.5);
 			print $outfile pack("f", $val);
 		}
 	}
 	close($outfile);
 	print STDERR "\n";
 }
+
+__END__
+
+=head1 NAME
+
+B<dizzy-render> - seed a directory with cached texture files
+
+=head1 SYNOPSIS
+
+B<dizzy-render> B<-o> I<output-dir> B<-r> I<resolution> [I<names...>]
+
+=head1 DESCRIPTION
+
+B<dizzy-render> can be used to preseed a directory with cached textures.
+Why an extra tool, if Dizzy can do this itself? Well, people might want to
+generate textures in the installation script of a distro package, where it's
+unlikely or at least unwanted that an X11 program spawns to render textures.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-o> I<output-dir>
+
+=item B<--output-path> I<output-dir>
+
+Dump the textures to this directory. The directory will be created if it does
+not exist. The default value is F</var/cache/dizzy/textures>.
+
+=item B<-r> I<resolution>
+
+=item B<--resolution> I<resolution>
+
+Sets the resolution at which the textures will be rendered. The default value
+is 64.
+
+=back
+
+The options can be followed by a list of I<names>. If there are any such
+I<names> specified, only textures with these names will be rendered.
+
+=head1 CAVEATS
+
+This tool cannot make use of GLSL shaders to speed up rendering. But on the
+other hand, the cache files are not portable, and there is no need to generate
+them on a GLSL supporting machine.
+
+This is not even recommended, as performance tests have shown GLSL rendering
+to be much faster than loading the textures from disk for high resolutions.
+
+=cut
+
