@@ -234,6 +234,28 @@ sub render_from_func {
 			function     => $args{function},
 		);
 	}
+
+	# if caching is active, write the texture to the cache now.
+	if (defined($args{cache_paths}->[0])) { eval {
+		require File::Path::Tiny;
+
+		if (not File::Path::Tiny::mk($args{cache_paths}->[0])) {
+			print STDERR "Couldn't create cache dir $args{cache_paths}->[0] ($!), not writing to cache.\n";
+			return;
+		}
+
+		my $res = glGetTexLevelParameteriv_p(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH);
+		my $fn = "$args{cache_paths}->[0]/$args{name}-$res";
+		open(my $outfile, ">", $fn) or do {
+			print STDERR "Couldn't write to cache file $fn ($!), not writing to cache.\n";
+			return;
+		};
+		# fucking _s version of this routine is fucking broken, so no way around
+		# pointlessly unpacking and repacking the data
+		my @pixels = glGetTexImage_p(GL_TEXTURE_2D, 0, GL_LUMINANCE, GL_FLOAT);
+		print $outfile pack("f*", @pixels);
+		close($outfile);
+	}; warn $@ if $@; }
 }
 
 sub new_from_func {
