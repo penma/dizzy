@@ -1,0 +1,19 @@
+---
+name: dizzy
+version: v0.1.92
+author:
+  - 'Lars Stoltenow <penma@penma.de>'
+abstract: a graphics demo that makes you dizzy using rotating textures
+license: perl
+resources:
+  license: http://dev.perl.org/licenses/
+requires:
+  Convert::Color: 0
+  OpenGL: 0.58
+  perl: v5.10.0
+configure_requires:
+  File::Find::Rule: 0
+  File::Copy::Recursive: 0
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4

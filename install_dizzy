@@ -1,0 +1,198 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+use Config;
+use File::Find::Rule;
+use File::Copy::Recursive qw(fcopy);
+use Getopt::Long qw(:config no_ignore_case bundling);
+use Pod::Man;
+
+# files to be installed
+my %files = (
+	bin  => [ "dizzy" ],
+	sbin => [ "dizzy-render" ],
+	lib  => [ File::Find::Rule->file()->name("*.pm")->in("lib") ],
+	man  => [ ], # filled by manpage generator
+);
+my %man_sources = (
+	6 => { "dizzy" => "dizzy" },
+	8 => { "dizzy-render" => "dizzy-render" },
+);
+
+my %options = (
+	dry_run => 0,
+
+	set => "site",
+	prefix => undef,
+	install_root => "",
+
+	bin_path => undef,
+	sbin_path => undef,
+	lib_path => undef,
+	man_path => undef,
+);
+
+GetOptions(\%options,
+	'dry_run|dry-run|n+',
+
+	'set=s',
+	'prefix=s',
+	'install_root|install-root=s',
+
+	'bin_path|bin-path=s',
+	'sbin_path|sbin-path=s',
+	'lib_path|lib-path=s',
+	'man_path|man-path=s',
+);
+
+# fill in the paths that were not overridden by user
+if (defined($options{prefix})) {
+	$options{bin_path}  //= "$options{prefix}/bin";
+	$options{sbin_path} //= "$options{prefix}/sbin";
+	$options{lib_path}  //= "$options{prefix}/share/perl5";
+	$options{man_path}  //= "$options{prefix}/share/man";
+} else {
+	die("Argument to --set must be site or vendor") if ($options{set} !~ /^(site|vendor)$/);
+	$options{bin_path}  //= $Config{"install$options{set}bin"};
+	if (!defined($options{sbin_path})) {
+		$options{sbin_path} = $Config{"install$options{set}bin"};
+		$options{sbin_path} =~ s{/bin$}{/sbin};
+	}
+	$options{lib_path}  //= $Config{"install$options{set}lib"};
+	if (!defined($options{man_path})) {
+		$options{man_path} = $Config{"install$options{set}man1dir"};
+		$options{man_path} =~ s{/man1$}{};
+	}
+}
+
+# generate manpages
+print STDERR "Generating manpages... ";
+mkdir("_manpages") unless ($options{dry_run});
+foreach my $section (keys(%man_sources)) {
+	mkdir("_manpages/man$section") unless ($options{dry_run});
+	while (my ($in, $out) = each(%{$man_sources{$section}})) {
+		Pod::Man
+			->new(section => $section)
+			->parse_from_file($in, "_manpages/man$section/$out.$section")
+			unless ($options{dry_run});
+		push(@{$files{man}}, "_manpages/man$section/$out.$section");
+	}
+}
+print STDERR "done.\n";
+
+# now actually install the files
+sub install {
+	my ($in, $out) = @_;
+
+	$in  =~ s@/+@/@g;
+	$out =~ s@/+@/@g;
+	printf("%-40s -> %s\n", $in, $out);
+
+	if ($options{dry_run}) {
+		return 1;
+	} else {
+		fcopy($in, $out) or die("Couldn't install to $out: $! - installation aborted");
+	}
+}
+
+# prefixes to be stripped from input file names before appending them to install dirs.
+my %install_prefixes = (
+	bin  => "^.*/",
+	sbin => "^.*/",
+	lib  => "^lib/",
+	man  => "^_manpages/",
+);
+
+foreach my $set (keys(%files)) {
+	foreach my $from (@{$files{$set}}) {
+		my $to = $from; $to =~ s@$install_prefixes{$set}@@;
+		install($from, $options{install_root} . "/" . $options{$set . "_path"} . "/" . $to);
+	}
+}
+
+if ($options{dry_run}) {
+	print STDERR "Dry run complete, now run without -n to install files.\n";
+} else {
+	print STDERR "All files installed successfully.\n";
+}
+
+exit(0);
+
+__END__
+
+=head1 NAME
+
+B<install_dizzy> - Dizzy's configuration and installation script
+
+=head1 SYNOPSIS
+
+B<install_dizzy> [B<-n>] [B<--set> I<vendor|site>] [B<--install-root> I<prefix>] ...
+
+=head1 DESCRIPTION
+
+B<install_dizzy> is the tool that is used to install Dizzy. The motivation for
+using this self-written script instead of something existing could best be
+described as "special needs" (or "laziness"). At least it works.
+
+When run, the tool will generate manpages from embedded POD and install
+libraries, binaries, and manpages to the system.
+
+See the options described below for controlling the location Dizzy will be
+installed (by default, this is something like /usr/local).
+
+=head1 OPTIONS
+
+=over
+
+=item B<-n>
+
+=item B<--dry-run>
+
+Don't actually install anything, just print what would be done.
+
+=item B<--set> I<vendor|site>
+
+Set default install paths according to what L<Config> thinks about this set.
+Typically, I<vendor> means something like F</usr> and I<site> means something
+like F</usr/local>. The default is I<site>.
+
+=item B<--prefix> I<path>
+
+Set default install paths to be under I<path>. This will install binaries to
+F<path/bin>, superuser binaries to F<path/sbin>, libraries to F<path/share/perl5>,
+and manpages to F<path/share/man>, unless overridden by one of the four B<--*-path>
+options.
+
+=item B<--install-root> I<path>
+
+Prefix I<path> to all paths that will be written to. This is useful for scripts
+of package managers, which install software into a directory and then pack this
+directory. Example: F</build/dizzy-0.2.0/debian/dizzy> (will create
+F</build/dizzy-0.2.0/debian/dizzy/usr/bin/dizzy> and so on.) This option is
+unset by default, which means all files will be installed into the system.
+
+=item B<--bin-path> I<bin-path>
+
+=item B<--sbin-path> I<sbin-path>
+
+=item B<--lib-path> I<lib-path>
+
+=item B<--man-path> I<man-path>
+
+Set different install paths for some elements. I<bin-path> specifies where
+the F<dizzy> binary is installed, I<sbin-path> for F<dizzy-render>, I<lib-path>
+for all the modules under F<lib> and I<man-path> for all documentation. The
+default values for these options are specified by the B<--set> or B<--prefix>
+options.
+
+A sensible value for I<bin-path> might be F</usr/games>.
+
+=back
+
+=head1 EXAMPLE
+
+A command line like this is used in Debian build scripts:
+
+ ./install_dizzy --set vendor --bin-path /usr/games --install-root ./debian/dizzy
+
