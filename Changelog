@@ -6,7 +6,8 @@ dizzy ? - ?
       textures, allowing for very fast rendering of high-resolution textures
     * removed all GLSL versions of textures - GLSL rendering is now done
       by automatically converting the Perl code to GLSL and running that
-    * implement a texture cache to speed up startup times
+    * implement a texture cache to speed up startup times when using CPU
+      rendering
     * added a -z/--zoom option, acting like the slider in windizz
     * removed -s option in favor of -z
     * new textures
