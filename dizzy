@@ -92,7 +92,7 @@ use Dizzy::GLUT;
 use Dizzy::Handlers;
 
 Dizzy::GLUT::init(title => "Dizzy", width => $options{width}, height => $options{height}, fullscreen => $options{fullscreen});
-Dizzy::Render::init_view(texture_scale => 5000 / $options{zoom});
+Dizzy::Render::init(texture_scale => 5000 / $options{zoom}, debug_show_planes => $options{debug_show_planes});
 
 Dizzy::TextureManager::init(
 	texture_resolution => $options{texture_resolution},
@@ -149,28 +149,6 @@ Dizzy::Handlers::register(
 				Dizzy::Handlers::invoke("texture_switch", direction => +1);
 			}
 		}
-
-		Dizzy::Handlers::GO_ON;
-	},
-
-	# to be moved to: somewhere else (or keep it here? it's nice and warm)
-	render => sub {
-		Dizzy::Render::render_planes(
-			tick => time() - $^T,
-			rotator_func => sub {
-				my ($tick, $plane) = @_;
-				if ($options{debug_show_planes}) {
-					glScalef(0.2, 0.2, 0.2);
-				}
-				if ($plane == 1) {
-					glRotatef($tick * 5, 0, 0, 1);
-					glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-				} elsif ($plane == 2) {
-					glRotatef($tick * -2.5, 0, 0, 1);
-					glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-				}
-			},
-		);
 
 		Dizzy::Handlers::GO_ON;
 	},

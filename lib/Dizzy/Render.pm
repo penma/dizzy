@@ -9,6 +9,8 @@ use Time::HiRes qw(sleep time);
 use Convert::Color;
 use Convert::Color::HSV;
 
+my $debug_show_planes;
+
 sub set_color_from_hsv {
 	my ($h, $v, $s) = @_;
 	glColor3f(Convert::Color::HSV->new($h * 360, $s, $v)->rgb());
@@ -29,6 +31,9 @@ sub render_planes {
 
 	foreach my $plane (1, 2) {
 		glPushMatrix();
+		if ($debug_show_planes) {
+			glScalef(0.2, 0.2, 0.2);
+		}
 		$args{rotator_func}->($tick, $plane);
 		glBegin(GL_QUADS);
 		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, 0);
@@ -49,9 +54,28 @@ sub render_planes {
 	}
 }
 
-sub init_view {
+sub handler_render {
+	render_planes(
+		tick => time() - $^T,
+		rotator_func => sub {
+			my ($tick, $plane) = @_;
+			if ($plane == 1) {
+				glRotatef($tick * 5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			} elsif ($plane == 2) {
+				glRotatef($tick * -2.5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			}
+		},
+	);
+
+	Dizzy::Handlers::GO_ON;
+}
+
+sub init {
 	my %args = @_;
 
+	# initialize GL view
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glMatrixMode(GL_PROJECTION);
@@ -63,6 +87,12 @@ sub init_view {
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+
+	# render handler registration
+	$debug_show_planes = $args{debug_show_planes};
+	Dizzy::Handlers::register(
+		render => \&handler_render
+	);
 }
 
 1;
