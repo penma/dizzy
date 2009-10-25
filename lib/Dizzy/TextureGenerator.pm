@@ -9,6 +9,7 @@ use File::Path qw(make_path);
 
 use OpenGL qw(:all);
 use Dizzy::GLUT;
+use Dizzy::GLFeatures;
 use Dizzy::Perl2GLSL;
 
 use 5.010;
@@ -205,7 +206,7 @@ sub render_from_func {
 
 	# if GLSL is supported and so, render it freshly, without cache
 	# (cache read/write just wastes time here)
-	if (Dizzy::GLUT::supports("glsl") and Dizzy::GLUT::supports("fbo")) {
+	if (Dizzy::GLFeatures::supports("glsl") and Dizzy::GLFeatures::supports("fbo")) {
 		# if GLSL is supported and stuff, render it
 		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
 

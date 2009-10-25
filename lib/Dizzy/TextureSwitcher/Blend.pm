@@ -8,6 +8,7 @@ use Math::Trig;
 use Time::HiRes qw(time);
 use Dizzy::TextureGenerator;
 use Dizzy::Handlers;
+use Dizzy::GLFeatures;
 
 my $blend_params = undef;  # parameters of original texture_switch request
 my $blend_start;           # time at which current blend was started
@@ -175,7 +176,7 @@ sub handler_render {
 }
 
 sub select_render_path {
-	if (Dizzy::GLUT::supports("glsl")) {
+	if (Dizzy::GLFeatures::supports("glsl")) {
 		print "TexBlend: will use fast GLSL shaders for blending :-)\n";
 		$func_init = \&glsl_init;
 		$func_blend = \&glsl_blend;
