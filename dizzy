@@ -283,10 +283,6 @@ Don't use any texture cache at all.
 
 Zooms out of the normal view so you can see how Dizzy creates the animation.
 
-=item B<--debug-show-messages>
-
-Display some messages not only on standard output, but also in the GL window.
-
 =back
 
 =head1 TEXTURE SWITCHERS
