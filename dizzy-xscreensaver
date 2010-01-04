@@ -16,11 +16,13 @@ use Inline C => << '__END__', NAME => 'Dizzy::GLUT', LIBS => '-lX11 -lGL';
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 
+static Display *dpy;
+static Window win;
+static XVisualInfo *vi;
+GLXContext cx;
+
 int GLX_Setup(int wid) {
-	Display *dpy;
-	Window win = wid;
-	XVisualInfo *vi;
-	GLXContext cx;
+	win = wid;
 
 	dpy = XOpenDisplay(0);
 	if (!dpy) return 0;
@@ -29,12 +31,20 @@ int GLX_Setup(int wid) {
 
 	glXMakeCurrent(dpy, win, cx);
 
-	return dpy;
+	return 1;
 }
 
-void GLX_SwapBuffers(int dpy, int win) {
+void GLX_SwapBuffers() {
 	glXSwapBuffers(dpy, win);
 }
+
+void GLX_XEvents() {
+	XWindowAttributes xwa;
+	XGetWindowAttributes(dpy, win, &xwa);
+	glXMakeCurrent(dpy, win, cx);
+	glViewport(0, 0, xwa.width, xwa.height);
+}
+
 __END__
 
 # find out the window id.
@@ -69,8 +79,7 @@ if (!$window_id) {
 my %options = Dizzy::Core::init_arguments();
 
 # initialize OpenGL
-my $dpy = GLX_Setup($window_id);
-if (!$dpy) {
+if (!GLX_Setup($window_id)) {
 	print STDERR "dizzy-xscreensaver: XLIB error, dying\n";
 	exit(1);
 }
@@ -83,8 +92,9 @@ Dizzy::Core::init_subsystems(%options);
 # XXX X event handling
 while (1) {
 	Dizzy::Handlers::invoke("render");
+	GLX_XEvents();
 	glFlush();
-	GLX_SwapBuffers($dpy, $window_id);
+	GLX_SwapBuffers();
 }
 
 __END__
