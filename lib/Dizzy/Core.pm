@@ -170,7 +170,7 @@ sub init_subsystems {
 
 			if ($args{ascii} eq "\e" or $args{ascii} eq "q") { # escape/q
 				exit(0);
-			} elsif ($args{special} == "LEFT" or $args{special} == "RIGHT") {
+			} elsif ($args{special} eq "LEFT" or $args{special} eq "RIGHT") {
 				Dizzy::Handlers::invoke("texture_switch",
 					direction => (($args{special} eq "LEFT") ? -1 : +1),
 				);
