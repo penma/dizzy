@@ -23,6 +23,7 @@ int GLX_Setup(int wid) {
 	GLXContext cx;
 
 	dpy = XOpenDisplay(0);
+	if (!dpy) return 0;
 	vi = glXChooseVisual(dpy, DefaultScreen(dpy), (int[]){ GLX_RGBA, GLX_DOUBLEBUFFER, None });
 	cx = glXCreateContext(dpy, vi, 0, GL_TRUE);
 
@@ -69,6 +70,10 @@ my %options = Dizzy::Core::init_arguments();
 
 # initialize OpenGL
 my $dpy = GLX_Setup($window_id);
+if (!$dpy) {
+	print STDERR "dizzy-xscreensaver: XLIB error, dying\n";
+	exit(1);
+}
 Dizzy::GLFeatures::update_capabilities();
 
 # initialize dizzy subsystems
