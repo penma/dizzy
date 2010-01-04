@@ -1,0 +1,103 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use 5.010;
+
+use lib 'lib';
+use OpenGL qw(:all);
+use Math::Trig;
+use Time::HiRes qw(sleep time);
+use Dizzy::Handlers;
+use Dizzy::Core;
+use Dizzy::GLFeatures;
+
+# XXX replace this with XS code sooner or later
+use Inline C => << '__END__', NAME => 'Dizzy::GLUT', LIBS => '-lX11 -lGL';
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+
+int GLX_Setup(int wid) {
+	Display *dpy;
+	Window win = wid;
+	XVisualInfo *vi;
+	GLXContext cx;
+
+	dpy = XOpenDisplay(0);
+	vi = glXChooseVisual(dpy, DefaultScreen(dpy), (int[]){ GLX_RGBA, GLX_DOUBLEBUFFER, None });
+	cx = glXCreateContext(dpy, vi, 0, GL_TRUE);
+
+	glXMakeCurrent(dpy, win, cx);
+
+	return dpy;
+}
+
+void GLX_SwapBuffers(int dpy, int win) {
+	glXSwapBuffers(dpy, win);
+}
+__END__
+
+# find out the window id.
+my $window_id;
+# since XSS gives us an old-style option sometimes, we have to remove it from
+# the argument list *before* Getopt chokes on it.
+for ($_ = 0; $_ < $#ARGV; $_++) {
+	if ($ARGV[$_] eq "-window-id") {
+		$window_id = $ARGV[$_ + 1];
+		$window_id = oct($window_id) if ($window_id =~ /^0/);
+		delete($ARGV[$_ + 1]);
+		delete($ARGV[$_]);
+	}
+}
+
+# sometimes, XSS will give us the information in an environment variable...
+if (!$window_id) {
+	if (defined($ENV{XSCREENSAVER_WINDOW})) {
+		$window_id = $ENV{XSCREENSAVER_WINDOW};
+		$window_id = oct($window_id) if ($window_id =~ /^0/);
+	}
+}
+
+# now we're in trouble. probably user called this directly
+if (!$window_id) {
+	print STDERR "dizzy-xscreensaver: no window ID to draw on found!\n";
+	print STDERR "(did you not read the manual and call this manually instead of dizzy(6)?)\n";
+	exit(1);
+}
+
+# now we can parse the standard options
+my %options = Dizzy::Core::init_arguments();
+
+# initialize OpenGL
+my $dpy = GLX_Setup($window_id);
+Dizzy::GLFeatures::update_capabilities();
+
+# initialize dizzy subsystems
+Dizzy::Core::init_subsystems(%options);
+
+# main loop
+# XXX X event handling
+while (1) {
+	Dizzy::Handlers::invoke("render");
+	glFlush();
+	GLX_SwapBuffers($dpy, $window_id);
+}
+
+__END__
+
+=head1 NAME
+
+B<dizzy-xscreensaver> - XScreenSaver compliant variant of dizzy
+
+=head1 SYNOPSIS
+
+B<dizzy-xscreensaver> [I<options>]
+
+=head1 DESCRIPTION
+
+For a description of what Dizzy is and what options it takes, refer to the
+L<dizzy> manpage.
+
+This program is a version of Dizzy that can be used as a XScreenSaver hack. It
+is not designed to be run directly by users.
+
+=cut

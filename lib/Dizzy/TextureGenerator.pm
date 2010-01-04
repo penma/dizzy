@@ -8,7 +8,6 @@ use Digest::SHA1 qw(sha1_hex);
 use File::Path qw(make_path);
 
 use OpenGL qw(:all);
-use Dizzy::GLUT;
 use Dizzy::GLFeatures;
 use Dizzy::Perl2GLSL;
 
