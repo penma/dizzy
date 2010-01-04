@@ -33,9 +33,12 @@ sub handler_keyboardspecial {
 	my ($key, $x, $y) = @_;
 
 	my %keys = (
-		GLUT_KEY_LEFT => "LEFT",
-		GLUT_KEY_RIGHT => "RIGHT",
+		GLUT_KEY_LEFT() => "LEFT",
+		GLUT_KEY_RIGHT() => "RIGHT",
 	);
+
+	use Data::Dumper;
+	print Dumper(\%keys);
 
 	Dizzy::Handlers::invoke("keyboard",
 		mouse_x => $x,
