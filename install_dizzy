@@ -3,8 +3,10 @@ use strict;
 use warnings;
 
 use Config;
+use File::Basename;
 use File::Find::Rule;
 use File::Copy::Recursive qw(fcopy);
+use File::Path qw(make_path);
 use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Man;
 
@@ -15,6 +17,9 @@ my %files = (
 	lib  => [ File::Find::Rule->file()->name("*.pm")->in("lib") ],
 	man  => [ ], # filled by manpage generator
 );
+my %xs_files = (
+	"lib/Dizzy/GLX.xs" => { target => "lib/auto/Dizzy/GLX", ldflags => "-lGL -lX11" },
+);
 my %man_sources = (
 	6 => { "dizzy" => "dizzy" },
 	8 => { "dizzy-render" => "dizzy-render" },
@@ -22,6 +27,7 @@ my %man_sources = (
 
 my %options = (
 	dry_run => 0,
+	no_xs => 0,
 
 	set => "site",
 	prefix => undef,
@@ -35,6 +41,7 @@ my %options = (
 
 GetOptions(\%options,
 	'dry_run|dry-run|n+',
+	'no_xs|no-xs|x+',
 
 	'set=s',
 	'prefix=s',
@@ -63,6 +70,33 @@ if (defined($options{prefix})) {
 	if (!defined($options{man_path})) {
 		$options{man_path} = $Config{"install$options{set}man1dir"};
 		$options{man_path} =~ s{/man1$}{};
+	}
+}
+
+# build XS
+if (%xs_files and not $options{no_xs}) {
+	use ExtUtils::ParseXS qw(process_file);
+	use ExtUtils::CBuilder;
+
+	print STDERR "Building XS modules...\n";
+
+	foreach my $xs_source (keys(%xs_files)) {
+		my $xs_cfile = basename($xs_source); $xs_cfile =~ s/\.xs$/.c/;
+
+		make_path($xs_files{$xs_source}->{target});
+
+		process_file(filename => $xs_source, output => "$xs_files{$xs_source}->{target}/$xs_cfile");
+
+		my $builder = new ExtUtils::CBuilder;
+		my $obj_file = $builder->compile(
+			source => "$xs_files{$xs_source}->{target}/$xs_cfile"
+		);
+		my $lib_file = $builder->link(
+			objects => $obj_file,
+			extra_linker_flags => $xs_files{$xs_source}->{ldflags} // "",
+		);
+		fcopy($lib_file, $xs_files{$xs_source}->{target});
+		$xs_files{$xs_source}->{sofile} = $xs_files{$xs_source}->{target} . "/" . basename($lib_file);
 	}
 }
 
@@ -111,6 +145,13 @@ foreach my $set (keys(%files)) {
 	}
 }
 
+if (not $options{no_xs}) {
+	foreach my $from (keys(%xs_files)) {
+		my $to = $xs_files{$from}->{sofile}; $to =~ s@$install_prefixes{lib}@@;
+		install($xs_files{$from}->{sofile}, "$options{install_root}/$options{lib_path}/$to");
+	}
+}
+
 if ($options{dry_run}) {
 	print STDERR "Dry run complete, now run without -n to install files.\n";
 } else {
@@ -150,6 +191,12 @@ installed (by default, this is something like /usr/local).
 =item B<--dry-run>
 
 Don't actually install anything, just print what would be done.
+
+=item B<-x>
+
+=item B<--no-xs>
+
+Skip build and installation of XS modules.
 
 =item B<--set> I<vendor|site>
 
