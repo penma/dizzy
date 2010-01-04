@@ -1,6 +1,6 @@
 ---
 name: dizzy
-version: v0.1.92
+version: v0.1.93
 author:
   - 'Lars Stoltenow <penma@penma.de>'
 abstract: a graphics demo that makes you dizzy using rotating textures
