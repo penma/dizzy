@@ -95,7 +95,6 @@ if (%xs_files and not $options{no_xs}) {
 			objects => $obj_file,
 			extra_linker_flags => $xs_files{$xs_source}->{ldflags} // "",
 		);
-		fcopy($lib_file, $xs_files{$xs_source}->{target});
 		$xs_files{$xs_source}->{sofile} = $xs_files{$xs_source}->{target} . "/" . basename($lib_file);
 	}
 }
