@@ -9,6 +9,8 @@ use File::Copy::Recursive qw(fcopy);
 use File::Path qw(make_path);
 use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Man;
+use ExtUtils::ParseXS qw(process_file);
+use ExtUtils::CBuilder;
 
 # files to be installed
 my %files = (
@@ -75,9 +77,6 @@ if (defined($options{prefix})) {
 
 # build XS
 if (%xs_files and not $options{no_xs}) {
-	use ExtUtils::ParseXS qw(process_file);
-	use ExtUtils::CBuilder;
-
 	print STDERR "Building XS modules...\n";
 
 	foreach my $xs_source (keys(%xs_files)) {
