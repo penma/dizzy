@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<screensaver name="dizzy" _label="Dizzy">
+<command arg="--automode 5" /> <!-- default specified below -->
+
+<number id="automode" type="slider" arg="--automode %" _label="Switch texture after" _low-label="0 sec" _high-label="60 sec" low="0.0" high="60.0" default="5.0" />
+<number id="zoom" type="slider" arg="--zoom %" _label="Zoom" _low-label="10%" _high-label="1000%" low="10" high="1000" default="100" />
+
+<boolean id="texblend" _label="Enable texture blending" arg-set="--texswitcher Blend" />
+<number id="texblend_duration" type="slider" arg="--texswitcher-options duration=%" _label="Duration" _low-label="0 sec" _high-label="10 sec" low="0.0" high="10.0" default="2.0" />
+
+<_description>
+A graphics demo that makes you dizzy using rotating textures.
+
+Written by Lars Stoltenow; 2010.
+</_description>
+
+</screensaver>
