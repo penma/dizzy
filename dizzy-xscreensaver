@@ -22,6 +22,14 @@ for ($_ = 0; $_ < $#ARGV; $_++) {
 		$window_id = oct($window_id) if ($window_id =~ /^0/);
 		delete($ARGV[$_ + 1]);
 		delete($ARGV[$_]);
+	} elsif ($ARGV[$_] eq "-root") {
+		$window_id = 0x10f;
+		delete($ARGV[$_]);
+	} elsif ($ARGV[$_] eq "-mono" or $ARGV[$_] eq "-install") {
+		delete($ARGV[$_]);
+	} elsif ($ARGV[$_] eq "-visual") {
+		delete($ARGV[$_ + 1]);
+		delete($ARGV[$_]);
 	}
 }
 
