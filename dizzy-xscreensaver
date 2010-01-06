@@ -5,54 +5,21 @@ use 5.010;
 
 use lib 'lib';
 use OpenGL qw(:all);
+use OpenGL::XScreenSaver;
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::Handlers;
 use Dizzy::Core;
 use Dizzy::GLFeatures;
-use Dizzy::GLX;
 
-# find out the window id.
-my $window_id;
-# since XSS gives us an old-style option sometimes, we have to remove it from
-# the argument list *before* Getopt chokes on it.
-for ($_ = 0; $_ <= $#ARGV; $_++) {
-	if ($ARGV[$_] eq "-window-id") {
-		$window_id = $ARGV[$_ + 1];
-		$window_id = oct($window_id) if ($window_id =~ /^0/);
-		delete($ARGV[$_ + 1]);
-		delete($ARGV[$_]);
-	} elsif ($ARGV[$_] eq "-root") {
-		$window_id = 0x10f;
-		delete($ARGV[$_]);
-	} elsif ($ARGV[$_] eq "-mono" or $ARGV[$_] eq "-install") {
-		delete($ARGV[$_]);
-	} elsif ($ARGV[$_] eq "-visual") {
-		delete($ARGV[$_ + 1]);
-		delete($ARGV[$_]);
-	}
-}
-
-# sometimes, XSS will give us the information in an environment variable...
-if (!$window_id) {
-	if (defined($ENV{XSCREENSAVER_WINDOW})) {
-		$window_id = $ENV{XSCREENSAVER_WINDOW};
-		$window_id = oct($window_id) if ($window_id =~ /^0/);
-	}
-}
-
-# now we're in trouble. probably user called this directly
-if (!$window_id) {
-	print STDERR "dizzy-xscreensaver: no window ID to draw on found!\n";
-	print STDERR "(did you not read the manual and call this manually instead of dizzy(6)?)\n";
-	exit(1);
-}
+# parse XSS options
+OpenGL::XScreenSaver::init();
 
 # now we can parse the standard options
 my %options = Dizzy::Core::init_arguments();
 
 # initialize OpenGL
-if (!Dizzy::GLX::GLX_Setup($window_id)) {
+if (!OpenGL::XScreenSaver::start()) {
 	print STDERR "dizzy-xscreensaver: XLIB error, dying\n";
 	exit(1);
 }
@@ -62,12 +29,9 @@ Dizzy::GLFeatures::update_capabilities();
 Dizzy::Core::init_subsystems(%options);
 
 # main loop
-# XXX X event handling
 while (1) {
 	Dizzy::Handlers::invoke("render");
-	Dizzy::GLX::GLX_XEvents();
-	glFlush();
-	Dizzy::GLX::GLX_SwapBuffers();
+	OpenGL::XScreenSaver::update();
 }
 
 __END__
