@@ -16,7 +16,7 @@ use Dizzy::GLX;
 my $window_id;
 # since XSS gives us an old-style option sometimes, we have to remove it from
 # the argument list *before* Getopt chokes on it.
-for ($_ = 0; $_ < $#ARGV; $_++) {
+for ($_ = 0; $_ <= $#ARGV; $_++) {
 	if ($ARGV[$_] eq "-window-id") {
 		$window_id = $ARGV[$_ + 1];
 		$window_id = oct($window_id) if ($window_id =~ /^0/);
