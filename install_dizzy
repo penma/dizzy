@@ -39,6 +39,7 @@ my %options = (
 	bin_path => undef,
 	sbin_path => undef,
 	lib_path => undef,
+	arch_path => undef,
 	man_path => undef,
 	xss_path => "/usr/lib/xscreensaver",
 );
@@ -55,6 +56,7 @@ GetOptions(\%options,
 	'bin_path|bin-path=s',
 	'sbin_path|sbin-path=s',
 	'lib_path|lib-path=s',
+	'arch_path|arch-path=s',
 	'man_path|man-path=s',
 	'xss_path|xss-path=s',
 );
@@ -64,6 +66,7 @@ if (defined($options{prefix})) {
 	$options{bin_path}  //= "$options{prefix}/bin";
 	$options{sbin_path} //= "$options{prefix}/sbin";
 	$options{lib_path}  //= "$options{prefix}/share/perl5";
+	$options{arch_path} //= "$options{prefix}/lib/perl5";
 	$options{man_path}  //= "$options{prefix}/share/man";
 } else {
 	die("Argument to --set must be site or vendor") if ($options{set} !~ /^(site|vendor)$/);
@@ -73,6 +76,7 @@ if (defined($options{prefix})) {
 		$options{sbin_path} =~ s{/bin$}{/sbin};
 	}
 	$options{lib_path}  //= $Config{"install$options{set}lib"};
+	$options{arch_path} //= $Config{"install$options{set}arch"};
 	if (!defined($options{man_path})) {
 		$options{man_path} = $Config{"install$options{set}man1dir"};
 		$options{man_path} =~ s{/man1$}{};
@@ -137,6 +141,7 @@ my %install_prefixes = (
 	bin  => "^.*/",
 	sbin => "^.*/",
 	lib  => "^lib/",
+	arch => "^lib/",
 	man  => "^_manpages/",
 );
 
@@ -149,8 +154,8 @@ foreach my $set (keys(%files)) {
 
 if (not $options{no_xs}) {
 	foreach my $from (keys(%xs_files)) {
-		my $to = $xs_files{$from}->{sofile}; $to =~ s@$install_prefixes{lib}@@;
-		install($xs_files{$from}->{sofile}, "$options{install_root}/$options{lib_path}/$to");
+		my $to = $xs_files{$from}->{sofile}; $to =~ s@$install_prefixes{arch}@@;
+		install($xs_files{$from}->{sofile}, "$options{install_root}/$options{arch_path}/$to");
 	}
 }
 
@@ -222,7 +227,7 @@ like F</usr/local>. The default is I<site>.
 
 Set default install paths to be under I<path>. This will install binaries to
 F<path/bin>, superuser binaries to F<path/sbin>, libraries to F<path/share/perl5>,
-and manpages to F<path/share/man>, unless overridden by one of the four B<--*-path>
+and manpages to F<path/share/man>, unless overridden by one of the six B<--*-path>
 options.
 
 =item B<--install-root> I<path>
@@ -239,6 +244,8 @@ unset by default, which means all files will be installed into the system.
 
 =item B<--lib-path> I<lib-path>
 
+=item B<--arch-path> I<arch-path>
+
 =item B<--man-path> I<man-path>
 
 =item B<--xss-path> I<xss-path>
@@ -246,6 +253,7 @@ unset by default, which means all files will be installed into the system.
 Set different install paths for some elements. I<bin-path> specifies where
 the F<dizzy> binary is installed, I<sbin-path> for F<dizzy-render>, I<lib-path>
 for all the modules under F<lib> and I<man-path> for all documentation.
+I<arch-path> specifies the location for architecture-dependent XS modules.
 I<xss-path> is the location where the XScreenSaver version is installed if B<-X>
 is given. The default values for these options are specified by the B<--set> or
 B<--prefix> options, the default for I<xss-path> is F</usr/lib/xscreensaver>.
