@@ -1,15 +1,49 @@
-dizzy ? - ?
+dizzy 0.2 - ?
 
-    * XScreenSaver support
-    * use fragment shaders (if available) to make texture blending less
-      laggy (esp. with higher texture resolutions)
-    * use fragment shaders (if available) instead of the CPU to render
-      textures, allowing for very fast rendering of high-resolution textures
-    * implement a texture cache to speed up startup times when using CPU
-      rendering
-    * replaced -s with -z/--zoom option, which takes a user-friendly percent
-      value
+    Changes since 0.1.1:
+    * render performance improvements:
+      GPU: support Shaders for high-resolution textures and fast blending
+      CPU: cache rendered textures to save time on future runs
+    * XScreenSaver integration
     * new textures
+
+    * replace -s with more user friendly -z/--zoom option
+    * raise default texture size to 256x256
+
+dizzy 0.1.95 - ?
+
+    * raise default texture size to 256x256
+    * optimize rendering for 16:10 resolutions
+    * move XScreenSaver XS bindings to OpenGL::XScreenSaver module
+
+dizzy 0.1.94 - Tue Jan 5 20:48:05 2010 +0100
+
+    * fix texture switching via cursor keys
+    * tweaks to the XScreenSaver integration
+
+dizzy 0.1.93 - Mon Jan 4 19:29:38 2010 +0100
+
+    * basic XScreenSaver support
+    * code refactoring
+
+dizzy 0.1.92 - Sun Oct 25 02:37:57 2009 +0200
+
+    * write textures to the cache dir automatically
+    * replace -s with -z/--zoom option, which takes a user-friendly percentage
+      value
+    * rewrote the build system
+
+dizzy 0.1.91 - Mon Oct 19 02:28:13 2009 +0200
+
+    * cache rendered textures to speed up program start
+    * add two new textures: Holegrid and Egg
+    * extensions to the Perl to GLSL converter
+
+dizzy 0.1.90 - Thu Oct 15 16:07:41 2009 +0200
+
+    * texture blending using shaders, automatically selected if available
+    * texture rendering using shaders, using framebuffer objects
+    * automatic runtime conversion of Perl texture definitions to GLSL
 
 dizzy 0.1.1 - Mon Sep 21 20:56:45 2009 +0200
 
