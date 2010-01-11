@@ -10,6 +10,7 @@ use Convert::Color;
 use Convert::Color::HSV;
 
 my $debug_show_planes;
+my $tex_scale;
 
 sub set_color_from_hsv {
 	my ($h, $v, $s) = @_;
@@ -34,6 +35,15 @@ sub render_planes {
 		if ($debug_show_planes) {
 			glScalef(0.2, 0.2, 0.2);
 		}
+
+		glMatrixMode(GL_TEXTURE);
+		foreach my $tex (GL_TEXTURE1, GL_TEXTURE0) {
+			glActiveTextureARB($tex);
+			glLoadIdentity();
+			glScalef(($tex_scale * 0.3 ** (0.75 + 0.25 * sin(0.4 * $tick))) x 3);
+		}
+		glMatrixMode(GL_MODELVIEW);
+
 		$args{rotator_func}->($tick, $plane);
 		glBegin(GL_QUADS);
 		glMultiTexCoord2fARB(GL_TEXTURE0_ARB, 0, 0);
@@ -80,8 +90,6 @@ sub init {
 
 	glMatrixMode(GL_PROJECTION);
 	glOrtho(-3.2, 3.2, 2.4, -2.4, 1, -1);
-	glMatrixMode(GL_TEXTURE);
-	glScalef(($args{texture_scale}) x 3);
 	glMatrixMode(GL_MODELVIEW);
 
 	glEnable(GL_TEXTURE_2D);
@@ -90,6 +98,7 @@ sub init {
 
 	# render handler registration
 	$debug_show_planes = $args{debug_show_planes};
+	$tex_scale = $args{texture_scale};
 	Dizzy::Handlers::register(
 		render => \&handler_render
 	);

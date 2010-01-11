@@ -18,7 +18,6 @@ my $blend_duration = 0;
 
 # saved parameters
 my $shader_prog;
-my $tex_scale;
 
 # blend function to use
 my $func_init;
@@ -129,18 +128,10 @@ sub glsl_blend {
 	glActiveTextureARB(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, $tex_a);
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-	glScalef(($tex_scale) x 3);
-	glMatrixMode(GL_MODELVIEW);
 
 	glActiveTextureARB(GL_TEXTURE1);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, $tex_b);
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-	glScalef(($tex_scale) x 3);
-	glMatrixMode(GL_MODELVIEW);
 
 	# set the blend factor
 	glUniform1fARB(glGetUniformLocationARB_p($shader_prog, "BlendFactor"), $ratio);
@@ -190,7 +181,6 @@ sub select_render_path {
 sub init {
 	my %args = @_;
 	$blend_duration = $args{duration} || 2;
-	$tex_scale = $args{texture_scale};
 
 	# allocate a texture for blends
 	$blend_texture = Dizzy::TextureGenerator::create_texture();
