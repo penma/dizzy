@@ -40,7 +40,7 @@ sub render_planes {
 		foreach my $tex (GL_TEXTURE1, GL_TEXTURE0) {
 			glActiveTextureARB($tex);
 			glLoadIdentity();
-			glScalef(($tex_scale * 0.3 ** (0.75 + 0.25 * sin(0.4 * $tick))) x 3);
+			glScalef(($tex_scale * 0.3 ** (0.75 + 0.25 * sin(($plane == 1 ? 0.4 : 0.3 ) * $tick))) x 3);
 		}
 		glMatrixMode(GL_MODELVIEW);
 
