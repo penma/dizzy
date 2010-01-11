@@ -83,6 +83,7 @@ glutSpecialFunc   (\&handler_keyboardspecial);
 Dizzy::Handlers::register_last(
 	render => sub {
 		Dizzy::Core::_fps_tick();
+		Dizzy::Handlers::GO_ON;
 	},
 );
 

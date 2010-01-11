@@ -102,6 +102,22 @@ sub init {
 	Dizzy::Handlers::register(
 		render => \&handler_render
 	);
+	if ($debug_show_planes) {
+		Dizzy::Handlers::register_last(render => sub {
+			glLineWidth(3);
+			glColor4f(1.0, 1.0, 1.0, 1.0);
+			my ($xe, $ye) = (3.2 * 0.2, 2.0 * 0.2);
+			glBegin(GL_LINE_STRIP);
+				glVertex2f( $xe,  $ye);
+				glVertex2f(-$xe,  $ye);
+				glVertex2f(-$xe, -$ye);
+				glVertex2f( $xe, -$ye);
+				glVertex2f( $xe,  $ye);
+			glEnd();
+
+			Dizzy::Handlers::GO_ON;
+		});
+	}
 }
 
 1;
