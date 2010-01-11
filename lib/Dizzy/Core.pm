@@ -157,7 +157,6 @@ sub init_subsystems {
 	Dizzy::TextureSwitcher::init(
 		$options{texswitcher},
 		%{$options{texswitcher_options}},
-		texture_scale => 5000 / $options{zoom}
 	);
 
 	Dizzy::Handlers::register(
