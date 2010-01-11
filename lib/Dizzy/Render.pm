@@ -89,7 +89,7 @@ sub init {
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 
 	glMatrixMode(GL_PROJECTION);
-	glOrtho(-3.2, 3.2, 1.8, -1.8, 1, -1);
+	glOrtho(-3.2, 3.2, 2.0, -2.0, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
 
 	glEnable(GL_TEXTURE_2D);
