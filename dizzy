@@ -74,7 +74,7 @@ if ($options{fullscreen}) {
 		exit(1);
 	}
 } else {
-	glutInitWindowSize($options{width} || 800, $options{height} || 600);
+	glutInitWindowSize($options{width} || 800, $options{height} || 500);
 	glutCreateWindow("Dizzy");
 }
 
@@ -167,7 +167,7 @@ This option can be given multiple times to set multiple options.
 =item B<--texture-resolution> I<resolution>
 
 Changes the texture resolution. I<resolution> must be a power of two. The default
-value is 64.
+value is 256.
 
 =item B<-R> I<resolution>
 

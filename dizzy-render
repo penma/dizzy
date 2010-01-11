@@ -13,7 +13,7 @@ use Getopt::Long qw(:config no_ignore_case bundling);
 use Pod::Usage;
 my %options = (
 	help => 0, man => 0,
-	resolution => 64,
+	resolution => 256,
 	output_path => "/var/cache/dizzy/textures",
 );
 GetOptions(\%options,
@@ -84,7 +84,7 @@ not exist. The default value is F</var/cache/dizzy/textures>.
 =item B<--resolution> I<resolution>
 
 Sets the resolution at which the textures will be rendered. The default value
-is 64.
+is 256, just like Dizzy's default resolution.
 
 =back
 

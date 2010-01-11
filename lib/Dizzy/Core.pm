@@ -99,7 +99,7 @@ sub init_arguments {
 		width                  => 0,
 		height                 => 0,
 		fullscreen             => 0,
-		texture_resolution     => 64,
+		texture_resolution     => 256,
 		shader_resolution      => 1024,
 		zoom                   => 100,
 		cache_paths            => \@default_cache_paths,
@@ -138,7 +138,7 @@ sub init_arguments {
 sub init_subsystems {
 	my %options = @_;
 
-	Dizzy::Render::init(texture_scale => 5000 / $options{zoom}, debug_show_planes => $options{debug_show_planes});
+	Dizzy::Render::init(texture_scale => 4000 / $options{zoom}, debug_show_planes => $options{debug_show_planes});
 
 	Dizzy::TextureManager::init(
 		texture_resolution => $options{texture_resolution},
