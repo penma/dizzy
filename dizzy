@@ -195,7 +195,9 @@ Don't use any texture cache at all.
 
 =item B<--debug-show-planes>
 
-Zooms out of the normal view so you can see how Dizzy creates the animation.
+Zooms out of the normal view so you can see how Dizzy creates the animation. A
+white border will also be drawn around the area that would have been shown had
+this option not been used.
 
 =back
 
