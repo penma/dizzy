@@ -159,10 +159,10 @@ sub make_code {
 			return "float $op[2] = gl_TexCoord[0].x - 0.5; float $op[3] = gl_TexCoord[0].y - 0.5";
 		}
 
-	} elsif ($op[0] =~ /^(add|subtract|multiply|divide|lt|gt)$/) {
+	} elsif ($op[0] =~ /^(add|subtract|multiply|divide|[lg][te])$/) {
 		my $operator = {
 			add => "+", subtract => "-", multiply => "*", divide => "/",
-			"lt" => "<", "gt" => ">",
+			"lt" => "<", "gt" => ">", "le" => "<=", "ge" => ">=",
 		}->{$op[0]};
 		return "(" . make_code($op[1], $symtab, $in_sub) . " $operator " . make_code($op[2], $symtab, $in_sub) . ")";
 	} elsif ($op[0] eq "negate") {
