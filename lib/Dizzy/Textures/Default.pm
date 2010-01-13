@@ -147,6 +147,17 @@ my @textures = (
 			return abs($dist - 0.5) < 0.1 ? 1.0 : 0.0;
 		},
 	},
+	{
+		name => "Airy",
+		function => sub {
+			my ($x, $y) = @_;
+			my $dist = sqrt($x ** 2 + $y ** 2);
+			my $i = ($dist <= 0.1 ? 0.1 : $dist) * 24 + 0.25;
+			my $j1 = sin($i) / ($i ** 2)  - cos($i) / $i;
+			my $v = abs($j1 * (1 - ($i / 24) ** 2) * 1.5);
+			return $dist > 0.1 ? $v : $v * (($dist / 0.1) ** 1.5) + 1 - ($dist / 0.1) ** 1.5;
+		},
+	},
 );
 
 =begin comment
