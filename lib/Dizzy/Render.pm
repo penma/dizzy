@@ -9,6 +9,8 @@ use Time::HiRes qw(sleep time);
 use Convert::Color;
 use Convert::Color::HSV;
 
+use Dizzy::RotatorManager;
+
 my $debug_show_planes;
 my $tex_scale;
 
@@ -67,16 +69,7 @@ sub render_planes {
 sub handler_render {
 	render_planes(
 		tick => time() - $^T,
-		rotator_func => sub {
-			my ($tick, $plane) = @_;
-			if ($plane == 1) {
-				glRotatef($tick * 5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			} elsif ($plane == 2) {
-				glRotatef($tick * -2.5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			}
-		},
+		rotator_func => Dizzy::RotatorManager::current(),
 	);
 
 	Dizzy::Handlers::GO_ON;

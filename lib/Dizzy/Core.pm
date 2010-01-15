@@ -14,6 +14,8 @@ use Dizzy::GLFeatures;
 use Dizzy::GLText;
 use Dizzy::TextureManager;
 use Dizzy::TextureSwitcher;
+use Dizzy::RotatorManager;
+use Dizzy::RotatorSwitcher;
 use Dizzy::Textures;
 use Dizzy::Render;
 
@@ -109,6 +111,9 @@ sub init_arguments {
 
 		texswitcher            => 'Simple',
 		texswitcher_options    => {},
+
+		rotswitcher            => 'Simple',
+		rotswitcher_options    => {},
 	);
 
 	GetOptions(\%options,
@@ -127,6 +132,9 @@ sub init_arguments {
 
 		'texswitcher|t=s',
 		'texswitcher_options|texswitcher-options|T=s',
+
+		'rotswitcher|d=s',
+		'rotswitcher_options|rotswitcher-options|D=s',
 
 		'debug_show_planes|debug-show-planes+',
 		'debug_time_startup|debug-time-startup+',
@@ -147,6 +155,8 @@ sub init_subsystems {
 		cache_disable      => $options{cache_disable},
 	);
 
+	Dizzy::RotatorManager::init();
+
 	# read textures
 	my @textures = Dizzy::Textures::textures();
 	foreach my $tex (0..$#textures) {
@@ -154,9 +164,42 @@ sub init_subsystems {
 		Dizzy::TextureManager::add(%{$textures[$tex]});
 	}
 
+	Dizzy::RotatorManager::add(
+		name => "Original",
+		function => sub {
+			my ($tick, $plane) = @_;
+			if ($plane == 1) {
+				glRotatef($tick * 5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			} else {
+				glRotatef($tick * -2.5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			}
+		},
+	);
+	Dizzy::RotatorManager::add(
+		name => "Foobar",
+		function => sub {
+			my ($tick, $plane) = @_;
+			if ($plane == 1) {
+				glRotatef(sin($tick * 0.75) * 10 + $tick * 5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			} elsif ($plane == 2) {
+				glRotatef(sin($tick * 0.25) * 50 + $tick * -2.5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			}
+		},
+	);
+
+
 	Dizzy::TextureSwitcher::init(
 		$options{texswitcher},
 		%{$options{texswitcher_options}},
+	);
+
+	Dizzy::RotatorSwitcher::init(
+		$options{rotswitcher},
+		%{$options{rotswitcher_options}},
 	);
 
 	Dizzy::Handlers::register(
@@ -173,6 +216,10 @@ sub init_subsystems {
 				Dizzy::Handlers::invoke("texture_switch",
 					direction => (($args{special} eq "LEFT") ? -1 : +1),
 				);
+			} elsif ($args{special} eq "UP" or $args{special} eq "DOWN") {
+				Dizzy::Handlers::invoke("rotator_switch",
+					direction => (($args{special} eq "DOWN") ? -1 : +1),
+				);
 			}
 
 			Dizzy::Handlers::GO_ON;
@@ -182,6 +229,11 @@ sub init_subsystems {
 		texture_changed => sub {
 			my %args = @_;
 			print "*** selected texture \"$args{name}\"\n";
+		},
+
+		rotator_changed => sub {
+			my %args = @_;
+			print "*** selected rotator \"$args{name}\"\n";
 		},
 
 		# auto texture changing mode

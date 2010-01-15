@@ -35,6 +35,8 @@ sub handler_keyboardspecial {
 	my %keys = (
 		GLUT_KEY_LEFT() => "LEFT",
 		GLUT_KEY_RIGHT() => "RIGHT",
+		GLUT_KEY_DOWN() => "DOWN",
+		GLUT_KEY_UP() => "UP",
 	);
 
 	Dizzy::Handlers::invoke("keyboard",
@@ -160,6 +162,23 @@ switcher. The available options depend on the texture switcher used.
 
 This option can be given multiple times to set multiple options.
 
+=item B<-d> I<module>
+
+=item B<--rotswitcher> I<module>
+
+Selects the rotator switching module to use. Default is B<Simple>.
+
+See below for available texture switchers and their descriptions.
+
+=item B<-D> I<option>=I<value>
+
+=item B<--rotswitcher-options> I<option>=I<value>
+
+Passes an option I<option> with the value I<value> to the selected rotator
+switcher. The available options depend on the rotator switcher used.
+
+This option can be given multiple times to set multiple options.
+
 =item B<-r> I<resolution>
 
 =item B<--texture-resolution> I<resolution>
@@ -226,6 +245,12 @@ seconds, you set the duration to 2 and automode to 7 (not 5).
 
 =back
 
+=head1 ROTATOR SWITCHERS
+
+=head2 Simple
+
+A simple switcher that just activates the new rotator without any transition.
+
 =head1 KEYBOARD COMMANDS
 
 =over
@@ -237,6 +262,14 @@ Select previous available texture.
 =item Cursor right
 
 Select next available texture.
+
+=item Cursor down
+
+Select previous available rotator function.
+
+=item Cursor up
+
+Select next available rotator function.
 
 =item Escape
 
