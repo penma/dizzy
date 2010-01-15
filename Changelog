@@ -1,6 +1,7 @@
 dizzy 0.2 - ?
 
     Changes since 0.1.1:
+    * different rotator functions
     * render performance improvements:
       GPU: support Shaders for high-resolution textures and fast blending
       CPU: cache rendered textures to save time on future runs
@@ -12,6 +13,7 @@ dizzy 0.2 - ?
 
 dizzy 0.1.95 - ?
 
+    * allow different rotator functions
     * raise default texture size to 256x256
     * optimize rendering for 16:10 resolutions
     * move XScreenSaver XS bindings to OpenGL::XScreenSaver module
