@@ -83,9 +83,15 @@ usage: dizzy [options]
      -t switcher      choose the texture switcher
      -T opt=val       pass options to the texture switcher
 
+   Rotator switching options:
+     -d switcher      choose the rotator switcher
+     -D opt=val       pass options to the rotator switcher
+
    Keyboard commands:
    cursor left      select previous texture
    cursor right     select next texture
+   cursor down      select previous rotator
+   cursor up        select next rotator
    escape           exit dizzy
 EOH
 }
