@@ -12,12 +12,15 @@ use Time::HiRes qw(sleep time);
 use Dizzy::Handlers;
 use Dizzy::GLFeatures;
 use Dizzy::GLText;
+use Dizzy::Render;
+
 use Dizzy::TextureManager;
 use Dizzy::TextureSwitcher;
+use Dizzy::Textures;
+
 use Dizzy::RotatorManager;
 use Dizzy::RotatorSwitcher;
-use Dizzy::Textures;
-use Dizzy::Render;
+use Dizzy::Rotators;
 
 my ($fps_starttime, $fps_frames, $fps_text, $fps_fps) = (time(), 0, "", 0);
 
@@ -148,6 +151,7 @@ sub init_subsystems {
 
 	Dizzy::Render::init(texture_scale => 4000 / $options{zoom}, debug_show_planes => $options{debug_show_planes});
 
+	# initialize textures
 	Dizzy::TextureManager::init(
 		texture_resolution => $options{texture_resolution},
 		shader_resolution  => $options{shader_resolution},
@@ -155,46 +159,20 @@ sub init_subsystems {
 		cache_disable      => $options{cache_disable},
 	);
 
-	Dizzy::RotatorManager::init();
-
-	# read textures
 	my @textures = Dizzy::Textures::textures();
 	foreach my $tex (0..$#textures) {
 		print STDERR sprintf("Loading textures (%d/%d)\r", $tex + 1, scalar(@textures));
 		Dizzy::TextureManager::add(%{$textures[$tex]});
 	}
 
-	Dizzy::RotatorManager::add(
-		name => "Foobar",
-		function => sub {
-			my ($tick, $plane) = @_;
-			if ($plane == 1) {
-				glRotatef(sin($tick * 0.75) * 10 + $tick * 5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			} elsif ($plane == 2) {
-				glRotatef(sin($tick * 0.25) * 50 + $tick * -2.5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			}
-		},
-	);
-	Dizzy::RotatorManager::add(
-		name => "Classic",
-		function => sub {
-			my ($tick, $plane) = @_;
-			if ($plane == 1) {
-				glRotatef($tick * 5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			} else {
-				glRotatef($tick * -2.5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			}
-		},
-	);
-
 	Dizzy::TextureSwitcher::init(
 		$options{texswitcher},
 		%{$options{texswitcher_options}},
 	);
+
+	# initialize rotator functions
+	Dizzy::RotatorManager::init();
+	Dizzy::RotatorManager::add(%{$_}) foreach (Dizzy::Rotators::rotators());
 
 	Dizzy::RotatorSwitcher::init(
 		$options{rotswitcher},
