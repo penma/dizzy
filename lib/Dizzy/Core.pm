@@ -165,19 +165,6 @@ sub init_subsystems {
 	}
 
 	Dizzy::RotatorManager::add(
-		name => "Original",
-		function => sub {
-			my ($tick, $plane) = @_;
-			if ($plane == 1) {
-				glRotatef($tick * 5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			} else {
-				glRotatef($tick * -2.5, 0, 0, 1);
-				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
-			}
-		},
-	);
-	Dizzy::RotatorManager::add(
 		name => "Foobar",
 		function => sub {
 			my ($tick, $plane) = @_;
@@ -190,7 +177,19 @@ sub init_subsystems {
 			}
 		},
 	);
-
+	Dizzy::RotatorManager::add(
+		name => "Classic",
+		function => sub {
+			my ($tick, $plane) = @_;
+			if ($plane == 1) {
+				glRotatef($tick * 5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			} else {
+				glRotatef($tick * -2.5, 0, 0, 1);
+				glTranslatef(sin($tick * 0.5), cos($tick * 0.75), 0);
+			}
+		},
+	);
 
 	Dizzy::TextureSwitcher::init(
 		$options{texswitcher},
