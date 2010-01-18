@@ -11,12 +11,14 @@ dizzy 0.2 - ?
     * replace -s with more user friendly -z/--zoom option
     * raise default texture size to 256x256
 
-dizzy 0.1.95 - ?
+dizzy 0.1.95 - Mon Jan 18 13:57:04 2010 +0100
 
-    * allow different rotator functions
+    * implement different rotator functions
+    * zoom the textures on the planes independently
     * raise default texture size to 256x256
     * optimize rendering for 16:10 resolutions
     * move XScreenSaver XS bindings to OpenGL::XScreenSaver module
+    * new texture "Airy"
 
 dizzy 0.1.94 - Tue Jan 5 20:48:05 2010 +0100
 
