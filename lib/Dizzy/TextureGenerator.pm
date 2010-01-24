@@ -185,7 +185,7 @@ sub try_load_cached_texture {
 	# try uncompressed
 	if (-e $base_path) {
 		open(my $fd, "<", $base_path);
-		return join("", <$fd>);
+		return do { local $/; <$fd>; };
 	}
 
 	# try a gzip compressed version
@@ -193,7 +193,7 @@ sub try_load_cached_texture {
 		open(my $raw_fd, "<", "$base_path.gz");
 		require IO::Uncompress::Gunzip;
 		my $z = new IO::Uncompress::Gunzip($raw_fd);
-		return join("", <$z>);
+		return do { local $/; <$z>; };
 	}
 
 	# else...
