@@ -35,7 +35,7 @@ make_path($options{output_path});
 # render all textures or the ones specified
 foreach my $texture (@textures) {
 	next if (@tbr and not grep { $_ eq $texture->{name} } @tbr);
-	my $hash = sha1_hex(new B::Deparse()->coderef2text($texture->{function}));
+	my $hash = sha1_hex(B::Deparse->new()->coderef2text($texture->{function}));
 	my $fn = "$hash-$texture->{name}-$options{resolution}";
 	print STDERR "rendering $fn " . " " x (16 + 60 - length($fn));
 	open(my $outfile, ">", "$options{output_path}/$fn");

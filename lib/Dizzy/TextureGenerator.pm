@@ -194,7 +194,7 @@ sub try_load_cached_texture {
 	if (-e "$base_path.gz") {
 		open(my $raw_fd, "<", "$base_path.gz");
 		require IO::Uncompress::Gunzip;
-		my $z = new IO::Uncompress::Gunzip($raw_fd);
+		my $z = IO::Uncompress::Gunzip->new($raw_fd);
 		return <$z>;
 	}
 
@@ -220,7 +220,7 @@ sub render_from_func {
 	}
 
 	# so it's not supported, try to find it in the cache first.
-	my $hash = sha1_hex(new B::Deparse()->coderef2text($args{function}));
+	my $hash = sha1_hex(B::Deparse->new()->coderef2text($args{function}));
 	if (defined($args{cache_paths})) {
 		foreach my $path (@{$args{cache_paths}}) {
 			my $name = "$path/$hash-$args{name}-$args{texture_resolution}";
