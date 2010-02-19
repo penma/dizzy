@@ -75,15 +75,25 @@ sub handler_render {
 	Dizzy::Handlers::GO_ON;
 }
 
+sub init_projection {
+	my $aspect = $_[0] || 1.6;
+	my $old_matrix = glGetIntegerv_p(GL_MATRIX_MODE);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	if ($aspect >= 1.0) {
+		glOrtho(-3.2, 3.2, -3.2 / $aspect, 3.2 / $aspect, 1, -1);
+	} else {
+		glOrtho(-3.2 * $aspect, 3.2 * $aspect, -3.2, 3.2, 1, -1);
+	}
+	glMatrixMode($old_matrix);
+}
+
 sub init {
 	my %args = @_;
 
 	# initialize GL view
 	glClearColor(0.0, 0.0, 0.0, 0.0);
-
-	glMatrixMode(GL_PROJECTION);
-	glOrtho(-3.2, 3.2, 2.0, -2.0, 1, -1);
-	glMatrixMode(GL_MODELVIEW);
+	init_projection(1.6);
 
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_BLEND);

@@ -50,6 +50,12 @@ sub handler_render {
 	Dizzy::Handlers::invoke("render");
 }
 
+sub handler_reshape {
+	my ($w, $h) = @_;
+	glViewport(0, 0, $w, $h);
+	Dizzy::Render::init_projection($w / $h);
+}
+
 my %options = Dizzy::Core::init_arguments();
 
 # initialize OpenGL
@@ -81,6 +87,7 @@ glutIdleFunc      (\&handler_idle);
 glutDisplayFunc   (\&handler_render);
 glutKeyboardFunc  (\&handler_keyboard);
 glutSpecialFunc   (\&handler_keyboardspecial);
+glutReshapeFunc   (\&handler_reshape);
 
 Dizzy::Handlers::register_last(
 	render => sub {
