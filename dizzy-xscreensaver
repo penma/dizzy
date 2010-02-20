@@ -5,7 +5,7 @@ use 5.010;
 
 use lib 'lib';
 use OpenGL qw(:all);
-use OpenGL::XScreenSaver;
+use OpenGL::XScreenSaver 0.04;
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::Handlers;
@@ -29,7 +29,14 @@ Dizzy::GLFeatures::update_capabilities();
 Dizzy::Core::init_subsystems(%options);
 
 # main loop
+my ($w, $h) = (0, 0);
+my ($nw, $nh);
 while (1) {
+	($nw, $nh) = OpenGL::XScreenSaver::dimensions();
+	if ($nw != $w or $nh != $h) {
+		($w, $h) = ($nw, $nh);
+		Dizzy::Render::init_projection($w / $h);
+	}
 	Dizzy::Handlers::invoke("render");
 	OpenGL::XScreenSaver::update();
 }
