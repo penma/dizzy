@@ -4,94 +4,53 @@ use warnings;
 use 5.010;
 
 use lib 'lib';
+
 use OpenGL qw(:all);
+use SDL;
+use SDL::Event;
+use SDL::Surface;
+
 use Math::Trig;
 use Time::HiRes qw(sleep time);
 use Dizzy::Handlers;
 use Dizzy::Core;
 use Dizzy::GLFeatures;
 
-# handler functions
-sub handler_idle {
-	handler_render();
+my %options = Dizzy::Core::init_arguments();
 
-	glFlush();
-	glutSwapBuffers();
-}
-
-sub handler_keyboard {
-	my ($key, $x, $y) = @_;
-
-	Dizzy::Handlers::invoke("keyboard",
-		mouse_x => $x,
-		mouse_y => $y,
-		ascii   => chr($key),
-	);
-}
-
-sub handler_keyboardspecial {
-	my ($key, $x, $y) = @_;
-
-	my %keys = (
-		GLUT_KEY_LEFT() => "LEFT",
-		GLUT_KEY_RIGHT() => "RIGHT",
-		GLUT_KEY_DOWN() => "DOWN",
-		GLUT_KEY_UP() => "UP",
-	);
-
-	Dizzy::Handlers::invoke("keyboard",
-		mouse_x => $x,
-		mouse_y => $y,
-		special => $keys{$key} // "OTHER:$key",
-	);
-}
-
-sub handler_render {
-	Dizzy::Handlers::invoke("render");
-}
-
-sub handler_reshape {
+sub do_resize {
 	my ($w, $h) = @_;
+
+	# for fullscreen mode don't set any explicit resolution
+	if ($options{fullscreen}) { $w = $h = 0; }
+
+	my $surf = SDL::SetVideoMode($w, $h, 0,
+		SDL_OPENGL() |
+		SDL_HWSURFACE() |
+		SDL_RESIZABLE() |
+		($options{fullscreen} ? SDL_FULLSCREEN() : 0));
+
+	# find out actual new window size and reset projection
+	($w, $h) = (SDL::SurfaceW($surf), SDL::SurfaceH($surf));
 	glViewport(0, 0, $w, $h);
 	Dizzy::Render::init_projection($w / $h);
 }
 
-my %options = Dizzy::Core::init_arguments();
-
 # initialize OpenGL
-glutInit();
-glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-if ($options{fullscreen}) {
-	foreach my $mode (
-		glutGet(GLUT_SCREEN_WIDTH) . "x" . glutGet(GLUT_SCREEN_HEIGHT),
-		"1024x768",
-		"800x600",
-		""
-	) {
-		glutGameModeString($mode);
-		if (glutGameModeGet(GLUT_GAME_MODE_POSSIBLE)) {
-			glutEnterGameMode();
-			last;
-		}
-	}
-	if (glutGameModeGet(GLUT_GAME_MODE_ACTIVE) == 0) {
-		print "Fatal error: Couldn't initialize any game mode. Try without the -f option.\n";
-		exit(1);
-	}
-} else {
-	glutInitWindowSize($options{width} || 800, $options{height} || 500);
-	glutCreateWindow("Dizzy");
-}
-
-glutIdleFunc      (\&handler_idle);
-glutDisplayFunc   (\&handler_render);
-glutKeyboardFunc  (\&handler_keyboard);
-glutSpecialFunc   (\&handler_keyboardspecial);
-glutReshapeFunc   (\&handler_reshape);
+SDL::Init(SDL_INIT_VIDEO());
+SDL::WMSetCaption("Dizzy", "");
+SDL::GLSetAttribute(SDL_GL_DOUBLEBUFFER(), 1);
+do_resize($options{width} || 800, $options{height} || 500);
 
 Dizzy::Handlers::register_last(
 	render => sub {
 		Dizzy::Core::_fps_tick();
+		Dizzy::Handlers::GO_ON;
+	},
+	'exit' => sub {
+		my $ev = SDL::Event->new();
+		$ev->type(SDL_QUIT());
+		$ev->push();
 		Dizzy::Handlers::GO_ON;
 	},
 );
@@ -106,7 +65,42 @@ if ($options{debug_time_startup}) {
 	exit(0);
 }
 
-glutMainLoop();
+my $event = SDL::Event->new();
+while (1) {
+	if ($event->poll()) {
+		my $type = $event->type();
+		if ($type == SDL_QUIT()) {
+			SDL::Quit();
+			exit(0);
+		} elsif ($type == SDL_KEYDOWN()) {
+			my $keysym = $event->key_sym();
+			my $k;
+			if ($keysym == SDLK_LEFT()) {
+				$k = "LEFT";
+			} elsif ($keysym == SDLK_RIGHT()) {
+				$k = "RIGHT";
+			} elsif ($keysym == SDLK_DOWN()) {
+				$k = "DOWN";
+			} elsif ($keysym == SDLK_UP()) {
+				$k = "UP";
+			} elsif ($keysym == SDLK_ESCAPE()) {
+				$k = "\e";
+			} elsif ($keysym == SDLK_q()) {
+				$k = "q";
+			} else {
+				$k = "OTHER:$keysym";
+			}
+
+			Dizzy::Handlers::invoke("keyboard", key => $k);
+		} elsif ($type == SDL_VIDEORESIZE()) {
+			do_resize($event->resize_w(), $event->resize_h());
+		}
+	}
+
+	Dizzy::Handlers::invoke("render");
+	glFlush();
+	SDL::GLSwapBuffers();
+}
 
 __END__
 

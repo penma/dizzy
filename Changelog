@@ -1,6 +1,7 @@
 dizzy 0.2 - ?
 
     Changes since 0.1.1:
+    * switch from GLUT to SDL
     * different rotator functions
     * render performance improvements:
       GPU: support Shaders for high-resolution textures and fast blending
@@ -10,6 +11,12 @@ dizzy 0.2 - ?
 
     * replace -s with more user friendly -z/--zoom option
     * raise default texture size to 256x256
+
+dizzy 0.1.96 - ?
+
+    * switch to SDL
+    * change render aspect ratio on resizing
+    * actually use the cached texture data
 
 dizzy 0.1.95 - Mon Jan 18 13:57:04 2010 +0100
 

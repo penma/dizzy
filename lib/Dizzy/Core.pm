@@ -190,18 +190,16 @@ sub init_subsystems {
 			my %args = @_;
 
 			# so we don't get warning spam
-			$args{ascii} //= "";
-			$args{special} //= -1;
 
-			if ($args{ascii} eq "\e" or $args{ascii} eq "q") { # escape/q
-				exit(0);
-			} elsif ($args{special} eq "LEFT" or $args{special} eq "RIGHT") {
+			if ($args{key} eq "\e" or $args{key} eq "q") { # escape/q
+				Dizzy::Handlers::invoke("exit");
+			} elsif ($args{key} eq "LEFT" or $args{key} eq "RIGHT") {
 				Dizzy::Handlers::invoke("texture_switch",
-					direction => (($args{special} eq "LEFT") ? -1 : +1),
+					direction => (($args{key} eq "LEFT") ? -1 : +1),
 				);
-			} elsif ($args{special} eq "UP" or $args{special} eq "DOWN") {
+			} elsif ($args{key} eq "UP" or $args{key} eq "DOWN") {
 				Dizzy::Handlers::invoke("rotator_switch",
-					direction => (($args{special} eq "DOWN") ? -1 : +1),
+					direction => (($args{key} eq "DOWN") ? -1 : +1),
 				);
 			}
 
