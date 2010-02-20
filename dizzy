@@ -21,8 +21,16 @@ my %options = Dizzy::Core::init_arguments();
 sub do_resize {
 	my ($w, $h) = @_;
 
-	# for fullscreen mode don't set any explicit resolution
-	if ($options{fullscreen}) { $w = $h = 0; }
+	# set default resolutions:
+	if (!$w or !$h) {
+		if ($options{fullscreen}) {
+			# no specific resolution for fullscreen mode
+			$w = $h = 0;
+		} else {
+			# 800x500 for windowed mode
+			($w, $h) = (800, 500);
+		}
+	}
 
 	my $surf = SDL::SetVideoMode($w, $h, 0,
 		SDL_OPENGL() |
@@ -40,7 +48,7 @@ sub do_resize {
 SDL::Init(SDL_INIT_VIDEO());
 SDL::WMSetCaption("Dizzy", "");
 SDL::GLSetAttribute(SDL_GL_DOUBLEBUFFER(), 1);
-do_resize($options{width} || 800, $options{height} || 500);
+do_resize($options{width}, $options{height});
 
 Dizzy::Handlers::register_last(
 	render => sub {
