@@ -38,6 +38,11 @@ sub do_resize {
 		SDL_RESIZABLE() |
 		($options{fullscreen} ? SDL_FULLSCREEN() : 0));
 
+	if (!$surf) {
+		print STDERR "fatal: SDL Error: " .  SDL::GetError() . "\n";
+		exit(1);
+	}
+
 	# find out actual new window size and reset projection
 	($w, $h) = (SDL::SurfaceW($surf), SDL::SurfaceH($surf));
 	glViewport(0, 0, $w, $h);
