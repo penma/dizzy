@@ -168,6 +168,9 @@ sub init_subsystems {
 	my @textures = Dizzy::Textures::textures();
 	foreach my $tex (0..$#textures) {
 		print STDERR sprintf("Loading textures (%d/%d)\r", $tex + 1, scalar(@textures));
+		if ($options{callback_texture_load}) {
+			$options{callback_texture_load}->(current => $tex, total => scalar(@textures));
+		}
 		Dizzy::TextureManager::add(%{$textures[$tex]});
 	}
 

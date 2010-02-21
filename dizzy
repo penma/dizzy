@@ -70,8 +70,49 @@ Dizzy::Handlers::register_last(
 
 Dizzy::GLFeatures::update_capabilities();
 
+# prepare for progress screen
+glClearColor(0.0, 0.0, 0.0, 0.0);
+glClear(GL_COLOR_BUFFER_BIT);
+glLoadIdentity();
+
 # initialize dizzy subsystems
-Dizzy::Core::init_subsystems(%options);
+Dizzy::Core::init_subsystems(%options,
+	callback_texture_load => sub {
+		my %args = @_;
+
+		# if window is resized while displaying the progress bar, handle that
+		my $event = SDL::Event->new();
+		while ($event->poll()) {
+			my $type = $event->type();
+			if ($type == SDL_QUIT()) {
+				print STDERR "warning: exiting during initialization\n";
+				SDL::Quit();
+				exit(2);
+			} elsif ($type == SDL_VIDEORESIZE()) {
+				do_resize($event->resize_w(), $event->resize_h());
+			}
+		}
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		# bar background
+		glColor3f(0.5, 0.5, 0.5);
+		glBegin(GL_QUADS);
+		glVertex2f(-2.0, +0.125); glVertex2f(+2.0, +0.125);
+		glVertex2f(+2.0, -0.125); glVertex2f(-2.0, -0.125);
+		glEnd();
+
+		# bar itself
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_QUADS);
+		glVertex2f(-2.0, +0.125); glVertex2f(-2.0 + 4.0 * ($args{current} / $args{total}), +0.125);
+		glVertex2f(-2.0 + 4.0 * ($args{current} / $args{total}), -0.125); glVertex2f(-2.0, -0.125);
+		glEnd();
+
+		glFlush();
+		SDL::GLSwapBuffers();
+	},
+);
 
 if ($options{debug_time_startup}) {
 	print "debug: startup complete, exiting as requested\n";
