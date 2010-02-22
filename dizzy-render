@@ -6,6 +6,8 @@ use B::Deparse;
 use Digest::SHA1 qw(sha1_hex);
 use File::Path qw(make_path);
 
+use Time::HiRes qw(time);
+
 use lib 'lib';
 use Dizzy::Textures;
 
@@ -37,8 +39,10 @@ foreach my $texture (@textures) {
 	next if (@tbr and not grep { $_ eq $texture->{name} } @tbr);
 	my $hash = sha1_hex(B::Deparse->new()->coderef2text($texture->{function}));
 	my $fn = "$hash-$texture->{name}-$options{resolution}";
-	print STDERR "rendering $fn " . " " x (16 + 60 - length($fn));
+	print STDERR "rendering $fn " . " " x (16 + 70 - length($fn));
 	open(my $outfile, ">", "$options{output_path}/$fn");
+	my ($t_s, $t_e);
+	$t_s = time();
 	for (my $y = 0; $y < $options{resolution}; $y++) {
 		print STDERR sprintf("%s(line %4d/%4d)", "\b" x 16, $y, $options{resolution}) if (!($y % 16));
 		my $val;
@@ -47,8 +51,9 @@ foreach my $texture (@textures) {
 			print $outfile pack("f", $val);
 		}
 	}
+	$t_e = time();
+	print STDERR sprintf("%s(line %4d/%2\$4d) in %.2fs\n", "\b" x 16, $options{resolution}, $t_e - $t_s);
 	close($outfile);
-	print STDERR "\n";
 }
 
 __END__
