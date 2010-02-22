@@ -8,7 +8,6 @@ use lib 'lib';
 use OpenGL qw(:all);
 use SDL;
 use SDL::Event;
-use SDL::Surface;
 
 use Math::Trig;
 use Time::HiRes qw(sleep time);
@@ -96,18 +95,12 @@ Dizzy::Core::init_subsystems(%options,
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		# bar background
-		glColor3f(0.5, 0.5, 0.5);
-		glBegin(GL_QUADS);
-		glVertex2f(-2.0, +0.125); glVertex2f(+2.0, +0.125);
-		glVertex2f(+2.0, -0.125); glVertex2f(-2.0, -0.125);
-		glEnd();
+		glColor3f((0.125) x 3);
+		glRectf(-2.0, +0.0625, +2.0, -0.125);
 
 		# bar itself
-		glColor3f(1.0, 1.0, 1.0);
-		glBegin(GL_QUADS);
-		glVertex2f(-2.0, +0.125); glVertex2f(-2.0 + 4.0 * ($args{current} / $args{total}), +0.125);
-		glVertex2f(-2.0 + 4.0 * ($args{current} / $args{total}), -0.125); glVertex2f(-2.0, -0.125);
-		glEnd();
+		glColor3f((1.0) x 3);
+		glRectf(-2.0, +0.0625, -2.0 + 4.0 * ($args{current} / $args{total}), -0.125);
 
 		glFlush();
 		SDL::GLSwapBuffers();
