@@ -7,6 +7,7 @@ dizzy 0.2 - ?
       GPU: support Shaders for high-resolution textures and fast blending
       CPU: cache rendered textures to save time on future runs
     * XScreenSaver integration
+    * progress bar on loading
     * new textures
 
     * replace -s with more user friendly -z/--zoom option
@@ -15,6 +16,7 @@ dizzy 0.2 - ?
 dizzy 0.1.96 - ?
 
     * switch to SDL
+    * add a progress bar while loading
     * change render aspect ratio on resizing
     * actually use the cached texture data
 
