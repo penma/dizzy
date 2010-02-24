@@ -2,6 +2,7 @@ package Dizzy::Perl2GLSL;
 
 use strict;
 use warnings;
+use 5.010;
 
 use B;
 
@@ -13,7 +14,7 @@ sub walk_optree {
 	$optype =~ s/^B:://;
 	my $opname = $op->name;
 
-	if ($optype eq "UNOP" or $optype eq "BINOP" or $optype eq "LISTOP" or $optype eq "LOGOP") {
+	if ($optype ~~ [qw(UNOP BINOP LISTOP LOGOP)]) {
 		my @list = $op->name;
 
 		my $child = $op->first;
@@ -168,7 +169,7 @@ sub make_code {
 	} elsif ($op[0] eq "negate") {
 		return "-(" . make_code($op[1], $symtab, $in_sub) . ")";
 
-	} elsif ($op[0] =~ /^(sqrt|sin|cos|pow|log|abs)$/) {
+	} elsif ($op[0] ~~ [qw(sqrt sin cos pow log abs)]) {
 		# builtin functions
 		return "$op[0](" . join(", ", map { make_code($_, $symtab, $in_sub) } @op[1..$#op]) . ")";
 	} else {
