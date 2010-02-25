@@ -13,7 +13,7 @@ dizzy 0.2 - ?
     * replace -s with more user friendly -z/--zoom option
     * raise default texture size to 256x256
 
-dizzy 0.1.96 - ?
+dizzy 0.1.96 - Thu Feb 25 14:04:18 2010 +0100
 
     * switch to SDL
     * add a progress bar while loading
