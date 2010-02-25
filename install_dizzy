@@ -32,7 +32,8 @@ my %options = (
 	sbin_path => undef,
 	lib_path => undef,
 	man_path => undef,
-	xss_path => "/usr/lib/xscreensaver",
+	xss_lib_path => "/usr/lib/xscreensaver",
+	xss_share_path => "/usr/share/xscreensaver",
 );
 
 GetOptions(\%options,
@@ -47,7 +48,8 @@ GetOptions(\%options,
 	'sbin_path|sbin-path=s',
 	'lib_path|lib-path=s',
 	'man_path|man-path=s',
-	'xss_path|xss-path=s',
+	'xss_lib_path|xss-lib-path=s',
+	'xss_share_path|xss-share-path=s',
 );
 
 # fill in the paths that were not overridden by user
@@ -116,7 +118,8 @@ foreach my $set (keys(%files)) {
 }
 
 if ($options{install_xscreensaver}) {
-	install("dizzy-xscreensaver", "$options{install_root}/$options{xss_path}/dizzy");
+	install("dizzy-xscreensaver", "$options{install_root}/$options{xss_lib_path}/dizzy");
+	install("dizzy.xml", "$options{install_root}/$options{xss_share_path}/config/dizzy.xml");
 }
 
 if ($options{dry_run}) {
@@ -196,14 +199,17 @@ unset by default, which means all files will be installed into the system.
 
 =item B<--man-path> I<man-path>
 
-=item B<--xss-path> I<xss-path>
+=item B<--xss-lib-path> I<xss-lib-path>
+
+=item B<--xss-share-path> I<xss-share-path>
 
 Set different install paths for some elements. I<bin-path> specifies where
 the F<dizzy> binary is installed, I<sbin-path> for F<dizzy-render>, I<lib-path>
 for all the modules under F<lib> and I<man-path> for all documentation.
-I<xss-path> is the location where the XScreenSaver version is installed if B<-X>
-is given. The default values for these options are specified by the B<--set> or
-B<--prefix> options, the default for I<xss-path> is F</usr/lib/xscreensaver>.
+I<xss-lib-path> is the location where the XScreenSaver version is installed if
+B<-X> is given. The default values for these options are specified by the B<--set>
+or B<--prefix> options, the default for I<xss-lib-path> is F</usr/lib/xscreensaver>
+and that for I<xss-share-path> is F</usr/share/xscreensaver>.
 
 A sensible value for I<bin-path> might be F</usr/games>.
 
