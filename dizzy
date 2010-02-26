@@ -53,6 +53,9 @@ SDL::Init(SDL_INIT_VIDEO());
 SDL::WMSetCaption("Dizzy", "");
 SDL::GLSetAttribute(SDL_GL_DOUBLEBUFFER(), 1);
 do_resize($options{width}, $options{height});
+if ($options{fullscreen}) {
+	SDL::ShowCursor(0);
+}
 
 Dizzy::Handlers::register_last(
 	render => sub {
