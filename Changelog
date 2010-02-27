@@ -1,17 +1,22 @@
 dizzy 0.2 - ?
 
     Changes since 0.1.1:
-    * switch from GLUT to SDL
-    * different rotator functions
+
+    Main features:
+    * new textures and animations
+    * integration with XScreenSaver
     * render performance improvements:
       GPU: support Shaders for high-resolution textures and fast blending
       CPU: cache rendered textures to save time on future runs
-    * XScreenSaver integration
     * progress bar on loading
-    * new textures
 
-    * replace -s with more user friendly -z/--zoom option
-    * raise default texture size to 256x256
+    Other cool stuff:
+    * replace -s (scale) with more user friendly -z/--zoom option
+    * increase default zoom level
+    * raise default texture size to 256x256 for higher quality textures
+
+    Internals:
+    * switch from GLUT to SDL
 
 dizzy 0.1.96 - Thu Feb 25 14:04:18 2010 +0100
 
