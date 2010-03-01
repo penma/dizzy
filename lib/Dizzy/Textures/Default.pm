@@ -158,6 +158,20 @@ my @textures = (
 			return $dist > 0.1 ? $v : $v * (($dist / 0.1) ** 1.5) + 1 - ($dist / 0.1) ** 1.5;
 		},
 	},
+	{
+		name => "Blurry Vision",
+		function => sub {
+			my ($x, $y) = @_;
+			return sin(2 * $x * pi) / 2 + 0.5;
+		},
+	},
+	{
+		name => "Zigzag",
+		function => sub {
+			my ($x, $y) = @_;
+			return sin(2 * $x * pi) / 2 - $y + 1;
+		},
+	},
 );
 
 =begin comment
