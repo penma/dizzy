@@ -10,6 +10,8 @@ resources:
 requires:
   Convert::Color: 0
   OpenGL: 0.58
+  OpenGL::XScreenSaver: 0.04
+  SDL: 0
   perl: v5.10.0
 configure_requires:
   File::Find::Rule: 0
