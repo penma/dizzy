@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use B::Deparse;
-use Digest::SHA1 qw(sha1_hex);
+use Digest::SHA qw(sha1_hex);
 use File::Path qw(make_path);
 
 use OpenGL qw(:all);
