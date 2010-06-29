@@ -30,12 +30,23 @@ sub walk_optree {
 		} else {
 			return [@list];
 		}
-	} elsif ($optype eq "SVOP") {
-		my $sv = (($cv->PADLIST->ARRAY)[1]->ARRAY)[$op->targ];
-		return ${$sv->object_2svref};
-	} elsif ($optype eq "PADOP") {
-		my $pad = (($cv->PADLIST->ARRAY)[1]->ARRAY)[$op->padix];
-		return ["glob", $pad->NAME, $pad];
+	} elsif ($opname eq "const") {
+		if ($op->sv->isa("B::SV")) {
+			# unthreaded perl
+			return ${$op->sv->object_2svref};
+		} else {
+			# threaded perl
+			return ${(($cv->PADLIST->ARRAY)[1]->ARRAY)[$op->targ]->object_2svref};
+		}
+	} elsif ($opname eq "gv") {
+		if ($op->gv->isa("B::GV")) {
+			# unthreaded perl
+			return ["glob", $op->gv->NAME, $op->gv];
+		} else {
+			# threaded perl
+			my $pad = (($cv->PADLIST->ARRAY)[1]->ARRAY)[$op->padix];
+			return ["glob", $pad->NAME, $pad];
+		}
 	} elsif ($optype eq "OP") {
 		if ($op->name eq "padsv") {
 			return "var" . $op->targ;
