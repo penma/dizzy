@@ -207,7 +207,7 @@ sub render_from_func {
 
 	# if GLSL is supported and so, render it freshly, without cache
 	# (cache read/write just wastes time here)
-	if (Dizzy::GLFeatures::supports("glsl") and (!Dizzy::GLFeatures::is_mesa() or $args{shader}) and Dizzy::GLFeatures::supports("fbo")) {
+	if (Dizzy::GLFeatures::supports("glsl") and (!Dizzy::GLFeatures::has_mesa_shader_bug() or $args{shader}) and Dizzy::GLFeatures::supports("fbo")) {
 		# if GLSL is supported and stuff, render it
 		my $shader = $args{shader} // Dizzy::Perl2GLSL::perl2glsl($args{function});
 
