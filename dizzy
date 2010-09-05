@@ -285,7 +285,7 @@ transition. It takes one option:
 
 =over
 
-=item B<blend>=I<duration>
+=item B<duration>=I<duration>
 
 Sets the duration of a blend to I<duration> seconds. The value can be fractional
 (the decimal separator is always a period).  The default value is 2.
