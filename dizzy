@@ -6,8 +6,11 @@ use 5.010;
 use lib 'lib';
 
 use OpenGL qw(:all);
-use SDL;
+use SDL 2.5 qw(:init);
+use SDL::Video;
+use SDL::Surface;
 use SDL::Event;
+use SDL::Events;
 
 use Math::Trig;
 use Time::HiRes qw(sleep time);
@@ -31,30 +34,30 @@ sub do_resize {
 		}
 	}
 
-	my $surf = SDL::SetVideoMode($w, $h, 0,
+	my $surf = SDL::Video::set_video_mode($w, $h, 0,
 		SDL_OPENGL() |
 		SDL_HWSURFACE() |
 		SDL_RESIZABLE() |
 		($options{fullscreen} ? SDL_FULLSCREEN() : 0));
 
 	if (!$surf) {
-		print STDERR "fatal: SDL Error: " .  SDL::GetError() . "\n";
+		print STDERR "fatal: SDL Error: " .  SDL::get_error() . "\n";
 		exit(1);
 	}
 
 	# find out actual new window size and reset projection
-	($w, $h) = (SDL::SurfaceW($surf), SDL::SurfaceH($surf));
+	($w, $h) = ($surf->w, $surf->h);
 	glViewport(0, 0, $w, $h);
 	Dizzy::Render::init_projection($w / $h);
 }
 
 # initialize OpenGL
-SDL::Init(SDL_INIT_VIDEO());
-SDL::WMSetCaption("Dizzy", "");
-SDL::GLSetAttribute(SDL_GL_DOUBLEBUFFER(), 1);
+SDL::init(SDL_INIT_VIDEO());
+SDL::Video::wm_set_caption("Dizzy", "");
+SDL::Video::GL_set_attribute(SDL_GL_DOUBLEBUFFER(), 1);
 do_resize($options{width}, $options{height});
 if ($options{fullscreen}) {
-	SDL::ShowCursor(0);
+	SDL::Mouse::show_cursor(0);
 }
 
 Dizzy::Handlers::register_last(
@@ -65,7 +68,7 @@ Dizzy::Handlers::register_last(
 	'exit' => sub {
 		my $ev = SDL::Event->new();
 		$ev->type(SDL_QUIT());
-		$ev->push();
+		SDL::Events::push_event($ev);
 		Dizzy::Handlers::GO_ON;
 	},
 );
@@ -84,11 +87,10 @@ Dizzy::Core::init_subsystems(%options,
 
 		# if window is resized while displaying the progress bar, handle that
 		my $event = SDL::Event->new();
-		while ($event->poll()) {
+		while (SDL::Events::poll_event($event)) {
 			my $type = $event->type();
 			if ($type == SDL_QUIT()) {
 				print STDERR "warning: exiting during initialization\n";
-				SDL::Quit();
 				exit(2);
 			} elsif ($type == SDL_VIDEORESIZE()) {
 				do_resize($event->resize_w(), $event->resize_h());
@@ -106,7 +108,7 @@ Dizzy::Core::init_subsystems(%options,
 		glRectf(-2.0, +0.0625, -2.0 + 4.0 * ($args{current} / $args{total}), -0.125);
 
 		glFlush();
-		SDL::GLSwapBuffers();
+		SDL::Video::GL_swap_buffers();
 	},
 );
 
@@ -117,10 +119,9 @@ if ($options{debug_time_startup}) {
 
 my $event = SDL::Event->new();
 while (1) {
-	if ($event->poll()) {
+	if (SDL::Events::poll_event($event)) {
 		my $type = $event->type();
 		if ($type == SDL_QUIT()) {
-			SDL::Quit();
 			exit(0);
 		} elsif ($type == SDL_KEYDOWN()) {
 			my $keysym = $event->key_sym();
@@ -149,7 +150,7 @@ while (1) {
 
 	Dizzy::Handlers::invoke("render");
 	glFlush();
-	SDL::GLSwapBuffers();
+	SDL::Video::GL_swap_buffers();
 }
 
 __END__
