@@ -1,3 +1,9 @@
+dizzy 0.3 - Wed Nov 2 10:47:57 2011 +0100
+
+    * update to SDL.pm 2.5+ API
+    * re-enable shader rendering on Mesa versions that have the compiler
+      bug fixed
+
 dizzy 0.2 - Tue Mar 2 20:59:46 2010 +0100
 
     Changes since 0.1.1:
