@@ -11,6 +11,7 @@ use SDL::Video;
 use SDL::Surface;
 use SDL::Event;
 use SDL::Events;
+use SDL::Mouse;
 
 use Math::Trig;
 use Time::HiRes qw(sleep time);
