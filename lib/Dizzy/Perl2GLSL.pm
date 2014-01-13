@@ -50,10 +50,8 @@ sub walk_optree {
 	} elsif ($optype eq "OP") {
 		if ($op->name eq "padsv") {
 			return "var" . $op->targ;
-		} elsif ($op->name eq "pushmark" or $op->name eq "null") {
-			return ();
 		} else {
-			return "# op description " . $op->desc;
+			return ();
 		}
 	} elsif ($optype eq "COP") {
 		return ();
