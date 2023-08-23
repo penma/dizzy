@@ -3,6 +3,8 @@ package Dizzy::Perl2GLSL;
 use strict;
 use warnings;
 use 5.010;
+no if $] >= 5.017011, warnings => 'experimental::smartmatch';
+no if $] >= 5.037010, warnings => 'deprecated::smartmatch';
 
 use B;
 
